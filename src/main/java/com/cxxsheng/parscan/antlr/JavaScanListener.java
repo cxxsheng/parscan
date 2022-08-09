@@ -6,8 +6,10 @@ import com.cxxsheng.parscan.core.Condition;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.oracle.tools.packager.Log;
 import javafx.util.Pair;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,19 +152,17 @@ public class JavaScanListener extends JavaParserBaseListener {
 
         if (ctx.IF() != null){
             //start of a new IF statement
-            System.out.println("if"+ ctx.getText());
+           // System.out.println("if"+ ctx.getText());
             Token IF_TOKEN = ctx.IF().getSymbol();
             Coordinate coord = new Coordinate(IF_TOKEN.getLine(), IF_TOKEN.getCharPositionInLine());
             //fixme
             Condition condition = new Condition(coord, null);
-            System.out.println(coord);
+            //System.out.println(coord);
             Pair<Condition, Integer> pair = new Pair<>(condition,1);
             conditionStack.push(pair);
             currentConditionNeedPar = true;
         }
-
     }
-
     super.enterStatement(ctx);
   }
 
@@ -176,23 +176,33 @@ public class JavaScanListener extends JavaParserBaseListener {
 
   @Override
   public void enterParExpression(JavaParser.ParExpressionContext ctx) {
-    if (currentConditionNeedPar){
-
-    }
     super.enterParExpression(ctx);
   }
+
 
   @Override
   public void exitParExpression(JavaParser.ParExpressionContext ctx) {
     super.exitParExpression(ctx);
+    if (currentConditionNeedPar)
+    {
+      System.out.println("\nend");
+      currentConditionNeedPar = false;
+    }
+  }
+  //
+  @Override
+  public void visitTerminal(TerminalNode node) {
+    super.visitTerminal(node);
+    if (currentConditionNeedPar){
+      System.out.print(node.getText()+" ,");
+
+    }
   }
 
 
   @Override
   public void enterExpression(JavaParser.ExpressionContext ctx) {
     super.enterExpression(ctx);
-    System.out.println("exp "+ctx.getText());
-
   }
 
 
@@ -208,7 +218,6 @@ public class JavaScanListener extends JavaParserBaseListener {
 
       case METHOD_WRITE_TO_PARCEL_ENTERED:
         LOG.debug("param List is " + paramList);
-        System.out.println(ctx.getText());
         break;
       case METHOD_CREATE_FROM_PARCEL_ENTERED:
         LOG.debug("param List is " + paramList);

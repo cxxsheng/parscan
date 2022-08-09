@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.antlr;
 
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class JavaClassScanListener extends JavaParserBaseListener {
 
@@ -22,4 +23,6 @@ public class JavaClassScanListener extends JavaParserBaseListener {
     System.out.println(ctx.getText());
 
   }
+
+
 }

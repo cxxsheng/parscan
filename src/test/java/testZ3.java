@@ -26,5 +26,8 @@ public class testZ3 {
     Expr expr = ctx.mkAdd(num, num_one);
     ctx.mkStore(arrayExpr,expr,b);
     System.out.println(arrayExpr.getSort());
+
+    int a = 0;
+     a^=3;
   }
 }

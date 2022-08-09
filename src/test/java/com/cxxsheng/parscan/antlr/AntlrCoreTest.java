@@ -28,7 +28,7 @@ class AntlrCoreTest {
     @org.junit.jupiter.api.Test
     void parse() {
 
-      Path cp = Paths.get("src", "test", "resources", "JavaDemo", "GateKeeperResponse.java");
+      Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
       AntlrCore core = new AntlrCore(cp);
       try {
         core.parse();
