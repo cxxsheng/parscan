@@ -1,4 +1,4 @@
-// Generated from /Users/x/Parscan/src/main/java/com/cxxsheng/parscan/antlr/parser/JavaLexer.g4 by ANTLR 4.10.1
+// Generated from D:/parscan/src/main/java/com/cxxsheng/parscan/antlr/parser\JavaLexer.g4 by ANTLR 4.10.1
 package com.cxxsheng.parscan.antlr.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

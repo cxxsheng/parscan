@@ -1,6 +1,6 @@
 package com.cxxsheng.parscan.core.unit;
 
-enum Operator {
+public enum Operator {
     NONE(""),
     //Arithmetic operator
     ADD("+"), SUB("-"),
@@ -44,7 +44,7 @@ enum Operator {
     }
 
     public boolean isAssign(){
-        return this.ordinal() > AS.ordinal();
+        return this.ordinal() >= AS.ordinal();
     }
 
 

@@ -4,35 +4,42 @@ import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
 import com.cxxsheng.parscan.core.Condition;
 import com.cxxsheng.parscan.core.Coordinate;
-import com.oracle.tools.packager.Log;
+import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
+import com.cxxsheng.parscan.core.unit.Parameter;
+import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.unit.symbol.SymbolManager;
 import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.log4j.Logger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.TreeSet;
+
+import java.util.*;
 
 
-//Before we use antlr listener we must filter out some seeming parcelable java file by
-//using regexp or string matching first so that we do not need to parse all AOSP file
+//THIS IS IMPORTANT: Before we use antlr listener we must filter out some seeming parcelable java file by
+//using regexp or string matching firstly so that we do not need to parse all AOSP file
 //(that is a huge workload) and increase the scanning efficiency.
 public class JavaScanListener extends JavaParserBaseListener {
 
   private final static Logger LOG = Logger.getLogger(JavaScanListener.class);
 
-
+  // May have multi-classes in one java file so that
+  // we need to include all above possible parcelable classes.
+  // We choose k-v(Class Name/Parcelable Class) map for get class
+  // during scanning, because we could enter another class and
+  // we do not finish scanning one class yet if we have multi-classes.
+  // only save parcelable classes.
+  private final Map<String, ParcelableFuncImp> parImps = new HashMap<>();
 
   private String packageName = "unk";
 
 
-  //className/isParcelable
-  private Stack<Pair<String,Boolean>> classStack = new Stack<>();
+  //Not like parImps, class stack push/pop ALL kinds(include not parcelable class) classes in this java file.
+  private final Stack<Pair<String,Boolean>> classStack = new Stack<>();
 
-  private Stack<Pair<Condition, Integer>> conditionStack = new Stack<>();
+  // Like classStack, condition stack push/pop ALL kinds conditions stack during scanning.
+  private final Stack<Pair<Condition, Integer>> conditionStack = new Stack<>();
 
 
   private volatile boolean currentConditionNeedPar = false;
@@ -45,7 +52,11 @@ public class JavaScanListener extends JavaParserBaseListener {
 
   private volatile int currentMethodStatus = METHOD_EXITED;
   // method parameter list
-  private volatile List<Parameter> paramList = new ArrayList<>();
+  //private volatile List<Parameter> paramList = new ArrayList<>();
+
+  public JavaScanListener(){
+
+  }
 
   @Override
   public void enterPackageDeclaration(JavaParser.PackageDeclarationContext ctx) {
@@ -69,12 +80,13 @@ public class JavaScanListener extends JavaParserBaseListener {
       if (interfaceType.getText().equals("Parcelable")){
         LOG.info("class: " + className + " implements interface Parcelable");
         isParcelable = true;
+        parImps.put(className, new ParcelableFuncImp(packageName, className));
         break;
       }
     }
 
 
-    //classStack must be Parcelable
+    //If top class is Parcelable, walker will start extract info.
     classStack.push(new Pair<>(className, isParcelable));
 
   }
@@ -89,16 +101,36 @@ public class JavaScanListener extends JavaParserBaseListener {
     assert (classStack.peek().getKey().equals(className));
     classStack.pop();
 
-
   }
 
-  private void parseParamListFromMethodDeclare(JavaParser.MethodDeclarationContext ctx){
-    assert(paramList.isEmpty());
+  @Override
+  public void enterFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
+    super.enterFieldDeclaration(ctx);
+    ParcelableFuncImp imp = getCurrentParcelableClass();
+    if (imp != null){
+      String typeString = ctx.typeType().getText();
+      List<JavaParser.VariableDeclaratorContext> vars = ctx.variableDeclarators().variableDeclarator();
+      for (JavaParser.VariableDeclaratorContext v : vars){
+         String name = v.variableDeclaratorId().getText();
+         //has assign
+         if(v.ASSIGN()!=null && v.variableInitializer()!=null){
+            String valueString = v.variableInitializer().getText();
+            Symbol symbol = SymbolManager.parseSymbol(typeString, name, valueString);
+            SymbolManager.addSymbol2GlobalList(symbol);
+         }
+      }
+    }
+  }
+
+
+  private List<Parameter> parseParamListFromMethodDeclare(JavaParser.MethodDeclarationContext ctx){
+    List<Parameter> params = new ArrayList<>();
     JavaParser.FormalParameterListContext c = ctx.formalParameters().formalParameterList();
     for (JavaParser.FormalParameterContext p : c.formalParameter()){
         Parameter param = new Parameter(p.typeType().getText(), p.variableDeclaratorId().getText());
-        paramList.add(param);
+        params.add(param);
     }
+    return params;
   }
 
   @Override
@@ -117,16 +149,29 @@ public class JavaScanListener extends JavaParserBaseListener {
 
           assert (classStack.peek().getKey().equals(ctx.typeTypeOrVoid().getText()));
           LOG.info("Found " + ctx.IDENTIFIER());
-          parseParamListFromMethodDeclare(ctx);
+          List<Parameter> params = parseParamListFromMethodDeclare(ctx);
 
+          Coordinate c = new Coordinate(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+          ParcelableFuncImp imp = getCurrentParcelableClass();
+          if (imp == null){
+            throw new JavaScanException("cannot find current parcelable class");
+          }
+          imp.initDeSerFunc(imp.getClassName(), ctx.IDENTIFIER().getText(), params, c);
+
+          JavaTreeExtractor.parseMethodBody(imp, ctx.methodBody());
           currentMethodStatus = METHOD_CREATE_FROM_PARCEL_ENTERED;
 
       }else if ("writeToParcel".equals(ctx.IDENTIFIER().getText())){
 
-
           assert ("void".equals(ctx.typeTypeOrVoid().getText()));
           LOG.info("Found " + ctx.IDENTIFIER());
-          parseParamListFromMethodDeclare(ctx);
+          List<Parameter> params = parseParamListFromMethodDeclare(ctx);
+          Coordinate c = new Coordinate(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+          ParcelableFuncImp imp = getCurrentParcelableClass();
+          if (imp == null){
+            throw new JavaScanException("cannot find current parcelable class");
+          }
+          imp.initSerFunc("void", ctx.IDENTIFIER().getText(), params, c);
 
           currentMethodStatus = METHOD_WRITE_TO_PARCEL_ENTERED;
 
@@ -141,7 +186,6 @@ public class JavaScanListener extends JavaParserBaseListener {
     LOG.debug("Exited method " + ctx.IDENTIFIER());
     assert (currentMethodStatus != METHOD_EXITED);
     currentMethodStatus = METHOD_EXITED;
-    paramList.clear();
   }
 
   @Override
@@ -176,6 +220,8 @@ public class JavaScanListener extends JavaParserBaseListener {
 
   @Override
   public void enterParExpression(JavaParser.ParExpressionContext ctx) {
+
+
     super.enterParExpression(ctx);
   }
 
@@ -185,7 +231,6 @@ public class JavaScanListener extends JavaParserBaseListener {
     super.exitParExpression(ctx);
     if (currentConditionNeedPar)
     {
-      System.out.println("\nend");
       currentConditionNeedPar = false;
     }
   }
@@ -206,10 +251,6 @@ public class JavaScanListener extends JavaParserBaseListener {
   }
 
 
-
-
-
-
   @Override
   public void enterMethodBody(JavaParser.MethodBodyContext ctx) {
     super.enterMethodBody(ctx);
@@ -217,21 +258,29 @@ public class JavaScanListener extends JavaParserBaseListener {
     switch (currentMethodStatus){
 
       case METHOD_WRITE_TO_PARCEL_ENTERED:
-        LOG.debug("param List is " + paramList);
         break;
       case METHOD_CREATE_FROM_PARCEL_ENTERED:
-        LOG.debug("param List is " + paramList);
         break;
       default:
         LOG.debug("Nothing to do");
         break;
-
-
     }
-
-
-
   }
+
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {
+    super.enterEveryRule(ctx);
+  }
+
+  private ParcelableFuncImp getCurrentParcelableClass(){
+    try {
+      String className = classStack.peek().getKey();
+      return parImps.getOrDefault(className, null);
+    }catch (EmptyStackException e){
+      return null;
+    }
+  }
+
 
 
 }
