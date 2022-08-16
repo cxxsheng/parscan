@@ -7,7 +7,9 @@ import com.cxxsheng.parscan.core.unit.Parameter;
 import com.cxxsheng.parscan.core.FuncStatement;
 import com.cxxsheng.parscan.core.unit.Symbol;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ParcelableFuncImp implements SerializableFunc {
@@ -15,7 +17,7 @@ public class ParcelableFuncImp implements SerializableFunc {
     private FuncStatement deserFuc = new FuncStatement();    //createFromParcel function
 
     //symbolList in this file
-    private List<Symbol> symbolList;
+    private Map<String, Symbol> symbolMap = new HashMap<>();
 
     //packageName
     private  final String packageName;
@@ -81,10 +83,6 @@ public class ParcelableFuncImp implements SerializableFunc {
         deserFuc.initFunctionDeclaration(retValueType, name, params, c);
     }
 
-    public void addSymbol(Symbol symbol){
-        symbolList.add(symbol);
-    }
-
     //writeFromParcel's first param name. must be Parcel type
     public String getSerializeFuncKeyParamName(){
         Parameter p = serFunc.getFunDec().getParams().get(0);
@@ -100,6 +98,10 @@ public class ParcelableFuncImp implements SerializableFunc {
         if (p==null || !"Parcel".equals(p.getType()))
             throw new JavaScanException("Invalid deserialization function because of parameter at "+ serFunc.getPosition());
         return p.getName();
+    }
+
+    public void addLocalSymbol(){
+
     }
 
 }

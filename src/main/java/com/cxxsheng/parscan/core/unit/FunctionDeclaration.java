@@ -4,7 +4,7 @@ import com.cxxsheng.parscan.core.Coordinate;
 
 import java.util.List;
 
-public class FunctionDeclaration extends Symbol{
+public class FunctionDeclaration {
 
     private final List<Parameter> params;
     private final Coordinate coordinate;
@@ -16,7 +16,6 @@ public class FunctionDeclaration extends Symbol{
      * @param coordinate the coordinate of function
      */
     public FunctionDeclaration(String type, String name, List<Parameter> paramList, Coordinate coordinate) {
-        super(type, name);
         this.params = paramList;
         this.coordinate = coordinate;
     }
@@ -27,5 +26,9 @@ public class FunctionDeclaration extends Symbol{
 
     public Coordinate getCoordinate() {
         return coordinate;
+    }
+
+    public void addSymbolToLocalList(Symbol symbol){
+
     }
 }

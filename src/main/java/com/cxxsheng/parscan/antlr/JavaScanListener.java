@@ -6,8 +6,6 @@ import com.cxxsheng.parscan.core.Condition;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Parameter;
-import com.cxxsheng.parscan.core.unit.Symbol;
-import com.cxxsheng.parscan.core.unit.symbol.SymbolManager;
 import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -114,9 +112,8 @@ public class JavaScanListener extends JavaParserBaseListener {
          String name = v.variableDeclaratorId().getText();
          //has assign
          if(v.ASSIGN()!=null && v.variableInitializer()!=null){
-            String valueString = v.variableInitializer().getText();
-            Symbol symbol = SymbolManager.parseSymbol(typeString, name, valueString);
-            SymbolManager.addSymbol2GlobalList(symbol);
+
+           //fixme
          }
       }
     }

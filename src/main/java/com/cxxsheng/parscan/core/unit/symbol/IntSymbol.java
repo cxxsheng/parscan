@@ -1,23 +1,12 @@
 package com.cxxsheng.parscan.core.unit.symbol;
 
+import com.cxxsheng.parscan.core.unit.Symbol;
 
-//this symbol has value
-public class IntSymbol extends NoValueSymbol {
+// int value, include long value
+public class IntSymbol implements Symbol {
+    private final long value;
 
-    /**
-     * @param type symbol type
-     * @param name symbol name
-     * @param value symbol value
-     */
-    public IntSymbol(String type, String name, int value) {
-        super(type, name);
+    public IntSymbol(long value){
         this.value = value;
     }
-
-    private int value;
-
-    public int getValue() {
-        return value;
-    }
-
 }

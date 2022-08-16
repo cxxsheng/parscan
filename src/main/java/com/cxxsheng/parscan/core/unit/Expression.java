@@ -15,6 +15,12 @@ public class Expression {
      this.op = op;
    }
 
+
+    public Expression(Symbol left, Symbol right, Operator op){
+        this.left = left;
+        this.right = new Expression(right, (Expression) null, null);
+    }
+
     public Symbol getL(){
       return left;
     }
@@ -33,6 +39,12 @@ public class Expression {
 
     public ExpressionOrStatement wrapToExpOrStatement(){
         return new ExpressionOrStatement(this);
+    }
+
+
+
+    public boolean isTerminal(){
+        return left != null && right == null && op == Operator.NONE;
     }
 
 }
