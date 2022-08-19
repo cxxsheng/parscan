@@ -1,10 +1,11 @@
-package com.cxxsheng.parscan.core.unit;
+package com.cxxsheng.parscan.core.unit.symbol;
 
 import com.cxxsheng.parscan.core.Coordinate;
+import com.cxxsheng.parscan.core.unit.Symbol;
 
 import java.util.List;
 
-public class CallFunc {
+public class CallFunc implements Symbol {
     private final String funcName;
     private final List<String> params;
 

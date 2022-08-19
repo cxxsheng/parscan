@@ -2,10 +2,10 @@ package com.cxxsheng.parscan.core.unit.symbol;
 
 import com.cxxsheng.parscan.core.unit.Symbol;
 
-public class BoolSymbol implements Symbol {
-    private final boolean value;
+public class CharSymbol implements Symbol {
+    private final  char value;
 
-    public BoolSymbol(boolean value) {
+    public CharSymbol(char value) {
         this.value = value;
     }
 }

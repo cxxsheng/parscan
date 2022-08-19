@@ -1,12 +1,12 @@
 package com.cxxsheng.parscan.antlr;
 
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
+import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Operator;
 import com.cxxsheng.parscan.core.unit.Symbol;
-import com.cxxsheng.parscan.core.unit.symbol.ArrayInitSymbol;
-import com.cxxsheng.parscan.core.unit.symbol.IdentifierSymbol;
+import com.cxxsheng.parscan.core.unit.symbol.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -15,14 +15,36 @@ import java.util.List;
 public class JavaTreeExtractor {
 
     public static Symbol parseLiteral(JavaParser.LiteralContext literalContext){
-        if(literalContext.integerLiteral()!=null){
-
+        if(literalContext.integerLiteral() != null){
+            int mode = 10;
+            if (literalContext.integerLiteral().DECIMAL_LITERAL()!=null){
+                mode = 10;
+            }else if (literalContext.integerLiteral().HEX_LITERAL() != null){
+                mode = 16;
+            }else if (literalContext.integerLiteral().OCT_LITERAL() != null){
+                mode = 8;
+            }else if (literalContext.integerLiteral().BINARY_LITERAL() != null){
+                mode = 2;
+            }
+            return new IntSymbol(Utils.parseIntString(literalContext.integerLiteral().getText(), mode));
         }
-        literalContext.BOOL_LITERAL();
-        literalContext.CHAR_LITERAL();
-        literalContext.floatLiteral();
-        literalContext.NULL_LITERAL();
-        literalContext.STRING_LITERAL();
+        if (literalContext.floatLiteral() != null){
+            return new FloatSymbol(Utils.parseFloatString(literalContext.integerLiteral().getText()));
+        }
+        if (literalContext.BOOL_LITERAL() != null){
+            if ("true".equals(literalContext.BOOL_LITERAL().getText()))
+                return new BoolSymbol(true);
+            else
+                return new BoolSymbol(false);
+        }
+
+        if(literalContext.CHAR_LITERAL()!=null){
+            return new CharSymbol(literalContext.CHAR_LITERAL().getText().charAt(0));
+        }
+        if(literalContext.STRING_LITERAL()!=null){
+            return new StringSymbol(literalContext.STRING_LITERAL().getText());
+        }
+        throw new RuntimeException("??"); //fixme
     }
 
     public static Expression parsePrimary(JavaParser.PrimaryContext primaryContext){
@@ -38,6 +60,10 @@ public class JavaTreeExtractor {
         if (expressionContext.primary() != null){
             return parsePrimary(expressionContext.primary());
         }
+        if (expressionContext.bop != null){
+
+        }
+
         throw new RuntimeException("??"); //fixme
     }
 

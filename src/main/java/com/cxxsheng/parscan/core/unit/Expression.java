@@ -8,7 +8,7 @@ public class Expression {
    private Expression right = null;
    private Operator op = Operator.NONE;
 
-
+   private boolean isUnitary = false;
    public Expression(Symbol left, Expression right, Operator op){
      this.left = left;
      this.right = right;
@@ -19,6 +19,11 @@ public class Expression {
     public Expression(Symbol left, Symbol right, Operator op){
         this.left = left;
         this.right = new Expression(right, (Expression) null, null);
+    }
+
+    public Expression(Symbol left, Expression right, Operator op, boolean isUnitary){
+       this(left, right, op);
+       this.isUnitary = isUnitary;
     }
 
     public Symbol getL(){
@@ -43,8 +48,13 @@ public class Expression {
 
 
 
-    public boolean isTerminal(){
+    public boolean isSymbol(){
         return left != null && right == null && op == Operator.NONE;
     }
+
+
+    public boolean isUnitary(){
+        return isUnitary;
+   }
 
 }
