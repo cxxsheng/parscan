@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.antlr;
 
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
+import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Expression;
@@ -62,8 +63,63 @@ public class JavaTreeExtractor {
         }
         if (expressionContext.bop != null){
 
+
+            if (expressionContext.bop.getText().equals(".")){
+
+
+
+            }
+
+            List<JavaParser.ExpressionContext> expressions = expressionContext.expression();
+            if (expressions.size() == 2){
+                JavaParser.ExpressionContext left_e = expressions.get(0);
+                JavaParser.ExpressionContext right_e = expressions.get(1);
+                return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
+            }else if (expressionContext.expression().size()==3){
+                //unhandle
+            }else {
+                throw  new RuntimeException("??");//fixme
+            }
+        }
+        if (expressionContext.prefix!=null){
+            assert (expressionContext.expression().size()==1); // it is Unitary
+            return new Expression(null, parseExpression(expressionContext.expression().get(0)), Operator.nameOf(expressionContext.bop.getText()), true);
         }
 
+        if (expressionContext.postfix!=null){
+            assert (expressionContext.expression().size()==1); // it is Unitary
+            return new Expression(parseExpression(expressionContext.expression().get(0)), null , Operator.nameOf(expressionContext.bop.getText()), true);
+        }
+
+        if (expressionContext.methodCall() != null){
+            String funcName="";
+            if (expressionContext.methodCall().SUPER()!=null)
+                funcName = expressionContext.methodCall().SUPER().getText();
+            if (expressionContext.methodCall().THIS()!=null)
+                funcName = expressionContext.methodCall().THIS().getText();
+            if (expressionContext.methodCall().IDENTIFIER()!=null)
+                funcName = expressionContext.methodCall().IDENTIFIER().getText();
+
+
+            assert  !funcName.equals("");
+            Coordinate coordinate = new Coordinate(expressionContext.methodCall().start.getLine(), expressionContext.methodCall().start.getCharPositionInLine());
+            List<JavaParser.ExpressionContext> params = expressionContext.methodCall().expressionList().expression();
+            List<Expression> list = new ArrayList<>();
+
+            if (params!=null){
+                for (JavaParser.ExpressionContext p : params){
+                    list.add(parseExpression(p));
+                }
+            }
+            return new Expression(new CallFunc(funcName, list, coordinate));
+        }
+
+        if (expressionContext.expression() != null){
+            // a?b:c cannot handle
+            // a[b] cannot handle
+            //
+
+        }
         throw new RuntimeException("??"); //fixme
     }
 

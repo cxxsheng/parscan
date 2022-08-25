@@ -11,7 +11,7 @@ public enum Operator {
     GT(">"), GE(">="),
     LT("<"), LE("<="),
     EQ("=="), NE("!="),
-    IF("instanceof"),
+    IO("instanceof"),
     //Logical operator
     AND("&"), OR("|"),
     XOR("^"), NOT("!"),
@@ -48,7 +48,8 @@ public enum Operator {
     }
 
 
-    public static Operator nameOf(String name){
+    public static Operator
+    nameOf(String name){
       for (Operator op : Operator.values()){
         if(op.getName().equals(name))
           return op;

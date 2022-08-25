@@ -4,29 +4,58 @@ package com.cxxsheng.parscan.core.unit;
 import com.cxxsheng.parscan.core.ExpressionOrStatement;
 
 public class Expression {
-   private Symbol left = null;
+   private final Symbol symbol;
+   private Expression left = null;
    private Expression right = null;
    private Operator op = Operator.NONE;
 
    private boolean isUnitary = false;
-   public Expression(Symbol left, Expression right, Operator op){
+   public Expression(Expression left, Expression right, Operator op){
      this.left = left;
      this.right = right;
      this.op = op;
+     this.symbol = null;
    }
 
+   public Expression(Symbol symbol){
+       this.symbol = symbol;
+   }
+
+   public Expression(Symbol left, Expression right, Operator op){
+       this.left = new Expression(left);
+       this.right = right;
+       this.op = op;
+       this.symbol = null;
+   }
+
+   public Expression(Expression left, Expression right, Operator op, boolean isUnitary){
+       this(left, right, op);
+       this.isUnitary = true;
+   }
 
     public Expression(Symbol left, Symbol right, Operator op){
+        this.left = new Expression(left);
+        this.right = new Expression(right);
+        this.op = op;
+        this.symbol = null;
+    }
+
+    public Expression(Expression left, Symbol right, Operator op){
         this.left = left;
-        this.right = new Expression(right, (Expression) null, null);
+        this.right = new Expression(right);
+        this.op = op;
+        this.symbol = null;
     }
 
-    public Expression(Symbol left, Expression right, Operator op, boolean isUnitary){
-       this(left, right, op);
-       this.isUnitary = isUnitary;
+    public void setLeft(Expression left) {
+        this.left = left;
     }
 
-    public Symbol getL(){
+    public void setRight(Expression right) {
+        this.right = right;
+    }
+
+    public Expression getL(){
       return left;
     }
 
@@ -48,8 +77,8 @@ public class Expression {
 
 
 
-    public boolean isSymbol(){
-        return left != null && right == null && op == Operator.NONE;
+    public boolean isTerminal(){
+        return symbol != null;
     }
 
 
