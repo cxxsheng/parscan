@@ -76,7 +76,11 @@ public class JavaTreeExtractor {
                 JavaParser.ExpressionContext right_e = expressions.get(1);
                 return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
             }else if (expressionContext.expression().size()==3){
-                //unhandle
+                JavaParser.ExpressionContext cond = expressionContext.expression(0);
+                JavaParser.ExpressionContext left = expressionContext.expression(0);
+                JavaParser.ExpressionContext right = expressionContext.expression(0);
+
+                return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
             }else {
                 throw  new RuntimeException("??");//fixme
             }
@@ -120,7 +124,7 @@ public class JavaTreeExtractor {
             //
 
         }
-        throw new RuntimeException("??"); //fixme
+        throw new RuntimeException("There is unhandl"); //fixme
     }
 
     public static void parseLocalTypeDeclaration(ParcelableFuncImp imp, JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
@@ -129,7 +133,7 @@ public class JavaTreeExtractor {
 
 
     public static List<Expression> parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
-        //this is useful?
+        //this is useful? WE DO NOT DEED TO RECORD TYPE
         JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
         List<Expression> expressions = new ArrayList<>();
         List<JavaParser.VariableDeclaratorContext> variableDeclaratorContexts = localVariableDeclaration.variableDeclarators().variableDeclarator();
