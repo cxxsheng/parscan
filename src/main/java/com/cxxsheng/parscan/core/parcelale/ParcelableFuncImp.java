@@ -1,6 +1,6 @@
 package com.cxxsheng.parscan.core.parcelale;
 
-import com.cxxsheng.parscan.antlr.JavaScanException;
+import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.SerializableFunc;
 import com.cxxsheng.parscan.core.unit.Parameter;

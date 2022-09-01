@@ -1,5 +1,7 @@
 package com.cxxsheng.parscan.core;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.Objects;
 
 public class Coordinate {
@@ -22,12 +24,15 @@ public class Coordinate {
 
   @Override
   public String toString() {
-    return "Coordinate{" +
+    return "{" +
            "" + line +
            ", " + column +
            '}';
   }
 
+  static public Coordinate createFromCtx(ParserRuleContext ctx){
+    return new Coordinate(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -1,4 +1,4 @@
-package com.cxxsheng.parscan.antlr;
+package com.cxxsheng.parscan.antlr.exception;
 
 public class JavaScanException extends RuntimeException{
 

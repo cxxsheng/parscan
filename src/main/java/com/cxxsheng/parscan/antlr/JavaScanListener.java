@@ -1,5 +1,6 @@
 package com.cxxsheng.parscan.antlr;
 
+import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
 import com.cxxsheng.parscan.core.Condition;
@@ -154,8 +155,8 @@ public class JavaScanListener extends JavaParserBaseListener {
             throw new JavaScanException("cannot find current parcelable class");
           }
           imp.initDeSerFunc(imp.getClassName(), ctx.IDENTIFIER().getText(), params, c);
-
-          JavaTreeExtractor.parseMethodBody(imp, ctx.methodBody());
+          JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getSerializeFuncKeyParamName());
+          extractor.parseMethodBody(imp, ctx.methodBody());
           currentMethodStatus = METHOD_CREATE_FROM_PARCEL_ENTERED;
 
       }else if ("writeToParcel".equals(ctx.IDENTIFIER().getText())){

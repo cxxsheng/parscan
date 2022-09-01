@@ -1,19 +1,28 @@
 package com.cxxsheng.parscan.antlr;
 
+import com.cxxsheng.parscan.antlr.exception.JavaMethodExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Operator;
+import com.cxxsheng.parscan.core.unit.Parameter;
 import com.cxxsheng.parscan.core.unit.Symbol;
 import com.cxxsheng.parscan.core.unit.symbol.*;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaTreeExtractor {
+public class JavaMethodBodyTreeExtractor {
+
+    //trace the param
+    private final String traceParamName;
+
+    public JavaMethodBodyTreeExtractor(String params) {
+        this.traceParamName = params;
+    }
+
 
     public static Symbol parseLiteral(JavaParser.LiteralContext literalContext){
         if(literalContext.integerLiteral() != null){
@@ -45,29 +54,77 @@ public class JavaTreeExtractor {
         if(literalContext.STRING_LITERAL()!=null){
             return new StringSymbol(literalContext.STRING_LITERAL().getText());
         }
-        throw new RuntimeException("??"); //fixme
+        throw new JavaMethodExtractorException("unhandled situation ", literalContext);
     }
 
-    public static Expression parsePrimary(JavaParser.PrimaryContext primaryContext){
+    public Expression parsePrimary(JavaParser.PrimaryContext primaryContext){
+        //cannot handle explicitGenericInvocationSuffix
+        if (primaryContext.explicitGenericInvocationSuffix() != null)
+            throw new JavaMethodExtractorException("Cannot handle explicitGenericInvocationSuffix during primary's parsing ", primaryContext);
+
         if (primaryContext.literal() != null){
             return new Expression(parseLiteral(primaryContext.literal()), (Expression) null,null);
         }
         if (primaryContext.expression() != null)
             return parseExpression(primaryContext.expression());
-        throw new RuntimeException("??"); //fixme
+
+        return new StringSymbol(primaryContext.getText()).toExp();
     }
 
-    public static Expression parseExpression(JavaParser.ExpressionContext expressionContext){
-        if (expressionContext.primary() != null){
+
+    public CallFunc parseMethodCall(JavaParser.MethodCallContext methodCallContext){
+        String funcName="";
+        if (methodCallContext.SUPER()!=null)
+            funcName = methodCallContext.SUPER().getText();
+        if (methodCallContext.THIS()!=null)
+            funcName = methodCallContext.THIS().getText();
+        if (methodCallContext.IDENTIFIER()!=null)
+            funcName = methodCallContext.IDENTIFIER().getText();
+
+        Coordinate coordinate = new Coordinate(methodCallContext.start.getLine(), methodCallContext.start.getCharPositionInLine());
+        List<JavaParser.ExpressionContext> params = methodCallContext.expressionList().expression();
+        List<Expression> list = new ArrayList<>();
+
+        if (params!=null){
+            for (JavaParser.ExpressionContext p : params){
+                list.add(parseExpression(p));
+            }
+        }
+        return new CallFunc(funcName, list, coordinate);
+    }
+
+    public Expression parseExpression(JavaParser.ExpressionContext expressionContext){
+        if (expressionContext.primary() != null){  //primary
             return parsePrimary(expressionContext.primary());
         }
+
+        if (expressionContext.LBRACK()!=null && expressionContext.RBRACK()!=null) //expression '[' expression ']'
+        {
+
+            Expression e1 = parseExpression(expressionContext.expression(0));
+            Expression e2 = parseExpression(expressionContext.expression(1));
+            return new Expression(new ArrayGetSymbol(e1, e2));
+        }
+
+
         if (expressionContext.bop != null){
 
-
+//                 expression bop='.'
+//                  ( IDENTIFIER
+//                    | methodCall
+//                    | THIS
+//                    | NEW nonWildcardTypeArguments? innerCreator
+//                    | SUPER superSuffix
+//                    | explicitGenericInvocation
+//                  )
             if (expressionContext.bop.getText().equals(".")){
+                JavaParser.ExpressionContext e = expressionContext.expression(0);
+                Expression expression = parseExpression(e);
+                if (expressionContext.methodCall()!=null){
+                    return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
+                }else {
 
-
-
+                }
             }
 
             List<JavaParser.ExpressionContext> expressions = expressionContext.expression();
@@ -75,10 +132,10 @@ public class JavaTreeExtractor {
                 JavaParser.ExpressionContext left_e = expressions.get(0);
                 JavaParser.ExpressionContext right_e = expressions.get(1);
                 return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
-            }else if (expressionContext.expression().size()==3){
-                JavaParser.ExpressionContext cond = expressionContext.expression(0);
-                JavaParser.ExpressionContext left = expressionContext.expression(0);
-                JavaParser.ExpressionContext right = expressionContext.expression(0);
+            }else if (expressions.size()==3){
+                JavaParser.ExpressionContext cond = expressions.get(0);
+                JavaParser.ExpressionContext left =  expressions.get(1);
+                JavaParser.ExpressionContext right =  expressions.get(2);
 
                 return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
             }else {
@@ -95,36 +152,17 @@ public class JavaTreeExtractor {
             return new Expression(parseExpression(expressionContext.expression().get(0)), null , Operator.nameOf(expressionContext.bop.getText()), true);
         }
 
-        if (expressionContext.methodCall() != null){
-            String funcName="";
-            if (expressionContext.methodCall().SUPER()!=null)
-                funcName = expressionContext.methodCall().SUPER().getText();
-            if (expressionContext.methodCall().THIS()!=null)
-                funcName = expressionContext.methodCall().THIS().getText();
-            if (expressionContext.methodCall().IDENTIFIER()!=null)
-                funcName = expressionContext.methodCall().IDENTIFIER().getText();
 
-
-            assert  !funcName.equals("");
-            Coordinate coordinate = new Coordinate(expressionContext.methodCall().start.getLine(), expressionContext.methodCall().start.getCharPositionInLine());
-            List<JavaParser.ExpressionContext> params = expressionContext.methodCall().expressionList().expression();
-            List<Expression> list = new ArrayList<>();
-
-            if (params!=null){
-                for (JavaParser.ExpressionContext p : params){
-                    list.add(parseExpression(p));
-                }
-            }
-            return new Expression(new CallFunc(funcName, list, coordinate));
+        if (expressionContext.methodCall() != null){ //methodCall
+          return parseMethodCall(expressionContext.methodCall()).toExp();
         }
 
-        if (expressionContext.expression() != null){
-            // a?b:c cannot handle
-            // a[b] cannot handle
-            //
 
+        //'(' annotation* typeType ('&' typeType)* ')' expression
+        if (expressionContext.expression() != null && expressionContext.expression().size() == 1){
+            return parseExpression(expressionContext.expression(0));
         }
-        throw new RuntimeException("There is unhandl"); //fixme
+        throw new RuntimeException("??"); //fixme
     }
 
     public static void parseLocalTypeDeclaration(ParcelableFuncImp imp, JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
@@ -132,7 +170,7 @@ public class JavaTreeExtractor {
     }
 
 
-    public static List<Expression> parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
+    public List<Expression> parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
         //this is useful? WE DO NOT DEED TO RECORD TYPE
         JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
         List<Expression> expressions = new ArrayList<>();
@@ -152,10 +190,10 @@ public class JavaTreeExtractor {
 
         return expressions;
     }
-    public static void parseStatement(ParcelableFuncImp imp, JavaParser.StatementContext statement){
+    public void parseStatement(ParcelableFuncImp imp, JavaParser.StatementContext statement){
     }
 
-    public static void parseMethodBody(ParcelableFuncImp imp, JavaParser.MethodBodyContext methodBodyContext){
+    public void parseMethodBody(ParcelableFuncImp imp, JavaParser.MethodBodyContext methodBodyContext){
         JavaParser.BlockContext block = methodBodyContext.block();
         List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
         for (JavaParser.BlockStatementContext blockStatement: blockStatements){
