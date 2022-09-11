@@ -7,7 +7,6 @@ import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Operator;
-import com.cxxsheng.parscan.core.unit.Parameter;
 import com.cxxsheng.parscan.core.unit.Symbol;
 import com.cxxsheng.parscan.core.unit.symbol.*;
 
@@ -57,10 +56,19 @@ public class JavaMethodBodyTreeExtractor {
         throw new JavaMethodExtractorException("unhandled situation ", literalContext);
     }
 
+//    primary
+//    : '(' expression ')'
+//            | THIS
+//    | SUPER
+//    | literal
+//    | IDENTIFIER
+//    | typeTypeOrVoid '.' CLASS
+//    | nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
+//
     public Expression parsePrimary(JavaParser.PrimaryContext primaryContext){
         //cannot handle explicitGenericInvocationSuffix
-        if (primaryContext.explicitGenericInvocationSuffix() != null)
-            throw new JavaMethodExtractorException("Cannot handle explicitGenericInvocationSuffix during primary's parsing ", primaryContext);
+        if (primaryContext.nonWildcardTypeArguments() != null)
+            throw new JavaMethodExtractorException("Cannot handle nonWildcardTypeArguments during primary's parsing ", primaryContext);
 
         if (primaryContext.literal() != null){
             return new Expression(parseLiteral(primaryContext.literal()), (Expression) null,null);
@@ -68,7 +76,7 @@ public class JavaMethodBodyTreeExtractor {
         if (primaryContext.expression() != null)
             return parseExpression(primaryContext.expression());
 
-        return new StringSymbol(primaryContext.getText()).toExp();
+        return new IdentifierSymbol(primaryContext.getText()).toExp();
     }
 
 
@@ -113,17 +121,27 @@ public class JavaMethodBodyTreeExtractor {
 //                  ( IDENTIFIER
 //                    | methodCall
 //                    | THIS
-//                    | NEW nonWildcardTypeArguments? innerCreator
-//                    | SUPER superSuffix
-//                    | explicitGenericInvocation
+//                    | NEW nonWildcardTypeArguments? innerCreator fixme here
+//                    | SUPER superSuffix fixme here
+//                    | explicitGenericInvocation fixme here
 //                  )
             if (expressionContext.bop.getText().equals(".")){
+                if (expressionContext.explicitGenericInvocation()!=null)
+                    throw new JavaMethodExtractorException("Cannot handle explicitGenericInvocation during point expression's parsing ", expressionContext);
+
+                if (expressionContext.NEW()!=null)
+                    throw new JavaMethodExtractorException("Cannot handle NEW keyword during point expression's parsing", expressionContext);
+
+                if (expressionContext.SUPER()!=null)
+                    throw new JavaMethodExtractorException("Cannot handle SUPER keyword during point expression's parsing", expressionContext);
+
                 JavaParser.ExpressionContext e = expressionContext.expression(0);
                 Expression expression = parseExpression(e);
                 if (expressionContext.methodCall()!=null){
                     return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
-                }else {
-
+                }
+                if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
+                    return new PointSymbol(expression, new IdentifierSymbol(expressionContext.IDENTIFIER().getText())).toExp();
                 }
             }
 
@@ -138,8 +156,9 @@ public class JavaMethodBodyTreeExtractor {
                 JavaParser.ExpressionContext right =  expressions.get(2);
 
                 return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
+
             }else {
-                throw  new RuntimeException("??");//fixme
+                throw  new JavaMethodExtractorException("unreachable syntax during paring op", expressionContext);
             }
         }
         if (expressionContext.prefix!=null){
