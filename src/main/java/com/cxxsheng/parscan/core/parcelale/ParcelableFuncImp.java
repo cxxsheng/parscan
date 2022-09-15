@@ -2,9 +2,9 @@ package com.cxxsheng.parscan.core.parcelale;
 
 import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.core.Coordinate;
+import com.cxxsheng.parscan.core.FunctionImp;
 import com.cxxsheng.parscan.core.SerializableFunc;
 import com.cxxsheng.parscan.core.unit.Parameter;
-import com.cxxsheng.parscan.core.FuncStatement;
 import com.cxxsheng.parscan.core.unit.Symbol;
 
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ParcelableFuncImp implements SerializableFunc {
-    private FuncStatement serFunc = new FuncStatement();     //writeToParcel function
-    private FuncStatement deserFuc = new FuncStatement();    //createFromParcel function
+    private FunctionImp serFunc = new FunctionImp();     //writeToParcel function
+    private FunctionImp deserFuc = new FunctionImp();    //createFromParcel function
 
     //symbolList in this file
     private Map<String, Symbol> symbolMap = new HashMap<>();
@@ -26,12 +26,12 @@ public class ParcelableFuncImp implements SerializableFunc {
     private final String className;
 
     @Override
-    public FuncStatement getSerializeFunc() {
+    public FunctionImp getSerializeFunc() {
         return serFunc;
     }
 
     @Override
-    public FuncStatement getDeserializeFunc() {
+    public FunctionImp getDeserializeFunc() {
         return deserFuc;
     }
 

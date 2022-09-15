@@ -3,6 +3,7 @@ package com.cxxsheng.parscan.antlr;
 import com.cxxsheng.parscan.antlr.exception.JavaMethodExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
+import com.cxxsheng.parscan.core.FunctionImp;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
 import com.cxxsheng.parscan.core.unit.Expression;
@@ -18,8 +19,11 @@ public class JavaMethodBodyTreeExtractor {
     //trace the param
     private final String traceParamName;
 
-    public JavaMethodBodyTreeExtractor(String params) {
+    private final FunctionImp imp ;
+
+    public JavaMethodBodyTreeExtractor(String params, FunctionImp imp) {
         this.traceParamName = params;
+        this.imp = imp;
     }
 
 
@@ -101,6 +105,48 @@ public class JavaMethodBodyTreeExtractor {
         return new CallFunc(funcName, list, coordinate);
     }
 
+  /*****************************************************************
+   *   X  means unfinished
+   *   √  means finished
+  expression
+    : primary                                                                                               √
+    | expression bop='.'                                                                                    X fixme unfinished
+      ( IDENTIFIER
+      | methodCall
+      | THIS
+      | NEW nonWildcardTypeArguments? innerCreator  //fixme unhandled will throw exception
+      | SUPER superSuffix                           //fixme unhandled will throw exception
+      | explicitGenericInvocation                   //fixme unhandled will throw exception
+      )
+        | expression '[' expression ']'                                                                     √
+    | methodCall                                                                                            √
+    | NEW creator                                                                                           X fixme unhandled
+    | '(' annotation* typeType ('&' typeType)* ')' expression                                               X fixme unfinished
+    | expression postfix=('++' | '--')                                                                      √
+                         | prefix=('+'|'-'|'++'|'--') expression                                            √
+    | expression bop=('*'|'/'|'%') expression                                                               √
+    | expression bop=('+'|'-') expression                                                                   √
+    | expression ('<' '<' | '>' '>' '>' | '>' '>') expression                                               √
+    | expression bop=('<=' | '>=' | '>' | '<') expression                                                   √
+    | expression bop=INSTANCEOF typeType                                                                    √
+    | expression bop=('==' | '!=') expression                                                               √
+    | expression bop='&' expression                                                                         √
+    | expression bop='^' expression                                                                         √
+    | expression bop='|' expression                                                                         √
+    | expression bop='&&' expression                                                                        √
+    | expression bop='||' expression                                                                        √
+    | <assoc=right> expression bop='?' expression ':' expression                                            √
+    | <assoc=right> expression
+    bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+  expression                                                                                                √
+    | lambdaExpression // Java8                                                                             X fixme unhandled
+
+  // Java 8 methodReference
+    | expression '::' typeArguments? IDENTIFIER                                                             X fixme unhandled
+    | typeType '::' (typeArguments? IDENTIFIER | NEW)                                                       X fixme unhandled
+    | classType '::' typeArguments? NEW                                                                     X fixme unhandled
+  ;
+   *****************************************************************/
     public Expression parseExpression(JavaParser.ExpressionContext expressionContext){
         if (expressionContext.primary() != null){  //primary
             return parsePrimary(expressionContext.primary());
@@ -114,61 +160,86 @@ public class JavaMethodBodyTreeExtractor {
             return new Expression(new ArrayGetSymbol(e1, e2));
         }
 
+         // expression ('<' '<' | '>' '>' '>' | '>' '>') expression
+        if (expressionContext.LT() != null){
+
+            int i = expressionContext.LT().size();
+            if (i == 2){
+
+              JavaParser.ExpressionContext left_e = expressionContext.expression().get(0);
+              JavaParser.ExpressionContext right_e = expressionContext.expression().get(1);
+              return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf("<<"));
+            }
+          throw  new JavaMethodExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
+
+        }
+
+        if (expressionContext.GT() != null){
+            int i = expressionContext.LT().size();
+
+            JavaParser.ExpressionContext left_e = expressionContext.expression().get(0);
+            JavaParser.ExpressionContext right_e = expressionContext.expression().get(1);
+            if (i==2){
+              return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(">>"));
+            }
+            if (i==3){
+              return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(">>>"));
+            }
+            throw new JavaMethodExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
+        }
+        //fixme unhandled
+        if (expressionContext.creator()!=null){
+          throw new JavaMethodExtractorException("unhandled creator", expressionContext);
+        }
 
         if (expressionContext.bop != null){
 
-//                 expression bop='.'
-//                  ( IDENTIFIER
-//                    | methodCall
-//                    | THIS
-//                    | NEW nonWildcardTypeArguments? innerCreator fixme here
-//                    | SUPER superSuffix fixme here
-//                    | explicitGenericInvocation fixme here
-//                  )
-            if (expressionContext.bop.getText().equals(".")){
-                if (expressionContext.explicitGenericInvocation()!=null)
-                    throw new JavaMethodExtractorException("Cannot handle explicitGenericInvocation during point expression's parsing ", expressionContext);
+              if (expressionContext.bop.getText().equals(".")){
+                  if (expressionContext.explicitGenericInvocation()!=null)
+                      throw new JavaMethodExtractorException("Cannot handle explicitGenericInvocation during point expression's parsing ", expressionContext);
 
-                if (expressionContext.NEW()!=null)
-                    throw new JavaMethodExtractorException("Cannot handle NEW keyword during point expression's parsing", expressionContext);
+                  if (expressionContext.NEW()!=null)
+                      throw new JavaMethodExtractorException("Cannot handle NEW keyword during point expression's parsing", expressionContext);
 
-                if (expressionContext.SUPER()!=null)
-                    throw new JavaMethodExtractorException("Cannot handle SUPER keyword during point expression's parsing", expressionContext);
+                  if (expressionContext.SUPER()!=null)
+                      throw new JavaMethodExtractorException("Cannot handle SUPER keyword during point expression's parsing", expressionContext);
 
-                JavaParser.ExpressionContext e = expressionContext.expression(0);
-                Expression expression = parseExpression(e);
-                if (expressionContext.methodCall()!=null){
-                    return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
-                }
-                if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
-                    return new PointSymbol(expression, new IdentifierSymbol(expressionContext.IDENTIFIER().getText())).toExp();
-                }
-            }
+                  JavaParser.ExpressionContext e = expressionContext.expression(0);
+                  Expression expression = parseExpression(e);
+                  if (expressionContext.methodCall()!=null){
+                      return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
+                  }
+                  if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
+                      return new PointSymbol(expression, new IdentifierSymbol(expressionContext.IDENTIFIER().getText())).toExp();
+                  }
+              }
 
-            List<JavaParser.ExpressionContext> expressions = expressionContext.expression();
-            if (expressions.size() == 2){
-                JavaParser.ExpressionContext left_e = expressions.get(0);
-                JavaParser.ExpressionContext right_e = expressions.get(1);
-                return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
-            }else if (expressions.size()==3){
-                JavaParser.ExpressionContext cond = expressions.get(0);
-                JavaParser.ExpressionContext left =  expressions.get(1);
-                JavaParser.ExpressionContext right =  expressions.get(2);
+              List<JavaParser.ExpressionContext> expressions = expressionContext.expression();
+              if (expressions.size() == 2){
+                  JavaParser.ExpressionContext left_e = expressions.get(0);
+                  JavaParser.ExpressionContext right_e = expressions.get(1);
+                  return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
+              }else if (expressions.size()==3){
+                  //ConditionalExpression
+                  JavaParser.ExpressionContext cond = expressions.get(0);
+                  JavaParser.ExpressionContext left =  expressions.get(1);
+                  JavaParser.ExpressionContext right =  expressions.get(2);
 
-                return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
+                  return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
 
-            }else {
-                throw  new JavaMethodExtractorException("unreachable syntax during paring op", expressionContext);
-            }
+              }else {
+                  throw  new JavaMethodExtractorException("unreachable syntax during paring op", expressionContext);
+              }
         }
+
         if (expressionContext.prefix!=null){
-            assert (expressionContext.expression().size()==1); // it is Unitary
-            return new Expression(null, parseExpression(expressionContext.expression().get(0)), Operator.nameOf(expressionContext.bop.getText()), true);
+              assert (expressionContext.expression().size()==1); // it is Unitary
+              return new Expression(null, parseExpression(expressionContext.expression().get(0)), Operator.nameOf(expressionContext.prefix.getText()), true);
         }
 
         if (expressionContext.postfix!=null){
             assert (expressionContext.expression().size()==1); // it is Unitary
-            return new Expression(parseExpression(expressionContext.expression().get(0)), null , Operator.nameOf(expressionContext.bop.getText()), true);
+            return new Expression(parseExpression(expressionContext.expression().get(0)), null , Operator.nameOf(expressionContext.postfix.getText()), true);
         }
 
 
@@ -177,11 +248,20 @@ public class JavaMethodBodyTreeExtractor {
         }
 
 
-        //'(' annotation* typeType ('&' typeType)* ')' expression
+        //'(' annotation* typeType ('&' typeType)* ')' expression fixme unfinished
         if (expressionContext.expression() != null && expressionContext.expression().size() == 1){
             return parseExpression(expressionContext.expression(0));
         }
-        throw new RuntimeException("??"); //fixme
+        // lambdaExpression fixme unhandled
+        if (expressionContext.lambdaExpression()!=null){
+          throw  new JavaMethodExtractorException("cannot handle lambdaExpression ", expressionContext); //fixme
+        }
+      //  java 8 methodReference fixme unhandled
+      if (expressionContext.COLONCOLON()!=null)
+          throw  new JavaMethodExtractorException("cannot handle java 8 methodReference ", expressionContext); //fixme
+
+      throw new JavaMethodExtractorException("impossible reachable", expressionContext);
+
     }
 
     public static void parseLocalTypeDeclaration(ParcelableFuncImp imp, JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
@@ -211,6 +291,7 @@ public class JavaMethodBodyTreeExtractor {
     }
     public void parseStatement(ParcelableFuncImp imp, JavaParser.StatementContext statement){
     }
+
 
     public void parseMethodBody(ParcelableFuncImp imp, JavaParser.MethodBodyContext methodBodyContext){
         JavaParser.BlockContext block = methodBodyContext.block();

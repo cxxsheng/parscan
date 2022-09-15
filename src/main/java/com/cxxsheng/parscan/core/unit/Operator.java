@@ -1,7 +1,7 @@
 package com.cxxsheng.parscan.core.unit;
 
 public enum Operator {
-    NONE(""),
+    NONE("NONE"),
     //Arithmetic operator
     ADD("+"), SUB("-"),
     MUL("*"), DIV("/"),
@@ -50,11 +50,19 @@ public enum Operator {
 
     public static Operator
     nameOf(String name){
+      if (name.equals(NONE.name))
+        throw new RuntimeException("Cannot get none by nameOf");
+
       for (Operator op : Operator.values()){
         if(op.getName().equals(name))
           return op;
       }
-      return Operator.NONE;
+      throw new RuntimeException("unhandled op" + name);
+    }
+
+
+    public static Operator getNone(){
+      return NONE;
     }
 
 }

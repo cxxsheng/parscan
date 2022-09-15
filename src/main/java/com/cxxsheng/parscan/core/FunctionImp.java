@@ -7,26 +7,26 @@ import com.cxxsheng.parscan.core.unit.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FuncStatement {
+public class FunctionImp {
 
     private FunctionDeclaration functionDec;
 
-    private List<ExpressionOrStatement> body = new ArrayList<>();
+    private List<Statement> body = new ArrayList<>();
 
-    public FuncStatement(FunctionDeclaration func, List<ExpressionOrStatement> body){
+    public FunctionImp(FunctionDeclaration func, List<Statement> body){
         this();
         this.functionDec = func;
         this.body = body;
     }
 
-    public FuncStatement(){
+    public FunctionImp(){
     }
 
     public FunctionDeclaration getFunDec() {
         return functionDec;
     }
 
-    public List<ExpressionOrStatement> getBody() {
+    public List<Statement> getBody() {
         return body;
     }
 
@@ -40,11 +40,11 @@ public class FuncStatement {
     }
 
     public void addExpression(Expression exp){
-        body.add(exp.wrapToExpOrStatement());
+
     }
 
     public void addStatement(Statement statement){
-        body.add(statement.wrapToExpOrStatement());
+        body.add(statement);
     }
 
     public Coordinate getPosition(){

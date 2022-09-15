@@ -1,7 +1,10 @@
 package com.cxxsheng.parscan.core;
 
-public interface Statement {
-    default ExpressionOrStatement wrapToExpOrStatement(){
-       return new ExpressionOrStatement(this);
-    }
+import com.cxxsheng.parscan.core.unit.Expression;
+import java.util.List;
+
+public class Statement {
+  private final List<Expression> expressions;
+
+  public Statement(List<Expression> expressions) {this.expressions = expressions;}
 }
