@@ -1,7 +1,6 @@
 package com.cxxsheng.parscan.core.unit;
 
 
-import com.cxxsheng.parscan.core.ExpressionOrStatement;
 
 public class Expression {
    private final Symbol symbol;
@@ -9,14 +8,24 @@ public class Expression {
    private Expression right = null;
    private Operator op = Operator.NONE;
 
+
+   private boolean isTaint = false;
+
    private boolean isUnitary = false;
    public Expression(Expression left, Expression right, Operator op){
      this.left = left;
      this.right = right;
      this.op = op;
      this.symbol = null;
+
+     //taint broadcast is very important
+     if(right.isTaint && this.isAssign()){
+       this.left.taintSymbol();
+       this.taintSymbol();
+     }
    }
 
+   //use to wrap symbol
    public Expression(Symbol symbol){
        this.symbol = symbol;
    }
@@ -71,9 +80,6 @@ public class Expression {
       return op.isAssign();
     }
 
-    public ExpressionOrStatement wrapToExpOrStatement(){
-        return new ExpressionOrStatement(this);
-    }
 
 
 
@@ -86,4 +92,12 @@ public class Expression {
         return isUnitary;
    }
 
+  public void taintSymbol() {
+    if (symbol != null)
+      symbol.taint();
+  }
+
+  public boolean isTaint() {
+    return isTaint;
+  }
 }

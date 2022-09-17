@@ -3,7 +3,7 @@ package com.cxxsheng.parscan.core.unit.symbol;
 import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Symbol;
 
-public class PointSymbol implements Symbol {
+public class PointSymbol extends Symbol {
     private final Expression exp;
     private final Symbol v;
 
@@ -14,5 +14,10 @@ public class PointSymbol implements Symbol {
 
     boolean isFunc(){
         return v instanceof CallFunc;
+    }
+
+    @Override
+    public void taint() {
+
     }
 }

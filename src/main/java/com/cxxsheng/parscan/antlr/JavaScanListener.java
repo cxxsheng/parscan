@@ -6,6 +6,7 @@ import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
 import com.cxxsheng.parscan.core.Condition;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
+import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Parameter;
 import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -102,23 +103,7 @@ public class JavaScanListener extends JavaParserBaseListener {
 
   }
 
-  @Override
-  public void enterFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
-    super.enterFieldDeclaration(ctx);
-    ParcelableFuncImp imp = getCurrentParcelableClass();
-    if (imp != null){
-      String typeString = ctx.typeType().getText();
-      List<JavaParser.VariableDeclaratorContext> vars = ctx.variableDeclarators().variableDeclarator();
-      for (JavaParser.VariableDeclaratorContext v : vars){
-         String name = v.variableDeclaratorId().getText();
-         //has assign
-         if(v.ASSIGN()!=null && v.variableInitializer()!=null){
 
-           //fixme
-         }
-      }
-    }
-  }
 
 
   private List<Parameter> parseParamListFromMethodDeclare(JavaParser.MethodDeclarationContext ctx){
@@ -156,7 +141,7 @@ public class JavaScanListener extends JavaParserBaseListener {
           }
           imp.initDeSerFunc(imp.getClassName(), ctx.IDENTIFIER().getText(), params, c);
           JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getSerializeFuncKeyParamName(), imp.getDeserializeFunc());
-          extractor.parseMethodBody(imp, ctx.methodBody());
+          extractor.parseMethodBody(ctx.methodBody());
           currentMethodStatus = METHOD_CREATE_FROM_PARCEL_ENTERED;
 
       }else if ("writeToParcel".equals(ctx.IDENTIFIER().getText())){

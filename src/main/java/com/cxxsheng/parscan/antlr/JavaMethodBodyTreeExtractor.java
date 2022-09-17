@@ -27,7 +27,28 @@ public class JavaMethodBodyTreeExtractor {
     }
 
 
-    public static Symbol parseLiteral(JavaParser.LiteralContext literalContext){
+    public Symbol parseIDENTIFIER(String ID){
+
+        Symbol s = new IdentifierSymbol(ID);
+        if (ID.equals(traceParamName)){
+          s.taint();
+        }
+        return s;
+    }
+
+    /*****************************************************************
+
+     literal
+        : integerLiteral                                                √
+        | floatLiteral                                                  X fixme this unfinished，goto see Utils.parseFloatString 's imp
+        | CHAR_LITERAL                                                  √
+        | STRING_LITERAL                                                √
+        | BOOL_LITERAL                                                  √
+        | NULL_LITERAL                                                  √
+      ;
+     *****************************************************************/
+
+    public Symbol parseLiteral(JavaParser.LiteralContext literalContext){
         if(literalContext.integerLiteral() != null){
             int mode = 10;
             if (literalContext.integerLiteral().DECIMAL_LITERAL()!=null){
@@ -60,6 +81,8 @@ public class JavaMethodBodyTreeExtractor {
         throw new JavaMethodExtractorException("unhandled situation ", literalContext);
     }
 
+
+
 //    primary
 //    : '(' expression ')'
 //            | THIS
@@ -80,8 +103,10 @@ public class JavaMethodBodyTreeExtractor {
         if (primaryContext.expression() != null)
             return parseExpression(primaryContext.expression());
 
-        return new IdentifierSymbol(primaryContext.getText()).toExp();
+        return  parseIDENTIFIER(primaryContext.getText()).toExp();
     }
+
+
 
 
     public CallFunc parseMethodCall(JavaParser.MethodCallContext methodCallContext){
@@ -104,6 +129,8 @@ public class JavaMethodBodyTreeExtractor {
         }
         return new CallFunc(funcName, list, coordinate);
     }
+
+
 
   /*****************************************************************
    *   X  means unfinished
@@ -210,7 +237,7 @@ public class JavaMethodBodyTreeExtractor {
                       return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
                   }
                   if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
-                      return new PointSymbol(expression, new IdentifierSymbol(expressionContext.IDENTIFIER().getText())).toExp();
+                      return new PointSymbol(expression, parseIDENTIFIER(expressionContext.IDENTIFIER().getText())).toExp();
                   }
               }
 
@@ -264,43 +291,82 @@ public class JavaMethodBodyTreeExtractor {
 
     }
 
-    public static void parseLocalTypeDeclaration(ParcelableFuncImp imp, JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
 
+    /*****************************************************************
+
+    localTypeDeclaration
+      : classOrInterfaceModifier*
+      (classDeclaration | interfaceDeclaration)                         X fixme unhandled innerclass declaration or interface
+      | ';'
+    ;
+     *****************************************************************/
+
+    public static void parseLocalTypeDeclaration(JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
+        throw new JavaMethodExtractorException("unhandled innerclass declaration or interface", localTypeDeclaration);
     }
 
+
+
+    /*****************************************************************
+
+    localVariableDeclaration
+      : variableModifier* typeType variableDeclarators                   √
+      ;
+     IT WILL IGNORE TYPE AND VAR WITH NO INITIALIZER (eg. int a;)
+     *****************************************************************/
 
     public List<Expression> parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
-        //this is useful? WE DO NOT DEED TO RECORD TYPE
-        JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
-        List<Expression> expressions = new ArrayList<>();
-        List<JavaParser.VariableDeclaratorContext> variableDeclaratorContexts = localVariableDeclaration.variableDeclarators().variableDeclarator();
-        for (JavaParser.VariableDeclaratorContext variableDeclaratorContext: variableDeclaratorContexts){
-            String name =  variableDeclaratorContext.variableDeclaratorId().IDENTIFIER().getText();
-            Symbol symbol = new IdentifierSymbol(name);
-            JavaParser.ArrayInitializerContext arrayInitializerContext = variableDeclaratorContext.variableInitializer().arrayInitializer();
-            if (arrayInitializerContext!=null){
-                expressions.add(new Expression(symbol, new ArrayInitSymbol(arrayInitializerContext.getText()), Operator.AS));
-            }
-            JavaParser.ExpressionContext e = variableDeclaratorContext.variableInitializer().expression();//expression
-            if (e!=null){
-                expressions.add(new Expression(symbol, parseExpression(e), Operator.AS));
-            }
-        }
+          //this is useful? WE DO NOT DEED TO RECORD TYPE
+          JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
+          List<Expression> expressions = new ArrayList<>();
+          //multi variables init like
+          // int a,b,c = 1;
+          List<JavaParser.VariableDeclaratorContext> variableDeclaratorContexts = localVariableDeclaration.variableDeclarators().variableDeclarator();
+          for (JavaParser.VariableDeclaratorContext variableDeclaratorContext: variableDeclaratorContexts){
+              String name =  variableDeclaratorContext.variableDeclaratorId().IDENTIFIER().getText();
+              Symbol symbol = parseIDENTIFIER(name);
+              JavaParser.ArrayInitializerContext arrayInitializerContext = variableDeclaratorContext.variableInitializer().arrayInitializer();
+              if (arrayInitializerContext != null){
+                  expressions.add(new Expression(symbol, new ArrayInitSymbol(arrayInitializerContext.getText()), Operator.AS));
+              }
+              JavaParser.ExpressionContext e = variableDeclaratorContext.variableInitializer().expression();//expression
+              if (e != null){
+                  expressions.add(new Expression(symbol, parseExpression(e), Operator.AS));
+              }
 
-        return expressions;
+          }
+          return expressions;
+      }
+
+
+    public void parseStatement(JavaParser.StatementContext statement){
+
+
     }
-    public void parseStatement(ParcelableFuncImp imp, JavaParser.StatementContext statement){
-    }
 
 
-    public void parseMethodBody(ParcelableFuncImp imp, JavaParser.MethodBodyContext methodBodyContext){
+
+
+    /*****************************************************************
+    block
+      : '{' blockStatement* '}'                                       √
+    ;
+
+    blockStatement
+      : localVariableDeclaration ';'                                  √
+      | statement                                                     √
+      | localTypeDeclaration                                          √
+    ;
+   *****************************************************************/
+
+    public void parseMethodBody(JavaParser.MethodBodyContext methodBodyContext){
         JavaParser.BlockContext block = methodBodyContext.block();
         List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
         for (JavaParser.BlockStatementContext blockStatement: blockStatements){
             JavaParser.LocalTypeDeclarationContext localVariableDeclaration =  blockStatement.localTypeDeclaration();
             if (localVariableDeclaration != null){
 
-                parseLocalTypeDeclaration(imp, localVariableDeclaration);
+                parseLocalTypeDeclaration(localVariableDeclaration);
                 continue;
             }
 
@@ -313,7 +379,7 @@ public class JavaMethodBodyTreeExtractor {
 
             JavaParser.StatementContext statement = blockStatement.statement();
             if (statement!=null){
-                parseStatement(imp,statement);
+                parseStatement(statement);
                 continue;
             }
         }

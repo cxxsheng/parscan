@@ -3,7 +3,7 @@ package com.cxxsheng.parscan.core.unit.symbol;
 import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Symbol;
 
-public class ConditionalExpression implements Symbol {
+public class ConditionalExpression extends Symbol {
 
     private final Expression cond;
     private final Expression left;
@@ -26,5 +26,11 @@ public class ConditionalExpression implements Symbol {
 
     public Expression getRight() {
         return right;
+    }
+
+    // ConditionalExpression cannot taint because it is always at expression's right
+    @Override
+    public void taint() {
+
     }
 }

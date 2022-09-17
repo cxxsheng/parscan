@@ -5,8 +5,9 @@ import com.cxxsheng.parscan.core.unit.Expression;
 import com.cxxsheng.parscan.core.unit.Symbol;
 
 import java.util.List;
+import java.util.Objects;
 
-public class CallFunc implements Symbol {
+public class CallFunc extends Symbol {
     private final String funcName;
     private final List<Expression> params;
 
@@ -31,4 +32,15 @@ public class CallFunc implements Symbol {
     public Coordinate getCoordinate() {
         return coordinate;
     }
+
+    @Override
+    public void taint() {
+      isTaint = true;
+    }
+
+  @Override
+  public boolean equals(Object o) {
+      return false;
+  }
+
 }
