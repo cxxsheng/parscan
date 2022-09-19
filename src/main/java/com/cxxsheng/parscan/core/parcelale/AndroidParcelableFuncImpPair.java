@@ -2,19 +2,21 @@ package com.cxxsheng.parscan.core.parcelale;
 
 import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.FunctionImp;
 import com.cxxsheng.parscan.core.SerializableFunc;
-import com.cxxsheng.parscan.core.unit.Parameter;
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.FunctionImp;
+import com.cxxsheng.parscan.core.data.unit.Parameter;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ParcelableFuncImp implements SerializableFunc {
-    private FunctionImp serFunc = new FunctionImp();     //writeToParcel function
-    private FunctionImp deserFuc = new FunctionImp();    //createFromParcel function
+
+//
+public class AndroidParcelableFuncImpPair implements SerializableFunc {
+    private FunctionImp serFunc;     //writeToParcel function
+    private FunctionImp deserFuc;    //createFromParcel function
 
     //symbolList in this file
     private Map<String, Symbol> symbolMap = new HashMap<>();
@@ -43,7 +45,7 @@ public class ParcelableFuncImp implements SerializableFunc {
     }
 
 
-    public ParcelableFuncImp(String packageName, String className){
+    public AndroidParcelableFuncImpPair(String packageName, String className){
         this.packageName = packageName;
         this.className = className;
     }
@@ -63,7 +65,7 @@ public class ParcelableFuncImp implements SerializableFunc {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParcelableFuncImp that = (ParcelableFuncImp) o;
+      AndroidParcelableFuncImpPair that = (AndroidParcelableFuncImpPair) o;
         return Objects.equals(packageName, that.packageName) && Objects.equals(className, that.className);
     }
 
@@ -75,13 +77,14 @@ public class ParcelableFuncImp implements SerializableFunc {
 
     //init writeToParcel function
     public void initSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
-        serFunc.initFunctionDeclaration(retValueType, name, params, c);
+        serFunc = new FunctionImp(retValueType, name, params, c);
     }
 
     //init createFromParcel function
     public void initDeSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
-        deserFuc.initFunctionDeclaration(retValueType, name, params, c);
+        deserFuc = new FunctionImp(retValueType, name, params, c);
     }
+
 
     //writeFromParcel's first param name. must be Parcel type
     public String getSerializeFuncKeyParamName(){
@@ -98,10 +101,6 @@ public class ParcelableFuncImp implements SerializableFunc {
         if (p==null || !"Parcel".equals(p.getType()))
             throw new JavaScanException("Invalid deserialization function because of parameter at "+ serFunc.getPosition());
         return p.getName();
-    }
-
-    public void addLocalSymbol(){
-
     }
 
 }

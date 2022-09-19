@@ -1,7 +1,7 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Expression;
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 public class ConditionalExpression extends Symbol {
 

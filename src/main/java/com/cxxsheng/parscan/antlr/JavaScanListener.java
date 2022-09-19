@@ -3,11 +3,9 @@ package com.cxxsheng.parscan.antlr;
 import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
-import com.cxxsheng.parscan.core.Condition;
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.parcelale.ParcelableFuncImp;
-import com.cxxsheng.parscan.core.unit.Expression;
-import com.cxxsheng.parscan.core.unit.Parameter;
+import com.cxxsheng.parscan.core.parcelale.AndroidParcelableFuncImpPair;
+import com.cxxsheng.parscan.core.data.unit.Parameter;
 import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -30,7 +28,7 @@ public class JavaScanListener extends JavaParserBaseListener {
   // during scanning, because we could enter another class and
   // we do not finish scanning one class yet if we have multi-classes.
   // only save parcelable classes.
-  private final Map<String, ParcelableFuncImp> parImps = new HashMap<>();
+  private final Map<String, AndroidParcelableFuncImpPair> parImps = new HashMap<>();
 
   private String packageName = "unk";
 
@@ -39,7 +37,6 @@ public class JavaScanListener extends JavaParserBaseListener {
   private final Stack<Pair<String,Boolean>> classStack = new Stack<>();
 
   // Like classStack, condition stack push/pop ALL kinds conditions stack during scanning.
-  private final Stack<Pair<Condition, Integer>> conditionStack = new Stack<>();
 
 
   private volatile boolean currentConditionNeedPar = false;
@@ -80,7 +77,7 @@ public class JavaScanListener extends JavaParserBaseListener {
       if (interfaceType.getText().equals("Parcelable")){
         LOG.info("class: " + className + " implements interface Parcelable");
         isParcelable = true;
-        parImps.put(className, new ParcelableFuncImp(packageName, className));
+        parImps.put(className, new AndroidParcelableFuncImpPair(packageName, className));
         break;
       }
     }
@@ -135,7 +132,7 @@ public class JavaScanListener extends JavaParserBaseListener {
           List<Parameter> params = parseParamListFromMethodDeclare(ctx);
 
           Coordinate c = new Coordinate(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-          ParcelableFuncImp imp = getCurrentParcelableClass();
+          AndroidParcelableFuncImpPair imp = getCurrentParcelableClass();
           if (imp == null){
             throw new JavaScanException("cannot find current parcelable class");
           }
@@ -150,7 +147,7 @@ public class JavaScanListener extends JavaParserBaseListener {
           LOG.info("Found " + ctx.IDENTIFIER());
           List<Parameter> params = parseParamListFromMethodDeclare(ctx);
           Coordinate c = new Coordinate(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-          ParcelableFuncImp imp = getCurrentParcelableClass();
+          AndroidParcelableFuncImpPair imp = getCurrentParcelableClass();
           if (imp == null){
             throw new JavaScanException("cannot find current parcelable class");
           }
@@ -173,23 +170,6 @@ public class JavaScanListener extends JavaParserBaseListener {
 
   @Override
   public void enterStatement(JavaParser.StatementContext ctx) {
-    switch (currentMethodStatus){
-      case METHOD_WRITE_TO_PARCEL_ENTERED:
-      case METHOD_CREATE_FROM_PARCEL_ENTERED:
-
-        if (ctx.IF() != null){
-            //start of a new IF statement
-           // System.out.println("if"+ ctx.getText());
-            Token IF_TOKEN = ctx.IF().getSymbol();
-            Coordinate coord = new Coordinate(IF_TOKEN.getLine(), IF_TOKEN.getCharPositionInLine());
-            //fixme
-            Condition condition = new Condition(coord, null);
-            //System.out.println(coord);
-            Pair<Condition, Integer> pair = new Pair<>(condition,1);
-            conditionStack.push(pair);
-            currentConditionNeedPar = true;
-        }
-    }
     super.enterStatement(ctx);
   }
 
@@ -255,7 +235,7 @@ public class JavaScanListener extends JavaParserBaseListener {
     super.enterEveryRule(ctx);
   }
 
-  private ParcelableFuncImp getCurrentParcelableClass(){
+  private AndroidParcelableFuncImpPair getCurrentParcelableClass(){
     try {
       String className = classStack.peek().getKey();
       return parImps.getOrDefault(className, null);

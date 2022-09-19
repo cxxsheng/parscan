@@ -1,6 +1,4 @@
-package com.cxxsheng.parscan.core.unit;
-
-import java.util.Objects;
+package com.cxxsheng.parscan.core.data.unit;
 
 public abstract class Symbol {
 

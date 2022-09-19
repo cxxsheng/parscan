@@ -1,6 +1,6 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 // int value, include long value
 public class IntSymbol extends Symbol {

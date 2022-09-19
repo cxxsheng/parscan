@@ -1,4 +1,4 @@
-package com.cxxsheng.parscan.core.unit;
+package com.cxxsheng.parscan.core.data.unit;
 
 public class Parameter {
 

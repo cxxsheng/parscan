@@ -1,26 +1,26 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 import java.util.Objects;
 
-public class StringSymbol extends Symbol {
+public class IdentifierSymbol extends Symbol {
+
     private final String value;
 
-    public StringSymbol(String value) {
+    public IdentifierSymbol(String value) {
         this.value = value;
     }
 
-    // constant cannot be tainted
     @Override
     public void taint() {
-
+        isTaint = true;
     }
 
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      StringSymbol that = (StringSymbol)o;
+      IdentifierSymbol that = (IdentifierSymbol)o;
       return Objects.equals(value, that.value);
     }
 

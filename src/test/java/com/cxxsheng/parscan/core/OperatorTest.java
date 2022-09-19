@@ -1,6 +1,6 @@
 package com.cxxsheng.parscan.core;
 
-import com.cxxsheng.parscan.core.unit.Operator;
+import com.cxxsheng.parscan.core.data.unit.Operator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

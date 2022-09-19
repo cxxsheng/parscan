@@ -1,26 +1,29 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 import java.util.Objects;
 
-public class IdentifierSymbol extends Symbol {
 
+// like {1,2,3,4} while initializing array
+public class ArrayInitSymbol extends Symbol {
     private final String value;
 
-    public IdentifierSymbol(String value) {
+    public ArrayInitSymbol(String value) {
         this.value = value;
     }
 
+    //constant cannot be tainted
     @Override
     public void taint() {
-        isTaint = true;
+
     }
 
     @Override
+    //Not very precise because element in {} can be expression instead of constant
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      IdentifierSymbol that = (IdentifierSymbol)o;
+      ArrayInitSymbol that = (ArrayInitSymbol)o;
       return Objects.equals(value, that.value);
     }
 

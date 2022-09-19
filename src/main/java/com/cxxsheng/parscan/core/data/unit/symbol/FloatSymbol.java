@@ -1,6 +1,6 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 public class FloatSymbol extends Symbol {
     private final double value;

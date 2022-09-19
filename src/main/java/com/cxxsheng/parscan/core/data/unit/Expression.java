@@ -1,8 +1,9 @@
-package com.cxxsheng.parscan.core.unit;
+package com.cxxsheng.parscan.core.data.unit;
 
 
+import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 
-public class Expression {
+public class Expression implements ExpressionOrBlock {
    private final Symbol symbol;
    private Expression left = null;
    private Expression right = null;
@@ -92,12 +93,12 @@ public class Expression {
         return isUnitary;
    }
 
-  public void taintSymbol() {
-    if (symbol != null)
-      symbol.taint();
-  }
+    public void taintSymbol() {
+      if (symbol != null)
+        symbol.taint();
+    }
 
-  public boolean isTaint() {
+    public boolean isTaint() {
     return isTaint;
   }
 }

@@ -1,6 +1,8 @@
 package com.cxxsheng.parscan.core;
 
 
+import com.cxxsheng.parscan.core.data.ConditionalBlock;
+import com.cxxsheng.parscan.core.data.FunctionImp;
 
 //core class to collect parcelable function
 public interface SerializableFunc {

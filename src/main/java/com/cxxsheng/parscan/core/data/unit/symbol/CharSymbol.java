@@ -1,12 +1,12 @@
-package com.cxxsheng.parscan.core.unit.symbol;
+package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
 import java.util.Objects;
 
-public class BoolSymbol extends Symbol {
-    private final boolean value;
+public class CharSymbol extends Symbol {
+    private final  char value;
 
-    public BoolSymbol(boolean value) {
+    public CharSymbol(char value) {
         this.value = value;
     }
 
@@ -20,7 +20,7 @@ public class BoolSymbol extends Symbol {
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      BoolSymbol that = (BoolSymbol)o;
+      CharSymbol that = (CharSymbol)o;
       return value == that.value;
     }
 

@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 
 import java.util.Objects;
 
@@ -47,4 +48,7 @@ public class Coordinate {
     return Objects.hash(line, column);
   }
 
+  static public Coordinate initFromToken(Token token){
+      return new Coordinate(token.getLine(), token.getCharPositionInLine());
+  }
 }
