@@ -8,7 +8,6 @@ import com.cxxsheng.parscan.core.parcelale.AndroidParcelableFuncImpPair;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.log4j.Logger;
 

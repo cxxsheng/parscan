@@ -1,23 +1,20 @@
 package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Block implements ExpressionOrBlock {
 
       protected boolean isTaint = false;
       protected Block father;
-      private ExpressionOrBlockList content;
       private final Coordinate coordinate;
+      private final ExpressionOrBlockList content;
 
-      public Block(Coordinate coordinate) {this.coordinate = coordinate;}
+      public Block( Coordinate coordinate, ExpressionOrBlockList content) {
+        this.content = content;
+        this.coordinate = coordinate;}
 
 
 
-      public void initExpressionOrBlockList(ExpressionOrBlockList content){
-          this.content = content;
-      }
 
 
       public void addExpressionOrBlock(ExpressionOrBlock eb){

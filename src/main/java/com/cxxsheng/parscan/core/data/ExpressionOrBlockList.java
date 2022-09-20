@@ -15,7 +15,6 @@ public class ExpressionOrBlockList {
 
   private final List<ExpressionOrBlock> content;
 
-
   public ExpressionOrBlockList(){
     content = new ArrayList<>();
   }

@@ -7,17 +7,24 @@ import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
+import com.cxxsheng.parscan.core.data.ForBlock;
 import com.cxxsheng.parscan.core.data.FunctionImp;
+import com.cxxsheng.parscan.core.data.Statement;
+import com.cxxsheng.parscan.core.data.SynchronizedBlock;
+import com.cxxsheng.parscan.core.data.WhileBlock;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.*;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JavaMethodBodyTreeExtractor {
 
+
+  private final static org.apache.log4j.Logger LOG = Logger.getLogger(JavaMethodBodyTreeExtractor.class);
       //trace the param
       private final String traceParamName;
 
@@ -288,11 +295,11 @@ public class JavaMethodBodyTreeExtractor {
           }
           // lambdaExpression fixme unhandled
           if (expressionContext.lambdaExpression()!=null){
-            throw new JavaMethodExtractorException("cannot handle lambdaExpression ", expressionContext); //fixme
+              throw new JavaMethodExtractorException("cannot handle lambdaExpression ", expressionContext); //fixme
           }
         //  java 8 methodReference fixme unhandled
         if (expressionContext.COLONCOLON()!=null)
-            throw new JavaMethodExtractorException("cannot handle java 8 methodReference ", expressionContext); //fixme
+              throw new JavaMethodExtractorException("cannot handle java 8 methodReference ", expressionContext); //fixme
 
         throw new JavaMethodExtractorException("impossible reachable", expressionContext);
 
@@ -352,35 +359,43 @@ public class JavaMethodBodyTreeExtractor {
       an statement like if-else statement or while statement.
       statement
         : blockLabel=block                                                                √
-        | ASSERT expression (':' expression)? ';'
-        | IF parExpression statement (ELSE statement)?
-        | FOR '(' forControl ')' statement
-        | WHILE parExpression statement
-        | DO statement WHILE parExpression ';'
-        | TRY block (catchClause+ finallyBlock? | finallyBlock)
-        | TRY resourceSpecification block catchClause* finallyBlock?
-        | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
-        | SYNCHRONIZED parExpression block
-        | RETURN expression? ';'
-        | THROW expression ';'
-        | BREAK IDENTIFIER? ';'
-        | CONTINUE IDENTIFIER? ';'
-        | SEMI
-        | statementExpression=expression ';'
-        | identifierLabel=IDENTIFIER ':' statement
+        | ASSERT expression (':' expression)? ';'                                         X fixme unfinished
+        | IF parExpression statement (ELSE statement)?                                    √
+        | FOR '(' forControl ')' statement                                                X fixme unfinished
+        | WHILE parExpression statement                                                   √
+        | DO statement WHILE parExpression ';'                                            √
+        | TRY block (catchClause+ finallyBlock? | finallyBlock)                           X fixme unfinished
+        | TRY resourceSpecification block catchClause* finallyBlock?                      X fixme unfinished
+        | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'            X fixme unfinished
+        | SYNCHRONIZED parExpression block                                                √
+        | RETURN expression? ';'                                                          √
+        | THROW expression ';'                                                            √
+        | BREAK IDENTIFIER? ';'                                                           X fixme IDENTIFIER unfinished
+        | CONTINUE IDENTIFIER? ';'                                                        X fixme IDENTIFIER unfinished
+        | SEMI                                                                            √
+        | statementExpression=expression ';'                                              √
+        | identifierLabel=IDENTIFIER ':' statement                                        X fixme unhandled
       ;
       *****************************************************************/
 
       public ExpressionOrBlockList parseStatement(JavaParser.StatementContext statement){
-          if (statement.block()!=null){
+        Coordinate x = Coordinate.createFromCtx(statement);
+
+        if (statement.block()!=null){
                 return parseBlock(statement.block());
           }
 
+          if (statement.ASSERT()!=null){
+                //here may have some problem
+                LOG.info("Have an assert at " + Coordinate.createFromCtx(statement));
+                Expression e = parseExpression(statement.expression(0));
+                return e.wrapToList();
+          }
+
+          //If statement
           if (statement.IF()!=null){
                 Expression ce = parseExpression(statement.parExpression().expression());
-                Coordinate c = Coordinate.initFromToken(statement.start);
-                ConditionalBlock b = new ConditionalBlock(ce, c);
-                b.initExpressionOrBlockList(parseStatement(statement.statement(0)));
+                ConditionalBlock b = new ConditionalBlock(x,ce ,parseStatement(statement.statement(0)));
 
                 if (statement.ELSE() != null){
                     b.initElseBlock(parseStatement(statement.statement(1)));
@@ -389,6 +404,91 @@ public class JavaMethodBodyTreeExtractor {
                 return b.wrapToList();
           }
 
+
+          /*
+          for statement
+
+          //fixme unfinished
+          */
+
+          if (statement.FOR()!=null){
+
+              JavaParser.ForControlContext forControl = statement.forControl();
+
+
+              /*
+
+              forControl
+              : enhancedForControl
+                | forInit? ';' expression? ';' forUpdate=expressionList?
+              ;
+              */
+
+              //for each like for (element:iterator)
+
+              if (forControl.enhancedForControl()!=null){
+
+              }
+              else {
+
+              }
+
+              ForBlock forBlock = new ForBlock(x,parseBlock(statement.block()));
+              return forBlock.wrapToList();
+          }
+
+          //do-while statement
+          if (statement.DO() !=null ){
+            WhileBlock whileBlock = new WhileBlock(x, parseExpression(statement.expression(0)), true, parseBlock(statement.block()));
+            return whileBlock.wrapToList();
+          }
+
+          //while statement
+          if (statement.WHILE()!=null){
+              WhileBlock whileBlock = new WhileBlock(x, parseExpression(statement.expression(0)), false, parseBlock(statement.block()));
+              return whileBlock.wrapToList();
+          }
+
+
+          //synchronized statement
+          if (statement.SYNCHRONIZED()!=null){
+
+              SynchronizedBlock b = new SynchronizedBlock(x, parseExpression(statement.expression(0)), parseBlock(statement.block()));
+              return b.wrapToList();
+          }
+          //return statement
+          if (statement.RETURN()!=null){
+            Statement rt = new Statement(x, Statement.RETURN_STATEMENT, parseExpression(statement.expression(0)));
+            return rt.wrapToList();
+          }
+
+          //Throw statement
+          if (statement.THROW()!=null){
+            Statement rt = new Statement(x, Statement.THROW_STATEMENT, parseExpression(statement.expression(0)));
+            return rt.wrapToList();
+          }
+
+
+          if (statement.BREAK()!=null){
+              //ignore label
+              Statement rt = new Statement(x, Statement.BREAK_STATEMENT,null);
+              return rt.wrapToList();
+          }
+
+          if (statement.CONTINUE()!=null){
+              //ignore label
+              Statement rt = new Statement(x, Statement.CONTINUE_STATEMENT,null);
+              return rt.wrapToList();
+          }
+
+          //statementExpression
+          if (statement.statementExpression!=null)
+            return parseExpression(statement.statementExpression).wrapToList();
+
+          //SEMI empty body
+          if (statement.SEMI()!=null){
+              return null;
+          }
 
           throw new JavaMethodExtractorException("unreachable code ", statement);
 

@@ -7,7 +7,6 @@ import java.util.List;
 public interface ExpressionOrBlock {
 
   default ExpressionOrBlockList wrapToList(){
-
       return new ExpressionOrBlockList(this);
   }
 }

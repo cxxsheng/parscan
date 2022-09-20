@@ -35,9 +35,6 @@ public class FunctionImp {
       return functionDec.getCoordinate();
     }
 
-    public void initBody(Coordinate body_x){
-      body = new Block(body_x);
-    }
 
     public void addExpOrBlock2Body(ExpressionOrBlock eb){
       if (body == null){

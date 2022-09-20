@@ -2,14 +2,13 @@ package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.unit.Expression;
-import java.util.List;
 
 public class ConditionalBlock extends Block {
       private final Expression boolExp;
 
       private ExpressionOrBlockList elseBlock;
-      public ConditionalBlock(Expression boolExp, Coordinate coordinate) {
-        super(coordinate);
+      public ConditionalBlock(Coordinate x, Expression boolExp, ExpressionOrBlockList content) {
+        super(x, content);
         this.boolExp = boolExp;
       }
 
