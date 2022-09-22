@@ -10,6 +10,9 @@ public class PointSymbol extends Symbol {
     public PointSymbol(Expression exp, Symbol v) {
         this.exp = exp;
         this.v = v;
+
+        if (exp.isTaint())
+          taint();
     }
 
     boolean isFunc(){
@@ -18,6 +21,11 @@ public class PointSymbol extends Symbol {
 
     @Override
     public void taint() {
+      isTaint=true;
+    }
 
+    @Override
+    public final boolean isConstant() {
+      return false;
     }
 }

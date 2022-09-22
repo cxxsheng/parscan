@@ -17,6 +17,11 @@ public class IdentifierSymbol extends Symbol {
     }
 
     @Override
+    public final boolean isConstant() {
+      return false;
+    }
+
+  @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;

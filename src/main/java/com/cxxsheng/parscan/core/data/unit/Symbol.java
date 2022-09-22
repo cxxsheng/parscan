@@ -12,4 +12,6 @@ public abstract class Symbol {
     public Expression toExp(){
         return new Expression(this);
     }
+
+    abstract public boolean isConstant();
 }

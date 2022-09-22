@@ -136,7 +136,7 @@ public class JavaScanListener extends JavaParserBaseListener {
             throw new JavaScanException("cannot find current parcelable class");
           }
           imp.initDeSerFunc(imp.getClassName(), ctx.IDENTIFIER().getText(), params, c);
-          JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getSerializeFuncKeyParamName(), imp.getDeserializeFunc());
+          JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getDeSerializeFuncKeyParamName(), imp.getDeserializeFunc());
           extractor.parseMethodBody(ctx.methodBody());
           currentMethodStatus = METHOD_CREATE_FROM_PARCEL_ENTERED;
 
@@ -152,6 +152,8 @@ public class JavaScanListener extends JavaParserBaseListener {
           }
           imp.initSerFunc("void", ctx.IDENTIFIER().getText(), params, c);
 
+          JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getSerializeFuncKeyParamName(), imp.getDeserializeFunc());
+          extractor.parseMethodBody(ctx.methodBody());
           currentMethodStatus = METHOD_WRITE_TO_PARCEL_ENTERED;
 
       }

@@ -11,7 +11,13 @@ public class NullSymbol extends Symbol {
 
     }
 
-   public static  NullSymbol Init(){
+    @Override
+    public final boolean isConstant() {
+      return true;
+    }
+
+
+  public static  NullSymbol Init(){
       return INSTANCE;
     }
 }

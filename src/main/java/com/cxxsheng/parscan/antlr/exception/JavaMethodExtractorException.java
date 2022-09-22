@@ -9,4 +9,8 @@ public class JavaMethodExtractorException extends RuntimeException {
     public JavaMethodExtractorException(String msg, ParserRuleContext c){
         super(msg + " at " + Coordinate.createFromCtx(c));
     }
+
+   public JavaMethodExtractorException(String msg){
+     super(msg);
+   }
 }

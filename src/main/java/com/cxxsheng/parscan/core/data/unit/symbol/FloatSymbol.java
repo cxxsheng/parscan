@@ -14,4 +14,10 @@ public class FloatSymbol extends Symbol {
     public void taint() {
 
     }
+
+    @Override
+    public final boolean isConstant() {
+      return true;
+    }
+
 }

@@ -11,7 +11,7 @@ public class FunctionImp {
 
     private Block body = null;
 
-    public FunctionImp(String type, String name, List<Parameter> params, Coordinate c){
+    public FunctionImp(Coordinate c,String type, String name, List<Parameter> params){
       this.functionDec = new FunctionDeclaration(type, name, params, c);
     }
 

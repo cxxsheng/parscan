@@ -4,13 +4,18 @@ import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 public class LabelSymbol extends Symbol {
 
-  public LabelSymbol(String name) {this.name = name;}
+    public LabelSymbol(String name) {this.name = name;}
 
-  @Override
-  public void taint() {
+    @Override
+    public void taint() {
 
-  }
+    }
 
-  private final String name;
+    @Override
+    public final boolean isConstant() {
+      return false;
+    }
+
+    private final String name;
 
 }

@@ -11,13 +11,20 @@ public class ArrayGetSymbol extends Symbol {
     public ArrayGetSymbol(Expression array, Expression index) {
         this.array = array;
         this.index = index;
+
+        if (array.isTaint()||index.isTaint())
+          taint();
     }
 
 
-  @Override
-  public void taint() {
-      isTaint = true;
-  }
 
+    @Override
+    public void taint() {
+        isTaint = true;
+    }
 
+    @Override
+    public final boolean isConstant() {
+      return false;
+    }
 }

@@ -13,6 +13,7 @@ public class Expression implements ExpressionOrBlock {
    private boolean isTaint = false;
 
    private boolean isUnitary = false;
+
    public Expression(Expression left, Expression right, Operator op){
      this.left = left;
      this.right = right;
@@ -93,12 +94,24 @@ public class Expression implements ExpressionOrBlock {
         return isUnitary;
    }
 
+    //taint only when expression is a symbol
     public void taintSymbol() {
       if (symbol != null)
         symbol.taint();
     }
 
-    public boolean isTaint() {
+    //taint the whole expression, be careful to use it
+    public void taint() {
+        isTaint = true;
+        if (left!=null)
+          left.taint();
+        if (right!=null)
+          right.taint();
+        if (symbol!=null)
+          symbol.taint();
+    }
+
+  public boolean isTaint() {
     return isTaint;
   }
 }

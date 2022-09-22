@@ -17,12 +17,17 @@ public class BoolSymbol extends Symbol {
     }
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      BoolSymbol that = (BoolSymbol)o;
-      return value == that.value;
+    public final boolean isConstant() {
+      return true;
     }
+
+    @Override
+      public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoolSymbol that = (BoolSymbol)o;
+        return value == that.value;
+      }
 
     @Override
     public int hashCode() {

@@ -13,6 +13,8 @@ import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.JavaType;
+import com.cxxsheng.parscan.core.data.unit.Primitive;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.*;
@@ -117,8 +119,9 @@ public class JavaMethodBodyTreeExtractor {
           if (primaryContext.expression() != null)
               return parseExpression(primaryContext.expression());
 
-          return  parseIDENTIFIER(primaryContext.getText()).toExp();
+          return parseIDENTIFIER(primaryContext.getText()).toExp();
       }
+
 
 
 
@@ -132,16 +135,17 @@ public class JavaMethodBodyTreeExtractor {
           if (methodCallContext.IDENTIFIER()!=null)
               funcName = methodCallContext.IDENTIFIER().getText();
 
-          Coordinate coordinate = new Coordinate(methodCallContext.start.getLine(), methodCallContext.start.getCharPositionInLine());
-          List<JavaParser.ExpressionContext> params = methodCallContext.expressionList().expression();
+          Coordinate x = new Coordinate(methodCallContext.start.getLine(), methodCallContext.start.getCharPositionInLine());
+          JavaParser.ExpressionListContext params = methodCallContext.expressionList();
           List<Expression> list = new ArrayList<>();
 
           if (params!=null){
-              for (JavaParser.ExpressionContext p : params){
+              List<JavaParser.ExpressionContext> ps = params.expression();
+              for (JavaParser.ExpressionContext p : ps){
                   list.add(parseExpression(p));
               }
           }
-          return new CallFunc(funcName, list, coordinate);
+          return new CallFunc(x, funcName, list);
       }
 
 
@@ -202,7 +206,7 @@ public class JavaMethodBodyTreeExtractor {
           }
 
            // expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-          if (expressionContext.LT() != null){
+          if (expressionContext.LT().size() != 0){
 
               int i = expressionContext.LT().size();
               if (i == 2){
@@ -215,7 +219,7 @@ public class JavaMethodBodyTreeExtractor {
 
           }
 
-          if (expressionContext.GT() != null){
+          if (expressionContext.GT().size() >= 2){
               int i = expressionContext.LT().size();
 
               JavaParser.ExpressionContext left_e = expressionContext.expression().get(0);
@@ -229,7 +233,27 @@ public class JavaMethodBodyTreeExtractor {
               throw new JavaMethodExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
           }
           //fixme unhandled
+          //creator
+          //    : nonWildcardTypeArguments createdName classCreatorRest
+          //    | createdName (arrayCreatorRest | classCreatorRest)
+          //    ;
           if (expressionContext.creator()!=null){
+            JavaParser.CreatorContext creator = expressionContext.creator();
+
+            //type
+            String name = creator.createdName().getText();
+
+            //arrayCreatorRest
+            //    : '[' (']' ('[' ']')* arrayInitializer | expression ']' ('[' expression ']')* ('[' ']')*)
+            //    ;
+            if (creator.arrayCreatorRest()!=null){
+              //
+              Expression size1 = parseExpression(creator.arrayCreatorRest().expression(0));
+              JavaType javaType = new JavaType(Primitive.nameOf(name), true);
+              return new Creator(size1, javaType).toExp();
+            }
+
+
             throw new JavaMethodExtractorException("unhandled creator", expressionContext);
           }
 
@@ -339,17 +363,19 @@ public class JavaMethodBodyTreeExtractor {
             for (JavaParser.VariableDeclaratorContext variableDeclaratorContext: variableDeclaratorContexts){
                 String name =  variableDeclaratorContext.variableDeclaratorId().IDENTIFIER().getText();
                 Symbol symbol = parseIDENTIFIER(name);
-                JavaParser.ArrayInitializerContext arrayInitializerContext = variableDeclaratorContext.variableInitializer().arrayInitializer();
-                if (arrayInitializerContext != null){
-                    expressions.add(new Expression(symbol, new ArrayInitSymbol(arrayInitializerContext.getText()), Operator.AS));
-                }
-                JavaParser.ExpressionContext e = variableDeclaratorContext.variableInitializer().expression();//expression
-                if (e != null){
-                    expressions.add(new Expression(symbol, parseExpression(e), Operator.AS));
-                }
+                JavaParser.VariableInitializerContext vInitializerContext = variableDeclaratorContext.variableInitializer();
+                if (vInitializerContext != null){
+                    JavaParser.ArrayInitializerContext arrayInit = vInitializerContext.arrayInitializer();
+                    if (arrayInit!=null)
 
+                      expressions.add(new Expression(symbol, new ArrayInitSymbol(arrayInit.getText()), Operator.AS));
+                    JavaParser.ExpressionContext e =vInitializerContext.expression();//expression
+
+                    if (e != null)
+                      expressions.add(new Expression(symbol, parseExpression(e), Operator.AS));
+
+                }
             }
-
             return ExpressionOrBlockList.wrap(ExpressionOrBlockList.PURE_EXPRESSION, expressions);
         }
 
@@ -433,7 +459,7 @@ public class JavaMethodBodyTreeExtractor {
 
               }
 
-              ForBlock forBlock = new ForBlock(x,parseBlock(statement.block()));
+              ForBlock forBlock = new ForBlock(x, parseBlock(statement.block()));
               return forBlock.wrapToList();
           }
 

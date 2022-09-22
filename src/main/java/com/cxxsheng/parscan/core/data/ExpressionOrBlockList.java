@@ -13,10 +13,11 @@ public class ExpressionOrBlockList {
   public static final int PURE_EXPRESSION = 1;  // 0b01
   private int type = 0;
 
-  private final List<ExpressionOrBlock> content;
+  private List<ExpressionOrBlock> content;
+
+  public static final ExpressionOrBlockList EMPTY_INSTANCE = new ExpressionOrBlockList();
 
   public ExpressionOrBlockList(){
-    content = new ArrayList<>();
   }
 
   public ExpressionOrBlockList(int type, List<ExpressionOrBlock> content) {
@@ -24,12 +25,20 @@ public class ExpressionOrBlockList {
     this.content = content;
   }
 
+
   public ExpressionOrBlockList(ExpressionOrBlock unit){
     if (unit instanceof Expression)
       this.type |= PURE_EXPRESSION;
     else if (unit instanceof Block)
       this.type |= PURE_BLOCK;
-    content = new ArrayList<>();
+    addUnit2Content(unit);
+  }
+
+  private void addUnit2Content(ExpressionOrBlock unit){
+    if (unit==null)
+      return;
+    if (content==null)
+      content = new ArrayList<>();
     content.add(unit);
   }
 
@@ -42,12 +51,16 @@ public class ExpressionOrBlockList {
       this.type |= PURE_EXPRESSION;
     else if (unit instanceof Block)
       this.type |= PURE_BLOCK;
-    content.add(unit);
+    addUnit2Content(unit);
+
   }
 
   public void addExpressionList(ExpressionOrBlockList t){
     type = t.type | type;
-    content.addAll(t.content);
+    if (content==null)
+      content = t.content;
+    else
+      content.addAll(t.content);
   }
 
 
@@ -62,4 +75,6 @@ public class ExpressionOrBlockList {
    public boolean isEmpty(){
       return content==null || content.size()==0;
    }
+
+
 }

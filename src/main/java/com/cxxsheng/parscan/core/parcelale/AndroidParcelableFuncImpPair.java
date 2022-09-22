@@ -77,12 +77,12 @@ public class AndroidParcelableFuncImpPair implements SerializableFunc {
 
     //init writeToParcel function
     public void initSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
-        serFunc = new FunctionImp(retValueType, name, params, c);
+        serFunc = new FunctionImp(c, retValueType, name, params);
     }
 
     //init createFromParcel function
     public void initDeSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
-        deserFuc = new FunctionImp(retValueType, name, params, c);
+        deserFuc = new FunctionImp(c, retValueType, name, params);
     }
 
 
@@ -97,7 +97,7 @@ public class AndroidParcelableFuncImpPair implements SerializableFunc {
 
     //createFromParcel's first param name. must be Parcel type
     public String getDeSerializeFuncKeyParamName(){
-        Parameter p = serFunc.getFunDec().getParams().get(0);
+        Parameter p = deserFuc.getFunDec().getParams().get(0);
         if (p==null || !"Parcel".equals(p.getType()))
             throw new JavaScanException("Invalid deserialization function because of parameter at "+ serFunc.getPosition());
         return p.getName();
