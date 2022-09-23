@@ -41,7 +41,7 @@ public class Expression implements ExpressionOrBlock {
 
    public Expression(Expression left, Expression right, Operator op, boolean isUnitary){
        this(left, right, op);
-       this.isUnitary = true;
+       this.isUnitary = isUnitary;
    }
 
     public Expression(Symbol left, Symbol right, Operator op){

@@ -2,23 +2,30 @@ package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
 
+
 public class Block implements ExpressionOrBlock {
 
       protected boolean isTaint = false;
       protected Block father;
       private final Coordinate coordinate;
-      private final ExpressionOrBlockList content;
+      private ExpressionOrBlockList content;
 
-      public Block( Coordinate coordinate, ExpressionOrBlockList content) {
+      public Block(Coordinate coordinate, ExpressionOrBlockList content) {
         this.content = content;
-        this.coordinate = coordinate;}
+        this.coordinate = coordinate;
+
+        //if content exits, must have taint expression
+        if (!content.isEmpty())
+          taint();
+      }
 
 
 
 
 
       public void addExpressionOrBlock(ExpressionOrBlock eb){
-          content.addOne(eb);
+          if (eb.isTaint())
+            content = content.addOne(eb);
       }
 
         //public void addExpression(Expression exp){
@@ -32,6 +39,11 @@ public class Block implements ExpressionOrBlock {
 
         public ExpressionOrBlockList getContent() {
           return content;
+        }
+
+        @Override
+        public void taint() {
+          isTaint = true;
         }
 
         public boolean isTaint() {

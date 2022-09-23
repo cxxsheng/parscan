@@ -561,10 +561,10 @@ public class JavaMethodBodyTreeExtractor {
        *****************************************************************/
       public ExpressionOrBlockList parseBlock(JavaParser.BlockContext block){
 
-          ExpressionOrBlockList ebl = new ExpressionOrBlockList();
+          ExpressionOrBlockList ebl = ExpressionOrBlockList.EMPTY_INSTANCE;
           List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
           for (JavaParser.BlockStatementContext blockStatement: blockStatements){
-              ebl.addExpressionList(parseBlockStatement(blockStatement));
+              ebl = ebl.addExpressionList(parseBlockStatement(blockStatement));
           }
 
           return ebl;

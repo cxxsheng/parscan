@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.data;
 
 
+import com.cxxsheng.parscan.antlr.exception.JavaMethodExtractorException;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,54 +14,83 @@ public class ExpressionOrBlockList {
   public static final int PURE_EXPRESSION = 1;  // 0b01
   private int type = 0;
 
-  private List<ExpressionOrBlock> content;
+  private final List<ExpressionOrBlock> content;
 
   public static final ExpressionOrBlockList EMPTY_INSTANCE = new ExpressionOrBlockList();
 
-  public ExpressionOrBlockList(){
+
+  private ExpressionOrBlockList(){
+      content = null;
   }
 
-  public ExpressionOrBlockList(int type, List<ExpressionOrBlock> content) {
-    this.type = type;
-    this.content = content;
+  private ExpressionOrBlockList(int type, List<ExpressionOrBlock> content) {
+
+      this.type = type;
+      this.content = content;
   }
 
 
-  public ExpressionOrBlockList(ExpressionOrBlock unit){
-    if (unit instanceof Expression)
-      this.type |= PURE_EXPRESSION;
-    else if (unit instanceof Block)
-      this.type |= PURE_BLOCK;
-    addUnit2Content(unit);
-  }
+  private ExpressionOrBlockList(ExpressionOrBlock unit){
 
-  private void addUnit2Content(ExpressionOrBlock unit){
-    if (unit==null)
-      return;
-    if (content==null)
+      if (unit instanceof Expression)
+        this.type |= PURE_EXPRESSION;
+      else if (unit instanceof Block)
+        this.type |= PURE_BLOCK;
       content = new ArrayList<>();
-    content.add(unit);
+      content.add(unit);
   }
+
+
+
+  public static ExpressionOrBlockList Init(ExpressionOrBlock unit){
+      if (unit==null || !unit.isTaint())
+        return EMPTY_INSTANCE;
+      return new ExpressionOrBlockList(unit);
+  }
+
+
+  public static ExpressionOrBlockList Init(int type, List<ExpressionOrBlock> content){
+      if (content==null)
+        return EMPTY_INSTANCE;
+
+      List<ExpressionOrBlock> newArray = new ArrayList<>();
+
+      for (ExpressionOrBlock e : content){
+        if (e.isTaint())
+          newArray.add(e);
+      }
+      if (newArray.isEmpty())
+        return EMPTY_INSTANCE;
+      return new ExpressionOrBlockList(type, newArray);
+  }
+
 
   public static ExpressionOrBlockList wrap(int type, List<ExpressionOrBlock> expressions) {
-    return new ExpressionOrBlockList(type, expressions);
+      return new ExpressionOrBlockList(type, expressions);
   }
 
-  public void addOne(ExpressionOrBlock unit){
-    if (unit instanceof Expression)
-      this.type |= PURE_EXPRESSION;
-    else if (unit instanceof Block)
-      this.type |= PURE_BLOCK;
-    addUnit2Content(unit);
+  public ExpressionOrBlockList addOne(ExpressionOrBlock unit){
 
+      if (this==EMPTY_INSTANCE)
+        return unit.wrapToList();
+
+      if (unit instanceof Expression)
+        this.type |= PURE_EXPRESSION;
+      else if (unit instanceof Block)
+        this.type |= PURE_BLOCK;
+
+      content.add(unit);
+      return this;
   }
 
-  public void addExpressionList(ExpressionOrBlockList t){
-    type = t.type | type;
-    if (content==null)
-      content = t.content;
-    else
-      content.addAll(t.content);
+  public ExpressionOrBlockList addExpressionList(ExpressionOrBlockList t){
+      if (this  == EMPTY_INSTANCE)
+          return t;
+      else {
+        type = t.type | type;
+        content.addAll(t.content);
+        return this;
+      }
   }
 
 
@@ -73,7 +103,7 @@ public class ExpressionOrBlockList {
    }
 
    public boolean isEmpty(){
-      return content==null || content.size()==0;
+      return this==EMPTY_INSTANCE || content==null || content.size()==0;
    }
 
 

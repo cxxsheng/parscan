@@ -4,12 +4,14 @@ import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 
 public class ConditionalBlock extends Block {
+
       private final Expression boolExp;
 
       private ExpressionOrBlockList elseBlock;
       public ConditionalBlock(Coordinate x, Expression boolExp, ExpressionOrBlockList content) {
         super(x, content);
         this.boolExp = boolExp;
+
       }
 
 
