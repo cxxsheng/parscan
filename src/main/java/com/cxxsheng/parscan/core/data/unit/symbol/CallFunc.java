@@ -29,7 +29,7 @@ public class CallFunc extends Symbol {
         //taint all param? maybe
         //fixme
         for (Expression e : params){
-            e.taint();
+            e.taintWholeExpression();
         }
     }
 
@@ -62,4 +62,16 @@ public class CallFunc extends Symbol {
         return false;
     }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("(");
+    for (Expression e : params){
+        sb.append(e);
+        sb.append(", ");
+    }
+    if (params.size()!=0)
+      sb.delete(sb.length()-2, sb.length()-1);
+    sb.append(")");
+    return funcName+sb;
+  }
 }

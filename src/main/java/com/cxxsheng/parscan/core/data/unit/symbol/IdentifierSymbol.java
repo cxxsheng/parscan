@@ -33,4 +33,9 @@ public class IdentifierSymbol extends Symbol {
     public int hashCode() {
       return Objects.hash(value);
     }
+
+  @Override
+  public String toString() {
+    return value;
+  }
 }

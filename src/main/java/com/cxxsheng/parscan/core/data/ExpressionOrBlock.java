@@ -12,6 +12,6 @@ public interface ExpressionOrBlock {
    boolean isTaint();
 
   default ExpressionOrBlockList wrapToList(){
-      return new ExpressionOrBlockList(this);
+      return  ExpressionOrBlockList.Init(this);
   }
 }

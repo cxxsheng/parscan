@@ -4,6 +4,8 @@ import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.antlr.parser.JavaParserBaseListener;
 import com.cxxsheng.parscan.core.Coordinate;
+import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
+import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.parcelale.AndroidParcelableFuncImpPair;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import javafx.util.Pair;
@@ -137,7 +139,7 @@ public class JavaScanListener extends JavaParserBaseListener {
           }
           imp.initDeSerFunc(imp.getClassName(), ctx.IDENTIFIER().getText(), params, c);
           JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getDeSerializeFuncKeyParamName(), imp.getDeserializeFunc());
-          extractor.parseMethodBody(ctx.methodBody());
+          ExpressionOrBlockList blockList = extractor.parseMethodBody(ctx.methodBody());
           currentMethodStatus = METHOD_CREATE_FROM_PARCEL_ENTERED;
 
       }else if ("writeToParcel".equals(ctx.IDENTIFIER().getText())){
@@ -153,7 +155,7 @@ public class JavaScanListener extends JavaParserBaseListener {
           imp.initSerFunc("void", ctx.IDENTIFIER().getText(), params, c);
 
           JavaMethodBodyTreeExtractor extractor = new JavaMethodBodyTreeExtractor(imp.getSerializeFuncKeyParamName(), imp.getDeserializeFunc());
-          extractor.parseMethodBody(ctx.methodBody());
+          ExpressionOrBlockList blockList = extractor.parseMethodBody(ctx.methodBody());
           currentMethodStatus = METHOD_WRITE_TO_PARCEL_ENTERED;
 
       }

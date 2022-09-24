@@ -8,6 +8,9 @@ public class ConditionalBlock extends Block {
       private final Expression boolExp;
 
       private ExpressionOrBlockList elseBlock;
+
+      private boolean haveElse = false;
+
       public ConditionalBlock(Coordinate x, Expression boolExp, ExpressionOrBlockList content) {
         super(x, content);
         this.boolExp = boolExp;
@@ -23,4 +26,8 @@ public class ConditionalBlock extends Block {
        public void initElseBlock(ExpressionOrBlockList elseB){
           elseBlock = elseB;
        }
+
+        public void setHaveElse() {
+          this.haveElse = true;
+        }
 }

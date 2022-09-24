@@ -27,4 +27,11 @@ public class ArrayGetSymbol extends Symbol {
     public final boolean isConstant() {
       return false;
     }
+
+  @Override
+  public String toString() {
+    return array +
+           "[" + index +
+           ']';
+  }
 }

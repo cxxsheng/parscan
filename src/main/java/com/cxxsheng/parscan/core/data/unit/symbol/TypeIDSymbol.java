@@ -26,4 +26,5 @@ public class TypeIDSymbol extends Symbol {
       public boolean isConstant() {
         return false;
       }
+
 }

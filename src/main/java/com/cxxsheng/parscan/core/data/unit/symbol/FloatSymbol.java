@@ -20,4 +20,8 @@ public class FloatSymbol extends Symbol {
       return true;
     }
 
+    @Override
+    public String toString() {
+      return ""+value;
+    }
 }

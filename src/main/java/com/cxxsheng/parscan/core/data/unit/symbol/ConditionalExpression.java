@@ -44,4 +44,10 @@ public class ConditionalExpression extends Symbol {
       return false;
     }
 
+  @Override
+  public String toString() {
+    return ""+ cond +
+           "?" + left +
+           ":" + right;
+  }
 }

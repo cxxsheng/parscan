@@ -10,7 +10,7 @@ public class PointSymbol extends Symbol {
     public PointSymbol(Expression exp, Symbol v) {
         this.exp = exp;
         this.v = v;
-
+        //fixme
         if (exp.isTaint())
           taint();
     }
@@ -28,4 +28,10 @@ public class PointSymbol extends Symbol {
     public final boolean isConstant() {
       return false;
     }
+
+  @Override
+  public String toString() {
+
+    return ""+ exp.toString() + "." +v.toString();
+  }
 }

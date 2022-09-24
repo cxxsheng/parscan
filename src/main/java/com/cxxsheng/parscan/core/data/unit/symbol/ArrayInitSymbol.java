@@ -36,4 +36,9 @@ public class ArrayInitSymbol extends Symbol {
     public boolean isConstant() {
       return true;
     }
+
+  @Override
+  public String toString() {
+    return value;
+  }
 }

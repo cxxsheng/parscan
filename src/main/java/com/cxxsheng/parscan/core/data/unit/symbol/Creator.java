@@ -29,4 +29,10 @@ public class Creator extends Symbol {
     public boolean isConstant() {
       return false;
     }
+
+  @Override
+  public String toString() {
+
+    return "new " + javaType.toString() + "["+size.toString()+"]";
+  }
 }

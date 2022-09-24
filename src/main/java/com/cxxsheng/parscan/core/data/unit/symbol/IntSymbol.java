@@ -20,4 +20,10 @@ public class IntSymbol extends Symbol {
     public final boolean isConstant() {
       return true;
     }
+
+  @Override
+  public String toString() {
+
+    return ""+value;
+  }
 }

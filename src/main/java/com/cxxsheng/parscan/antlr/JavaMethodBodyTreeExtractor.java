@@ -3,6 +3,7 @@ package com.cxxsheng.parscan.antlr;
 import com.cxxsheng.parscan.antlr.exception.JavaMethodExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
+import com.cxxsheng.parscan.core.data.Block;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
@@ -22,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class JavaMethodBodyTreeExtractor {
 
@@ -31,6 +33,8 @@ public class JavaMethodBodyTreeExtractor {
       private final String traceParamName;
 
       private final FunctionImp imp ;
+
+      public Stack<ExpressionOrBlockList> domainStack = new Stack<>();
 
       public JavaMethodBodyTreeExtractor(String params, FunctionImp imp) {
           this.traceParamName = params;
@@ -339,7 +343,8 @@ public class JavaMethodBodyTreeExtractor {
       ;
        *****************************************************************/
 
-      public static ExpressionOrBlockList parseLocalTypeDeclaration(JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
+      public static ExpressionOrBlockList parseLocalTypeDeclaration(
+                                                                    JavaParser.LocalTypeDeclarationContext localTypeDeclaration){
           throw new JavaMethodExtractorException("unhandled innerclass declaration or interface", localTypeDeclaration);
       }
 
@@ -356,8 +361,9 @@ public class JavaMethodBodyTreeExtractor {
       public ExpressionOrBlockList parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
             //this is useful? WE DO NOT DEED TO RECORD TYPE
             JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
-            List<ExpressionOrBlock> expressions = new ArrayList<>();
-            //multi variables init like
+             List<ExpressionOrBlock> expressions = new ArrayList<>();
+
+        //multi variables init like
             // int a,b,c = 1;
             List<JavaParser.VariableDeclaratorContext> variableDeclaratorContexts = localVariableDeclaration.variableDeclarators().variableDeclarator();
             for (JavaParser.VariableDeclaratorContext variableDeclaratorContext: variableDeclaratorContexts){
@@ -376,7 +382,7 @@ public class JavaMethodBodyTreeExtractor {
 
                 }
             }
-            return ExpressionOrBlockList.wrap(ExpressionOrBlockList.PURE_EXPRESSION, expressions);
+            return  ExpressionOrBlockList.Init(ExpressionOrBlockList.PURE_EXPRESSION, expressions);
         }
 
 
@@ -408,7 +414,7 @@ public class JavaMethodBodyTreeExtractor {
         Coordinate x = Coordinate.createFromCtx(statement);
 
         if (statement.block()!=null){
-                return parseBlock(statement.block());
+               return parseBlock(statement.block());
           }
 
           if (statement.ASSERT()!=null){
@@ -421,7 +427,7 @@ public class JavaMethodBodyTreeExtractor {
           //If statement
           if (statement.IF()!=null){
                 Expression ce = parseExpression(statement.parExpression().expression());
-                ConditionalBlock b = new ConditionalBlock(x,ce ,parseStatement(statement.statement(0)));
+                ConditionalBlock b = new ConditionalBlock(x,ce ,parseStatement( statement.statement(0)));
 
                 if (statement.ELSE() != null){
                     b.initElseBlock(parseStatement(statement.statement(1)));
@@ -531,23 +537,23 @@ public class JavaMethodBodyTreeExtractor {
           | localTypeDeclaration                                          √
         ;
        *****************************************************************/
-      public ExpressionOrBlockList parseBlockStatement(JavaParser.BlockStatementContext blockStatement){
+      public ExpressionOrBlockList parseBlockStatement( JavaParser.BlockStatementContext blockStatement){
           JavaParser.LocalTypeDeclarationContext localVariableDeclaration =  blockStatement.localTypeDeclaration();
           if (localVariableDeclaration != null){
 
-            return parseLocalTypeDeclaration(localVariableDeclaration);
+           return parseLocalTypeDeclaration(localVariableDeclaration);
           }
 
           JavaParser.LocalVariableDeclarationContext localVariableDeclarationContext = blockStatement.localVariableDeclaration();
           if (localVariableDeclarationContext!=null)
           {
-              return parseLocalVariableDeclaration(localVariableDeclarationContext);
+            return parseLocalVariableDeclaration(localVariableDeclarationContext);
           }
 
           //it is son
           JavaParser.StatementContext statement = blockStatement.statement();
           if (statement!=null){
-              return parseStatement(statement);
+             return parseStatement(statement);
 
           }
 
@@ -561,13 +567,15 @@ public class JavaMethodBodyTreeExtractor {
        *****************************************************************/
       public ExpressionOrBlockList parseBlock(JavaParser.BlockContext block){
 
-          ExpressionOrBlockList ebl = ExpressionOrBlockList.EMPTY_INSTANCE;
+          ExpressionOrBlockList blockDomain = ExpressionOrBlockList.InitEmptyInstance();
+
           List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
           for (JavaParser.BlockStatementContext blockStatement: blockStatements){
-              ebl = ebl.addExpressionList(parseBlockStatement(blockStatement));
+             blockDomain.combine(parseBlockStatement(blockStatement));
           }
 
-          return ebl;
+          return blockDomain;
+
       }
 
 
@@ -577,10 +585,11 @@ public class JavaMethodBodyTreeExtractor {
          : block
          | ';'
          ;
-       *****************************************************************/
-      public void parseMethodBody(JavaParser.MethodBodyContext methodBodyContext){
+       ****************************************************************
+       * @return*/
+      public ExpressionOrBlockList parseMethodBody(JavaParser.MethodBodyContext methodBodyContext){
           JavaParser.BlockContext block = methodBodyContext.block();
-          parseBlock(block);
+          return parseBlock(block);
       }
 
 

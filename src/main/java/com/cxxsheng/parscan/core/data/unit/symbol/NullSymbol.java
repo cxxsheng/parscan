@@ -17,7 +17,12 @@ public class NullSymbol extends Symbol {
     }
 
 
-  public static  NullSymbol Init(){
-      return INSTANCE;
+    public static  NullSymbol Init(){
+        return INSTANCE;
+      }
+
+    @Override
+    public String toString() {
+      return "null";
     }
 }

@@ -36,7 +36,17 @@ public class JavaType {
 
       return new JavaType(primitive, isArray);
     else
-      // isObject instead of primitive
+      // is object instead of primitive
       return new JavaType(name, isArray);
+  }
+
+
+  @Override
+  public String toString() {
+    String isArrayFix = isArray ? "[]":"";
+    if (isObject())
+      return this.ObjectName+isArrayFix;
+    else
+      return  primitive.getName()+isArrayFix;
   }
 }

@@ -36,11 +36,5 @@ public class FunctionImp {
     }
 
 
-    public void addExpOrBlock2Body(ExpressionOrBlock eb){
-      if (body == null){
-        throw new RuntimeException("body has not initialiazed!");
-      }
-      body.addExpressionOrBlock(eb);
-    }
 
 }
