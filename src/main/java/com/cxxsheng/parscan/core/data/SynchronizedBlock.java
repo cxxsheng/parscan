@@ -7,7 +7,7 @@ public class SynchronizedBlock extends Block {
 
   private final Expression e;
   public SynchronizedBlock(Coordinate x, Expression e, ExpressionOrBlockList content) {
-    super(x, content);
-    this.e = e;
+      super(x, content);
+      this.e = e;
   }
 }

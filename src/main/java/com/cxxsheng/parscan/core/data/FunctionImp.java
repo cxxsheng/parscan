@@ -9,7 +9,7 @@ public class FunctionImp {
 
     private FunctionDeclaration functionDec;
 
-    private Block body = null;
+    private ExpressionOrBlockList body = null;
 
     public FunctionImp(Coordinate c,String type, String name, List<Parameter> params){
       this.functionDec = new FunctionDeclaration(type, name, params, c);
@@ -23,11 +23,15 @@ public class FunctionImp {
       return functionDec;
     }
 
-    public Block getBody() {
+    public ExpressionOrBlockList getBody() {
       return body;
     }
 
-    public void setFuncDec(FunctionDeclaration function) {
+  public void setBody(ExpressionOrBlockList body) {
+    this.body = body;
+  }
+
+  public void setFuncDec(FunctionDeclaration function) {
       this.functionDec = function;
     }
 

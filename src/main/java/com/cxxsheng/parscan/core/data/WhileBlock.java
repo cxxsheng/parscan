@@ -7,9 +7,9 @@ public class WhileBlock extends Block {
   private final Expression boolExp;
   private final boolean isDoWhile;
   public WhileBlock(Coordinate x, Expression boolExp, boolean isDoWhile, ExpressionOrBlockList content) {
-    super(x, content);
-    this.boolExp = boolExp;
-    this.isDoWhile = isDoWhile;
+      super(x, content);
+      this.boolExp = boolExp;
+      this.isDoWhile = isDoWhile;
   }
 
 

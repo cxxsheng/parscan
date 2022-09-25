@@ -55,19 +55,20 @@ public class ExpressionOrBlockList {
       if (content==null)
         return InitEmptyInstance();
 
-      List<ExpressionOrBlock> newArray = new ArrayList<>();
+      //List<ExpressionOrBlock> newArray = new ArrayList<>();
 
 
       //filter all untainted expression
-      for (ExpressionOrBlock e : content){
-        if (e.isTaint())
-        {
-          newArray.add(e);
-        }
-      }
-      if (newArray.isEmpty())
-        return InitEmptyInstance();
-      return new ExpressionOrBlockList(type, newArray);
+      //for (ExpressionOrBlock e : content){
+      //  if (e.isTaint())
+      //  {
+      //    newArray.add(e);
+      //  }
+      //}
+      //if (newArray.isEmpty())
+      //  return InitEmptyInstance();
+      //return new ExpressionOrBlockList(type, newArray);
+      return new ExpressionOrBlockList(type, content);
   }
 
 
@@ -84,7 +85,7 @@ public class ExpressionOrBlockList {
 
   public ExpressionOrBlockList combine(ExpressionOrBlockList t){
 
-    type = t.type | type;
+      type = t.type | type;
       content.addAll(t.content);
       return this;
   }

@@ -30,9 +30,9 @@ public class Creator extends Symbol {
       return false;
     }
 
-  @Override
-  public String toString() {
+    @Override
+    public String toString() {
 
-    return "new " + javaType.toString() + "["+size.toString()+"]";
-  }
+      return "new " + javaType.toString() + "["+size.toString()+"]";
+    }
 }

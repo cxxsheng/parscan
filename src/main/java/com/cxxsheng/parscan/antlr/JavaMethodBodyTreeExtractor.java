@@ -589,7 +589,9 @@ public class JavaMethodBodyTreeExtractor {
        * @return*/
       public ExpressionOrBlockList parseMethodBody(JavaParser.MethodBodyContext methodBodyContext){
           JavaParser.BlockContext block = methodBodyContext.block();
-          return parseBlock(block);
+          ExpressionOrBlockList ret = parseBlock(block);
+          imp.setBody(ret);
+          return ret;
       }
 
 

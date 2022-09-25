@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class AntlrCore {
@@ -31,17 +32,31 @@ public class AntlrCore {
     return filePath;
   }
 
+
   //Start parse given java file
   public void  parse() throws IOException {
       JavaLexer lexer = new JavaLexer(CharStreams.fromPath(filePath));
       CommonTokenStream tokens = new CommonTokenStream(lexer);
       JavaParser parser = new JavaParser(tokens);
-      ParseTreeWalker walker = new ParseTreeWalker();
 
-      JavaScanListener listener = new JavaScanListener();
-      ParseTree tree = parser.compilationUnit();
-      walker.walk(listener,tree);
+      JavaParser.CompilationUnitContext tree = parser.compilationUnit();
+
+      List<JavaParser.TypeDeclarationContext> ts = tree.typeDeclaration();
+
+      //typeDeclaration
+      //: classOrInterfaceModifier*
+      //  (classDeclaration | enumDeclaration | interfaceDeclaration | annotationTypeDeclaration)
+      //  | ';'
+      //;
+      for (JavaParser.TypeDeclarationContext t: ts){
+        if (t.classDeclaration()!=null){
+          JavaClassExtractor extractor = new JavaClassExtractor();
+          extractor.parseClass(t.classDeclaration());
+        }
+      }
   }
+
+
 
 
 }
