@@ -12,11 +12,6 @@ public class ArrayInitSymbol extends Symbol {
         this.value = value;
     }
 
-    //constant cannot be tainted
-    @Override
-    public void taint() {
-
-    }
 
     @Override
     //Not very precise because element in {} can be expression instead of constant

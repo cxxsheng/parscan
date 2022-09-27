@@ -10,39 +10,18 @@ public class Expression implements ExpressionOrBlock {
    private Operator op = Operator.NONE;
 
 
-   private boolean isTaint = false;
-
    private boolean isUnitary = false;
-
-  //taint broadcast is very important
-
-   private void expTaint(){
-     //taint the left symbol
-     if(right.isTaint && this.isAssign()){
-       this.left.taintSymbol();
-       isTaint = true;
-     }
-
-     //if left or right tainted , the result (this exp) must be tained
-     if (left.isTaint || right.isTaint)
-       isTaint = true;
-   }
 
    public Expression(Expression left, Expression right, Operator op){
      this.left = left;
      this.right = right;
      this.op = op;
      this.symbol = null;
-
-     //taint broadcast is very important
-     expTaint();
    }
 
    //use to wrap symbol
    public Expression(Symbol symbol){
        this.symbol = symbol;
-       if (symbol.isTaint)
-         isTaint = true;
    }
 
    public Expression(Symbol left, Expression right, Operator op){
@@ -50,10 +29,6 @@ public class Expression implements ExpressionOrBlock {
        this.right = right;
        this.op = op;
        this.symbol = null;
-
-       //taint broadcast is very important
-       expTaint();
-
    }
 
    public Expression(Expression left, Expression right, Operator op, boolean isUnitary){
@@ -66,8 +41,6 @@ public class Expression implements ExpressionOrBlock {
         this.left = new Expression(left);
         this.right = new Expression(right);
         this.op = op;
-
-        expTaint();
         this.symbol = null;
     }
 
@@ -114,47 +87,18 @@ public class Expression implements ExpressionOrBlock {
         return isUnitary;
    }
 
-    //taint only when expression is a symbol
-    public void taintSymbol() {
-      if (isTerminal())
-      {
-        symbol.taint();
-        isTaint = true;
-      }
+    @Override
+    public String toString() {
+
+
+       if (isTerminal())
+         return symbol.toString();
+
+       else
+         return "("+this.left + this.getOp().getName() + this.right+ ")";
     }
 
-    public void taint() {
-        isTaint = true;
-        //if (left!=null)
-        //  left.taint();
-        //if (right!=null)
-        //  right.taint();
-        if (symbol!=null)
-          symbol.taint();
+    public Symbol getSymbol() {
+      return symbol;
     }
-
-  //taint the whole expression, be careful to use it
-    public void taintWholeExpression(){
-        isTaint = true;
-        if (left!=null)
-          left.taint();
-        if (right!=null)
-          right.taint();
-        if (symbol!=null)
-          symbol.taint();
-    }
-
-  public boolean isTaint() {
-    return isTaint;
-  }
-
-  @Override
-  public String toString() {
-
-     if (isTerminal())
-       return symbol.toString();
-
-     else
-       return "("+this.left + this.getOp().getName() + this.right+ ")";
-  }
 }

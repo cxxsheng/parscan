@@ -9,6 +9,7 @@ import java.util.List;
 //contains variables valid or invalid
 public class ExpressionOrBlockList {
 
+
   public static final int MIXED = 3;            // 0b11
   public static final int PURE_BLOCK = 2;       // 0b10
   public static final int PURE_EXPRESSION = 1;  // 0b01
@@ -16,10 +17,10 @@ public class ExpressionOrBlockList {
 
   private final List<ExpressionOrBlock> content;
 
-
+  private static final ExpressionOrBlockList EmptyInstance = new ExpressionOrBlockList();
 
   private ExpressionOrBlockList(){
-    content = new ArrayList<>();
+    content = null;
   }
 
   private ExpressionOrBlockList(int type, List<ExpressionOrBlock> content) {
@@ -41,38 +42,27 @@ public class ExpressionOrBlockList {
 
 
   public static ExpressionOrBlockList InitEmptyInstance(){
-    return new ExpressionOrBlockList();
+    return EmptyInstance;
   }
 
   public static ExpressionOrBlockList Init(ExpressionOrBlock unit){
-      if (unit==null || !unit.isTaint())
+      if (unit==null)
         return InitEmptyInstance();
       return new ExpressionOrBlockList(unit);
   }
 
 
   public static ExpressionOrBlockList Init(int type, List<ExpressionOrBlock> content){
-      if (content==null)
+      if (content==null || content.size() == 0)
         return InitEmptyInstance();
-
-      //List<ExpressionOrBlock> newArray = new ArrayList<>();
-
-
-      //filter all untainted expression
-      //for (ExpressionOrBlock e : content){
-      //  if (e.isTaint())
-      //  {
-      //    newArray.add(e);
-      //  }
-      //}
-      //if (newArray.isEmpty())
-      //  return InitEmptyInstance();
-      //return new ExpressionOrBlockList(type, newArray);
       return new ExpressionOrBlockList(type, content);
   }
 
 
   public ExpressionOrBlockList addOne(ExpressionOrBlock unit){
+
+      if (this == EmptyInstance)
+        return new ExpressionOrBlockList(unit);
 
       if (unit instanceof Expression)
         this.type |= PURE_EXPRESSION;
@@ -84,6 +74,12 @@ public class ExpressionOrBlockList {
   }
 
   public ExpressionOrBlockList combine(ExpressionOrBlockList t){
+
+      if (t == EmptyInstance)
+        return this;
+
+      if (this == EmptyInstance)
+        return t;
 
       type = t.type | type;
       content.addAll(t.content);
@@ -100,11 +96,13 @@ public class ExpressionOrBlockList {
    }
 
    public boolean isEmpty(){
-      return content==null || content.size()==0;
+      return this== EmptyInstance || content==null || content.size()==0;
    }
 
 
     public ExpressionOrBlock last(){
+      if (isEmpty())
+        return null;
       return content.get(content.size() - 1);
     }
 

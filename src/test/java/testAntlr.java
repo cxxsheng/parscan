@@ -1,10 +1,8 @@
-import com.cxxsheng.parscan.antlr.JavaScanListener;
 import com.cxxsheng.parscan.antlr.parser.JavaLexer;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.pattern.ParseTreeMatch;
 import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 import java.io.IOException;

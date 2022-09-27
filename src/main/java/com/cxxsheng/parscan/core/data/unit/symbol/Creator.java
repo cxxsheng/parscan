@@ -13,16 +13,6 @@ public class Creator extends Symbol {
     public Creator(Expression size, JavaType javaType) {
       this.size = size;
       this.javaType = javaType;
-
-
-      //broadcast
-      if (size.isTaint())
-        taint();
-    }
-
-    @Override
-    public void taint() {
-      isTaint = true;
     }
 
     @Override

@@ -11,10 +11,6 @@ public class IdentifierSymbol extends Symbol {
         this.value = value;
     }
 
-    @Override
-    public void taint() {
-        isTaint = true;
-    }
 
     @Override
     public final boolean isConstant() {

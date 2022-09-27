@@ -10,7 +10,6 @@ public class Statement implements ExpressionOrBlock {
     public final static int BREAK_STATEMENT = 2;
     public final static int CONTINUE_STATEMENT = 3;
 
-    private boolean isTaint = false;
     private final int type;
     private final Expression exp;
     private final Coordinate x;
@@ -18,17 +17,6 @@ public class Statement implements ExpressionOrBlock {
       this.type = type;
       this.exp = exp;
       this.x = x;
-      if (exp.isTaint())
-        taint();
     }
 
-    @Override
-    public void taint() {
-      isTaint = true;
-    }
-
-    @Override
-    public boolean isTaint() {
-      return isTaint;
-    }
 }

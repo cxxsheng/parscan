@@ -1,16 +1,17 @@
 package com.cxxsheng.parscan.core.data.unit;
 
+
 public class Parameter {
 
-  private final String type;
+  private final JavaType type;
   private final String name;
 
-  public Parameter(String type, String name){
+  public Parameter(JavaType type, String name){
     this.type = type;
     this.name = name;
   }
 
-  public String getType() {
+  public JavaType getType() {
     return type;
   }
 
@@ -24,4 +25,6 @@ public class Parameter {
             type + ' ' +
             name ;
   }
+
+
 }

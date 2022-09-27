@@ -7,11 +7,6 @@ public class LabelSymbol extends Symbol {
     public LabelSymbol(String name) {this.name = name;}
 
     @Override
-    public void taint() {
-
-    }
-
-    @Override
     public final boolean isConstant() {
       return false;
     }

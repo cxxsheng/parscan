@@ -17,10 +17,6 @@ public class TypeIDSymbol extends Symbol {
       this.isArray = isArray;
     }
 
-    @Override
-      public void taint() {
-        isTaint = true;
-      }
 
       @Override
       public boolean isConstant() {

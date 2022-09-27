@@ -15,10 +15,6 @@ public class ConditionalExpression extends Symbol {
         this.left = left;
         this.right = right;
 
-        //broadcast taint
-        if (cond.isTaint()||left.isTaint()||right.isTaint()){
-          taint();
-        }
     }
 
     public Expression getCond() {
@@ -31,11 +27,6 @@ public class ConditionalExpression extends Symbol {
 
     public Expression getRight() {
         return right;
-    }
-
-    @Override
-    public void taint() {
-      isTaint = true;
     }
 
 

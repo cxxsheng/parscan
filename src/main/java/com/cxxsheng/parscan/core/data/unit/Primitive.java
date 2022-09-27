@@ -1,7 +1,5 @@
 package com.cxxsheng.parscan.core.data.unit;
 
-import com.cxxsheng.parscan.antlr.exception.JavaMethodExtractorException;
-
 public enum Primitive {
   
   BYTE("byte"),

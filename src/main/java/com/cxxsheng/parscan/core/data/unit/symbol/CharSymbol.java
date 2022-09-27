@@ -10,12 +10,6 @@ public class CharSymbol extends Symbol {
         this.value = value;
     }
 
-    //constant cannot be tainted
-    @Override
-    public void taint() {
-
-    }
-
     @Override
     public final boolean isConstant() {
       return true;

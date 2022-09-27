@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
+import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import java.util.List;
 
@@ -11,8 +12,9 @@ public class FunctionImp {
 
     private ExpressionOrBlockList body = null;
 
-    public FunctionImp(Coordinate c,String type, String name, List<Parameter> params){
-      this.functionDec = new FunctionDeclaration(type, name, params, c);
+
+    public FunctionImp(Coordinate c, JavaType javaType, String name, List<Parameter> params){
+      this.functionDec = new FunctionDeclaration(javaType, name, params, c);
     }
 
     public FunctionImp(FunctionDeclaration func){
@@ -27,18 +29,21 @@ public class FunctionImp {
       return body;
     }
 
-  public void setBody(ExpressionOrBlockList body) {
-    this.body = body;
-  }
-
-  public void setFuncDec(FunctionDeclaration function) {
-      this.functionDec = function;
+    public void setBody(ExpressionOrBlockList body) {
+      this.body = body;
     }
+
+    public void setFuncDec(FunctionDeclaration function) {
+        this.functionDec = function;
+      }
 
     public Coordinate getPosition(){
       return functionDec.getCoordinate();
     }
 
 
-
+    @Override
+    public String toString() {
+      return functionDec.toString();
+    }
 }

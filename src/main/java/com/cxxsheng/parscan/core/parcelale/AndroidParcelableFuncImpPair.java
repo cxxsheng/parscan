@@ -4,6 +4,7 @@ import com.cxxsheng.parscan.antlr.exception.JavaScanException;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.SerializableFunc;
 import com.cxxsheng.parscan.core.data.FunctionImp;
+import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 
@@ -76,12 +77,12 @@ public class AndroidParcelableFuncImpPair implements SerializableFunc {
 
 
     //init writeToParcel function
-    public void initSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
+    public void initSerFunc(JavaType retValueType, String name, List<Parameter> params, Coordinate c){
         serFunc = new FunctionImp(c, retValueType, name, params);
     }
 
     //init createFromParcel function
-    public void initDeSerFunc(String retValueType, String name, List<Parameter> params, Coordinate c){
+    public void initDeSerFunc(JavaType retValueType, String name, List<Parameter> params, Coordinate c){
         deserFuc = new FunctionImp(c, retValueType, name, params);
     }
 

@@ -5,7 +5,6 @@ import com.cxxsheng.parscan.core.Coordinate;
 
 public class Block implements ExpressionOrBlock {
 
-      protected boolean isTaint = false;
       private final Coordinate coordinate;
       private ExpressionOrBlockList content;
 
@@ -14,9 +13,6 @@ public class Block implements ExpressionOrBlock {
         this.content = content;
         this.coordinate = x;
 
-        //if content exits, must have taint expression
-        if (!content.isEmpty())
-          taint();
       }
 
 
@@ -35,17 +31,5 @@ public class Block implements ExpressionOrBlock {
           return content;
         }
 
-        @Override
-        public void taint() {
-          isTaint = true;
-        }
-
-        public boolean isTaint() {
-          return isTaint;
-        }
-
-        public void Taint(){
-          isTaint = true;
-        }
 
 }
