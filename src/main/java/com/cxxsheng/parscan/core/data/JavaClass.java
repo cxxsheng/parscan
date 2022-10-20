@@ -51,4 +51,21 @@ public class JavaClass {
   public List<VarDeclaration> getVarList() {
     return varList;
   }
+
+  public FunctionImp getFunctionImpByName(String name){
+      for (FunctionImp imp : methods){
+        if (imp.toString().equals(name))
+          return imp;
+      }
+      return null;
+  }
+
+  public VarDeclaration getVarDeclarationByName(String name){
+    for (VarDeclaration v : varList)
+    {
+      if (v.toString().equals(name))
+        return v;
+    }
+    return null;
+  }
 }

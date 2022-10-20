@@ -1,0 +1,16 @@
+{
+  "parscan":[
+    {
+      "type": "param",
+      "method": "createFromParcel",
+      "params": ["Parcel"],
+      "index": "0"
+    },
+    {
+      "type": "param",
+      "method": "writeToParcel",
+      "params": ["Parcel", "int"],
+      "index": "0"
+    }
+  ]
+}

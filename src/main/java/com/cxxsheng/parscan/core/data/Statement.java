@@ -3,7 +3,7 @@ package com.cxxsheng.parscan.core.data;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 
-public class Statement implements ExpressionOrBlock {
+public class Statement extends ExpressionOrBlock {
 
     public final static int RETURN_STATEMENT = 0;
     public final static int THROW_STATEMENT = 1;
@@ -19,4 +19,11 @@ public class Statement implements ExpressionOrBlock {
       this.x = x;
     }
 
+    public int getType() {
+      return type;
+    }
+
+    public Expression getExp() {
+      return exp;
+    }
 }

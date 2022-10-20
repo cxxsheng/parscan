@@ -7,7 +7,7 @@ public class ConditionalBlock extends Block {
 
       private final Expression boolExp;
 
-      private ExpressionOrBlockList elseBlock;
+      private ExpressionOrBlockList elseBlock = ExpressionOrBlockList.InitEmptyInstance();
 
 
       public ConditionalBlock(Coordinate x, Expression boolExp, ExpressionOrBlockList content) {
@@ -18,22 +18,28 @@ public class ConditionalBlock extends Block {
 
 
        public boolean hasElse(){
-          return elseBlock != null;
+          return !elseBlock.isEmpty();
        }
 
-       //fixme may cannot figure out which kind (if/else) of son
        public void initElseBlock(ExpressionOrBlockList elseB){
           elseBlock = elseB;
+          if (!elseB.isEmpty())
+            elseBlock.setOwner(this);
        }
+
+
+        public ExpressionOrBlockList getElseBlock() {
+          return elseBlock;
+        }
 
         @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer("");
-            sb.append("if(").append(boolExp).append(")");
-            sb.append("{\n").append(getContent()).append("}\n");
-            if (hasElse()){
-              sb.append("else\n {\n").append(elseBlock).append("\n}\n");
-            }
-            return sb.toString();
+              final StringBuffer sb = new StringBuffer("");
+              sb.append("if(").append(boolExp).append(")");
+              sb.append("{\n").append(getContent()).append("}\n");
+              if (hasElse()){
+                sb.append("else\n {\n").append(elseBlock).append("\n}\n");
+              }
+              return sb.toString();
         }
 }

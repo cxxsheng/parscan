@@ -70,8 +70,7 @@ public class JavaMethodBodyTreeExtractor {
             //this is useful? WE DO NOT DEED TO RECORD TYPE
             JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
 
-            List<ExpressionOrBlock> expressions = parseVariableDeclarators(localVariableDeclaration.variableDeclarators());
-            return  ExpressionOrBlockList.Init(ExpressionOrBlockList.PURE_EXPRESSION, expressions);
+            return  parseVariableDeclarators(localVariableDeclaration.variableDeclarators());
         }
 
 

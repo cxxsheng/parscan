@@ -1,5 +1,5 @@
 package com.cxxsheng.parscan.antlr;
-import com.microsoft.z3.*;
+import com.cxxsheng.parscan.core.AntlrCore;
 
 
 import java.io.IOException;
@@ -36,6 +36,7 @@ class AntlrCoreTest {
       catch (IOException e) {
         assertTrue(true, e.getMessage());
       }
+
     }
 
 

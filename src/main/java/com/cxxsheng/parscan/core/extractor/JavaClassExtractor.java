@@ -60,8 +60,8 @@ public class JavaClassExtractor {
             JavaType type = parseJavaType(ctx.fieldDeclaration().typeType());
             parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
 
-            List<ExpressionOrBlock> exps = parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
-            for (ExpressionOrBlock e: exps){
+            ExpressionOrBlockList exps = parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
+            for (ExpressionOrBlock e: exps.getContent()){
                 Expression ee = (Expression)e;
                 VarDeclaration var;
                 if (ee.isTerminal()){

@@ -84,4 +84,8 @@ public class CallFunc extends Symbol {
     public void setExtraClass(JavaClass extraClass) {
       this.extraClass = extraClass;
     }
+
+  public JavaClass extraClass() {
+    return extraClass;
+  }
 }

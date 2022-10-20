@@ -5,6 +5,7 @@ import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import java.util.List;
+import java.util.Objects;
 
 public class FunctionImp {
 
@@ -46,4 +47,11 @@ public class FunctionImp {
     public String toString() {
       return functionDec.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.toString().equals(o.toString());
+    }
+
+
 }

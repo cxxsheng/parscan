@@ -2,8 +2,10 @@ package com.cxxsheng.parscan.core.data.unit;
 
 
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
+import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
+import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 
-public class Expression implements ExpressionOrBlock {
+public class Expression extends ExpressionOrBlock {
    private final Symbol symbol;
    private Expression left = null;
    private Expression right = null;
@@ -90,7 +92,6 @@ public class Expression implements ExpressionOrBlock {
     @Override
     public String toString() {
 
-
        if (isTerminal())
          return symbol.toString();
 
@@ -99,6 +100,17 @@ public class Expression implements ExpressionOrBlock {
     }
 
     public Symbol getSymbol() {
-      return symbol;
+        return symbol;
     }
+
+    public boolean hasRight(){
+        return right != null;
+    }
+
+    public boolean hasLeft(){
+        return left != null;
+    }
+
+
+
 }

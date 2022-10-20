@@ -5,6 +5,7 @@ import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 public class PointSymbol extends Symbol {
     private final Expression exp;
+    //ID or CallFunc
     private final Symbol v;
 
     public PointSymbol(Expression exp, Symbol v) {
@@ -25,5 +26,13 @@ public class PointSymbol extends Symbol {
   public String toString() {
 
     return ""+ exp.toString() + "." +v.toString();
+  }
+
+  public Expression getExp() {
+    return exp;
+  }
+
+  public Symbol getV() {
+    return v;
   }
 }

@@ -19,6 +19,8 @@ public class ExpressionOrBlockList {
 
   private static final ExpressionOrBlockList EmptyInstance = new ExpressionOrBlockList();
 
+  private ExpressionOrBlock owner;
+
   private ExpressionOrBlockList(){
     content = null;
   }
@@ -37,6 +39,7 @@ public class ExpressionOrBlockList {
       else if (unit instanceof Block)
         this.type |= PURE_BLOCK;
       content = new ArrayList<>();
+      unit.setDomain(this);
       content.add(unit);
   }
 
@@ -52,12 +55,6 @@ public class ExpressionOrBlockList {
   }
 
 
-  public static ExpressionOrBlockList Init(int type, List<ExpressionOrBlock> content){
-      if (content==null || content.size() == 0)
-        return InitEmptyInstance();
-      return new ExpressionOrBlockList(type, content);
-  }
-
 
   public ExpressionOrBlockList addOne(ExpressionOrBlock unit){
 
@@ -69,22 +66,47 @@ public class ExpressionOrBlockList {
       else if (unit instanceof Block)
         this.type |= PURE_BLOCK;
 
+
+      unit.setPreviousNode(getLast());
+      getLast().setNextNode(unit);
       content.add(unit);
+      unit.setDomain(this);
       return this;
   }
 
   public ExpressionOrBlockList combine(ExpressionOrBlockList t){
 
-      if (t == EmptyInstance)
-        return this;
-
-      if (this == EmptyInstance)
-        return t;
-
-      type = t.type | type;
-      content.addAll(t.content);
+    if (t.isEmpty())
       return this;
+
+    if (this.isEmpty())
+      return t;
+
+    type = t.type | type;
+
+    t.getHead().setPreviousNode(getLast());
+    getLast().setNextNode(t.getHead());
+    content.addAll(t.content);
+    for (ExpressionOrBlock e : t.getContent()){
+      e.setDomain(this);
+    }
+    return this;
   }
+
+
+  public ExpressionOrBlock getLast(){
+    if (isEmpty())
+      return null;
+    else
+      return content.get(content.size() - 1);
+  }
+
+  public ExpressionOrBlock getHead(){
+    if (isEmpty())
+      return null;
+    else return content.get(0);
+  }
+
 
 
    public boolean isOneExp(){
@@ -116,5 +138,34 @@ public class ExpressionOrBlockList {
       sb.append('\n');
     }
     return sb.toString();
+  }
+
+  public List<ExpressionOrBlock> getContent() {
+    return content;
+  }
+
+  public void setOwner(Block owner) {
+    this.owner = owner;
+  }
+
+  public ExpressionOrBlock getOwner() {
+    return owner;
+  }
+
+  public int size(){
+    if (isEmpty())
+      return 0;
+    else
+      return content.size();
+  }
+
+  public ExpressionOrBlock get(int i){
+
+    if (isEmpty())
+      return null;
+    if (i >= size() || i < 0){
+      return null;
+    }
+    return content.get(i);
   }
 }

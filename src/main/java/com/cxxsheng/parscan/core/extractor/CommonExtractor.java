@@ -386,17 +386,13 @@ public class CommonExtractor {
     //variableDeclarators
     //    : variableDeclarator (',' variableDeclarator)*
     //    ;
-    public static List<ExpressionOrBlock> parseVariableDeclarators(JavaParser.VariableDeclaratorsContext ctx) {
+    public static ExpressionOrBlockList parseVariableDeclarators(JavaParser.VariableDeclaratorsContext ctx) {
 
-      List<ExpressionOrBlock> expressions = null;
+      ExpressionOrBlockList ret = ExpressionOrBlockList.InitEmptyInstance();
       //multi variables init like
       // int a,b,c = 1;
       List<JavaParser.VariableDeclaratorContext> variableDeclaratorContexts = ctx.variableDeclarator();
       for (JavaParser.VariableDeclaratorContext variableDeclaratorContext : variableDeclaratorContexts) {
-
-        if (expressions == null){
-          expressions = new ArrayList<>();
-        }
 
         String name = variableDeclaratorContext.variableDeclaratorId().IDENTIFIER().getText();
         Symbol symbol = parseIDENTIFIER(name);
@@ -404,17 +400,16 @@ public class CommonExtractor {
         if (vInitializerContext != null) {
           JavaParser.ArrayInitializerContext arrayInit = vInitializerContext.arrayInitializer();
           if (arrayInit != null)
-            expressions.add(new Expression(symbol, new ArrayInitSymbol(arrayInit.getText()), Operator.AS));
+            ret = ret.addOne(new Expression(symbol, new ArrayInitSymbol(arrayInit.getText()), Operator.AS));
 
           JavaParser.ExpressionContext e = vInitializerContext.expression();//expression
           if (e != null)
-            expressions.add(new Expression(symbol, parseExpression(e), Operator.AS));
+            ret = ret.addOne(new Expression(symbol, parseExpression(e), Operator.AS));
         }else {
-          expressions.add(symbol.toExp());
+            ret = ret.addOne(symbol.toExp());
         }
       }
-
-      return expressions;
+      return ret;
     }
 
 }

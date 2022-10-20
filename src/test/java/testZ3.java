@@ -28,6 +28,6 @@ public class testZ3 {
     System.out.println(arrayExpr.getSort());
 
     int a = 0;
-     a^=3;
+     a ^= 3;
   }
 }
