@@ -3,8 +3,6 @@ package com.cxxsheng.parscan.core.extractor;
 import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
-import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.ForBlock;
@@ -12,14 +10,8 @@ import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
 import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.JavaType;
-import com.cxxsheng.parscan.core.data.unit.Primitive;
-import com.cxxsheng.parscan.core.data.unit.Operator;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.*;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.cxxsheng.parscan.core.extractor.CommonExtractor.*;
@@ -109,6 +101,7 @@ public class JavaMethodBodyTreeExtractor {
                 //here may have some problem
                 LOG.info("Have an assert at " + Coordinate.createFromCtx(statement));
                 Expression e = parseExpression(statement.expression(0));
+
                 return e.wrapToList();
           }
 

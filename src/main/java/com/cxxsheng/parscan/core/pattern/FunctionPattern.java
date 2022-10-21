@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Pattern {
+public class FunctionPattern {
 
 
   private final String patternType;
   private final Map<String, String> v;
 
-  private static List<Pattern> patterns = new ArrayList<>();
+  private static List<FunctionPattern> patterns = new ArrayList<>();
 
 
   public String getPatternType() {
@@ -27,15 +27,25 @@ public class Pattern {
     return v;
   }
 
-  public static List<Pattern> getPatterns() {
+  public static List<FunctionPattern> getPatterns() {
     return patterns;
   }
 
-  private static void addPattern(Pattern pattern){
+  private static void addPattern(FunctionPattern pattern){
     patterns.add(pattern);
   }
 
-  private Pattern(String patternType, Map<String, String> v){
+  public static final int NO_PAUSE = 0;
+
+  public static final int PAUSE_AT_FUNC = 1;
+
+  public static final int PAUSE_AT_CONDITION = 2;
+
+  private static int PAUSE_AT = NO_PAUSE;
+
+  private static boolean isInit = false;
+
+  private FunctionPattern(String patternType, Map<String, String> v){
     this.patternType = patternType;
     this.v = v;
   }
@@ -44,9 +54,14 @@ public class Pattern {
   public static void initFromString(String str){
 
     JSONObject jb = JSONObject.parseObject(str);
-    if(jb.containsKey("parscan")){
-      handleParscan(jb.getJSONArray("parscan"));
+    if(jb.containsKey("trace")){
+      handleParscan(jb.getJSONArray("trace"));
     }
+    String pauseAt = jb.getString("pauseAt");
+    if ("callFunc".equals(pauseAt)){
+      PAUSE_AT &= PAUSE_AT_FUNC;
+    }
+    isInit = true;
   }
 
   private static void handleParscan(JSONArray ja) {
@@ -60,7 +75,7 @@ public class Pattern {
           for (Map.Entry<String, Object> entry : obj.entrySet()) {
               map.put(entry.getKey(), entry.getValue().toString());
           }
-          Pattern p = new Pattern(type, map);
+          FunctionPattern p = new FunctionPattern(type, map);
           addPattern(p);
         }
     }
@@ -74,4 +89,9 @@ public class Pattern {
     initFromString(json);
 
   }
+
+  public static boolean isInit(){
+      return isInit;
+  }
+
 }

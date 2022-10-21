@@ -1,30 +1,32 @@
 package com.cxxsheng.parscan.core.iterator;
 
-import com.cxxsheng.parscan.antlr.exception.JavaScanException;
+import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
+import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
+
 import com.cxxsheng.parscan.core.data.Block;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
+import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
-import com.cxxsheng.parscan.core.pattern.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
-
-import static com.cxxsheng.parscan.core.data.Statement.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ASTIterator {
 
-  private final List<Pattern> pattern;
 
   private final JavaClass javaClass;
+
+  public final FunctionImp imp;
 
   public final ExpressionOrBlockList content;
 
@@ -32,12 +34,18 @@ public class ASTIterator {
 
   private Stack<Integer> indexStack;
 
+  private List<String> traceList;
 
 
-  public ASTIterator(JavaClass javaClass, ExpressionOrBlockList content) {
-    this.content = content;
+  private void initTraceList(){
+
+  }
+
+
+  public ASTIterator(JavaClass javaClass, FunctionImp functionImp) {
+    this.imp = functionImp;
+    this.content = functionImp.getBody();
     this.javaClass = javaClass;
-    pattern = Pattern.getPatterns();
     indexStack = new Stack<>();
     indexStack.push(0);
   }
@@ -45,7 +53,7 @@ public class ASTIterator {
 
   //fixme must use it before it starts
   private boolean isReady(){
-    return pattern != null && pattern.size() > 0;
+      return FunctionPattern.isInit();
   }
 
 
@@ -77,7 +85,7 @@ public class ASTIterator {
     if (e.hasRight())
        return handleExpression(e.getR());
 
-    throw new JavaScanException("unreachable expression");
+    throw new ASTParsingException("unreachable expression");
   }
 
 
@@ -97,9 +105,10 @@ public class ASTIterator {
 
   }
 
+  //stack handle functions
   private void updateIndex(int i){
     int  len = indexStack.size();
-    modifyStackByIndex(len-1, i);
+    modifyStackByIndex(len - 1, i);
   }
 
   private void selfAddIndex(){
@@ -196,7 +205,7 @@ public class ASTIterator {
             selfAddIndex();
         }
         else {
-          throw new JavaScanException("unhandeld type");
+          throw new ASTParsingException("unhandled type");
         }
 
 
@@ -228,11 +237,12 @@ public class ASTIterator {
 
 
   public boolean nextStage(){
-    return false;
+    continueToTaint();
+    return hasNextStage();
   }
 
   public boolean hasNextStage(){
-    return false;
+    return !indexStack.empty();
   }
 
 

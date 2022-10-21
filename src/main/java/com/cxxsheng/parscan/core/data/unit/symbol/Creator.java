@@ -2,7 +2,6 @@ package com.cxxsheng.parscan.core.data.unit.symbol;
 
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
-import com.cxxsheng.parscan.core.data.unit.Primitive;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 public class Creator extends Symbol {

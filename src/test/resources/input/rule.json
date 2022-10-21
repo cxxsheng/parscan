@@ -1,16 +1,12 @@
 {
-  "parscan":[
+  "trace":[
     {
-      "type": "param",
-      "method": "createFromParcel",
-      "params": ["Parcel"],
-      "index": "0"
-    },
-    {
-      "type": "param",
-      "method": "writeToParcel",
-      "params": ["Parcel", "int"],
+      "type": "methodParam",
       "index": "0"
     }
+  ],
+  "pauseAt": [
+    "callFunc"
   ]
+
 }

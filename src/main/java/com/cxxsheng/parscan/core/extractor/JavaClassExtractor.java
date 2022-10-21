@@ -1,6 +1,10 @@
 package com.cxxsheng.parscan.core.extractor;
 
-import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseJavaType;
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseJavaTypeOrVoid;
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseParamListFromFormalParameterList;
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseVariableDeclarators;
+
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
@@ -15,8 +19,6 @@ import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cxxsheng.parscan.core.extractor.CommonExtractor.*;
 
 public class JavaClassExtractor {
 

@@ -4,7 +4,6 @@ import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.Utils;
-import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;

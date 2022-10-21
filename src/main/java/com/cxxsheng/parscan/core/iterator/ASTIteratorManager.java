@@ -1,8 +1,6 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import javafx.util.Pair;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ASTIteratorManager {
   private static Pair<ASTIterator,ASTIterator> itPair;

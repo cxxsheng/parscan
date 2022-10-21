@@ -2,8 +2,6 @@ package com.cxxsheng.parscan.core.data.unit;
 
 
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
-import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
-import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 
 public class Expression extends ExpressionOrBlock {
    private final Symbol symbol;

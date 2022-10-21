@@ -1,14 +1,10 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
-import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
-import sun.plugin.cache.JarCacheUtil;
 
-import javax.swing.*;
 import java.util.List;
 
 public class CallFunc extends Symbol {

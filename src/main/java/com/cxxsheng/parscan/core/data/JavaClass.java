@@ -1,12 +1,8 @@
 package com.cxxsheng.parscan.core.data;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class JavaClass {
 

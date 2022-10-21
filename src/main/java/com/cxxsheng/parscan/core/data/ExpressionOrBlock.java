@@ -1,9 +1,5 @@
 package com.cxxsheng.parscan.core.data;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import java.util.ArrayList;
-import java.util.List;
-
 //wrap exp and block to construct tree
 public abstract class ExpressionOrBlock {
 

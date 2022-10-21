@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.AntlrCore;
+import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,15 +16,17 @@ class ASTIteratorTest {
     void continueToTaint() {
 
 
-      Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
-      AntlrCore core = new AntlrCore(cp);
       try {
+        FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
+        assertTrue(FunctionPattern.isInit());
+        Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
+        AntlrCore core = new AntlrCore(cp);
         core.parse();
-        ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc().getBody());
+        ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc());
         iterator.continueToTaint();
       }
       catch (IOException e) {
-        assertTrue(true, e.getMessage());
+
       }
     }
 

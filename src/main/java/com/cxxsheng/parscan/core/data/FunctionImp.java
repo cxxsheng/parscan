@@ -5,7 +5,6 @@ import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import java.util.List;
-import java.util.Objects;
 
 public class FunctionImp {
 
