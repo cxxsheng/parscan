@@ -11,9 +11,12 @@ import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
@@ -34,11 +37,23 @@ public class ASTIterator {
 
   private Stack<Integer> indexStack;
 
-  private List<String> traceList;
+  private final List<String> traceList;
 
 
   private void initTraceList(){
+    List<FunctionPattern> ps = FunctionPattern.getPatterns();
+    for (FunctionPattern p : ps){
+      String type = p.getPatternType();
+      if ("methodParam".equals(type)){
+          Integer index = p.getPatternInt("index");
+          if (index!=null && index >=0 ){
+            Parameter param = imp.getFunDec().getParams().get(index);
+            traceList.add(param.getName());
+          }
+      }else if ("variableName".equals(type)){
 
+      }
+    }
   }
 
 
@@ -46,6 +61,8 @@ public class ASTIterator {
     this.imp = functionImp;
     this.content = functionImp.getBody();
     this.javaClass = javaClass;
+    traceList = new ArrayList<>();
+    initTraceList();
     indexStack = new Stack<>();
     indexStack.push(0);
   }
@@ -57,35 +74,51 @@ public class ASTIterator {
   }
 
 
-
-
-  private boolean handleExpression(Expression e){
-
-
-    if (e.isTerminal()){
-      Symbol s = e.getSymbol();
-      if (s instanceof PointSymbol){
-            if (((PointSymbol)s).getExp().toString().contains("source")){
-              return false;
-            }
+  public boolean checkTraceList(String name){
+    for (String trace : traceList){
+      if (trace.equals(name)){
+        return true;
       }
-
-
-      return false;
-
     }
+    return false;
+  }
 
-    if (e.isAssign()){
+
+  /**
+   * @param e the expression we need to handle
+   * @return true when we hit some traceList so we block
+   * the iterator and wait to evaluate the state between
+   * two functions.
+   */
+  private boolean handleExpression(Expression e){
+    if (e.isTerminal()){
+        Symbol s = e.getSymbol();
+        if (s instanceof PointSymbol){
+              Expression exp = ((PointSymbol)s).getExp();
+
+              //fixme tommorow
+              return handleExpression(exp);
+        }else if (s instanceof CallFunc){
+              boolean result = false;
+              for(Expression ps : ((CallFunc)s).getParams()){
+                  result |= handleExpression(ps);
+              }
+              return result;
+        }
+
         return false;
+    }else{
+
+        boolean left = false;
+        boolean right  = false;
+        if(e.hasLeft())
+          left = handleExpression(e.getL());
+        if (e.hasRight())
+          right = handleExpression(e.getR());
+
+        return left | right;
     }
 
-
-    if(e.hasLeft())
-       return handleExpression(e.getL());
-    if (e.hasRight())
-       return handleExpression(e.getR());
-
-    throw new ASTParsingException("unreachable expression");
   }
 
 
@@ -181,7 +214,7 @@ public class ASTIterator {
 
         else if (cur instanceof Expression){
 
-          LOG.info("handling statement "+ cur.toString());
+          LOG.info("handling expression "+ cur.toString());
           boolean hitTaint = handleExpression((Expression)cur);
           selfAddIndex();
 

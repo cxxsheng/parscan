@@ -2,19 +2,17 @@ package com.cxxsheng.parscan.core.pattern;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import org.apache.commons.io.FileUtils;
 
 public class FunctionPattern {
 
 
   private final String patternType;
-  private final Map<String, String> v;
+  private final JSONObject v;
 
   private static List<FunctionPattern> patterns = new ArrayList<>();
 
@@ -23,9 +21,7 @@ public class FunctionPattern {
     return patternType;
   }
 
-  public Map<String, String> getV() {
-    return v;
-  }
+
 
   public static List<FunctionPattern> getPatterns() {
     return patterns;
@@ -45,7 +41,7 @@ public class FunctionPattern {
 
   private static boolean isInit = false;
 
-  private FunctionPattern(String patternType, Map<String, String> v){
+  private FunctionPattern(String patternType, JSONObject v){
     this.patternType = patternType;
     this.v = v;
   }
@@ -71,11 +67,8 @@ public class FunctionPattern {
         String type = obj.getString("type");
         if (type != null){
 
-          Map<String,String> map = new HashMap<>();
-          for (Map.Entry<String, Object> entry : obj.entrySet()) {
-              map.put(entry.getKey(), entry.getValue().toString());
-          }
-          FunctionPattern p = new FunctionPattern(type, map);
+
+          FunctionPattern p = new FunctionPattern(type, obj);
           addPattern(p);
         }
     }
@@ -94,4 +87,15 @@ public class FunctionPattern {
       return isInit;
   }
 
+  public String getPatternString(String name){
+    return v.getString(name);
+  }
+
+  public Integer getPatternInt(String name){
+    return v.getInteger(name);
+  }
+
+  public JSONObject getV() {
+    return v;
+  }
 }

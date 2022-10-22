@@ -1,9 +1,7 @@
 package com.cxxsheng.parscan.core.pattern;
 
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
-import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class PatternTest {
 
@@ -11,17 +9,12 @@ class PatternTest {
     void compileFromFile() {
 
       try {
-        Pattern.initFromFile("./src/test/resources/input/rule.json");
+        FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
         StringBuilder sb = new StringBuilder();
-        for (Pattern p : Pattern.getPatterns()){
+        for (FunctionPattern p : FunctionPattern.getPatterns()){
 
           sb.append(p.getPatternType()).append(": \n");
-          Map<String,String> vv = p.getV();
-          for (String key : vv.keySet()){
-            String vvvv = vv.get(key);
-            sb.append(key).append(": ").append(vvvv).append("\n");
-          }
-
+          sb.append("index: ").append(p.getPatternInt("index")).append('\n');
           sb.append("\n");
         }
         System.out.println(sb.toString());
@@ -35,17 +28,13 @@ class PatternTest {
   void test() {
 
     try {
-      Pattern.initFromFile("1");
+      FunctionPattern.initFromFile("1");
       StringBuilder sb = new StringBuilder();
-      for (Pattern p : Pattern.getPatterns()){
+
+      for (FunctionPattern p : FunctionPattern.getPatterns()){
 
         sb.append(p.getPatternType()).append(": \n");
-        Map<String,String> vv = p.getV();
-        for (String key : vv.keySet()){
-          String vvvv = vv.get(key);
-          sb.append(key).append(": ").append(vvvv).append("\n");
-        }
-
+        sb.append("index: ").append(p.getPatternInt("index")).append('\n');
         sb.append("\n");
       }
       System.out.println(sb.toString());

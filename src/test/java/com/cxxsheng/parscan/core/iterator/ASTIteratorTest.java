@@ -1,14 +1,13 @@
 package com.cxxsheng.parscan.core.iterator;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class ASTIteratorTest {
 
@@ -23,7 +22,11 @@ class ASTIteratorTest {
         AntlrCore core = new AntlrCore(cp);
         core.parse();
         ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc());
-        iterator.continueToTaint();
+
+        while (iterator.hasNextStage()){
+          System.out.println("nextStage");
+          iterator.continueToTaint();
+        }
       }
       catch (IOException e) {
 

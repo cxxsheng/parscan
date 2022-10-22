@@ -13,7 +13,7 @@ public class PointSymbol extends Symbol {
         this.v = v;
     }
 
-    boolean isFunc(){
+    public boolean isFunc(){
         return v instanceof CallFunc;
     }
 
@@ -22,17 +22,17 @@ public class PointSymbol extends Symbol {
       return false;
     }
 
-  @Override
-  public String toString() {
+    @Override
+     public String toString() {
 
-    return ""+ exp.toString() + "." +v.toString();
-  }
+        return ""+ exp.toString() + "." +v.toString();
+    }
 
-  public Expression getExp() {
+    public Expression getExp() {
     return exp;
   }
 
-  public Symbol getV() {
+    public Symbol getV() {
     return v;
   }
 }

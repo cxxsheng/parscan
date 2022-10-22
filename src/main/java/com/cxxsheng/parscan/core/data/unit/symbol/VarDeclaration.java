@@ -4,6 +4,8 @@ import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 
+
+//name to value map
 public class VarDeclaration extends Symbol {
 
 
