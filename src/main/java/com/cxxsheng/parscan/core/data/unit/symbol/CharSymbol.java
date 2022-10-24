@@ -15,6 +15,11 @@ public class CharSymbol extends Symbol {
       return true;
     }
 
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
+
   @Override
     public boolean equals(Object o) {
       if (this == o) return true;
@@ -28,8 +33,9 @@ public class CharSymbol extends Symbol {
       return Objects.hash(value);
     }
 
-  @Override
-  public String toString() {
-    return ""+value;
-  }
+
+    @Override
+    public String toString() {
+      return ""+value;
+    }
 }

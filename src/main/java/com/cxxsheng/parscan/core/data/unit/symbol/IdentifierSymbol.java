@@ -17,6 +17,11 @@ public class IdentifierSymbol extends Symbol {
       return false;
     }
 
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
+
   @Override
     public boolean equals(Object o) {
       if (this == o) return true;
@@ -30,8 +35,8 @@ public class IdentifierSymbol extends Symbol {
       return Objects.hash(value);
     }
 
-  @Override
-  public String toString() {
-    return value;
-  }
+    @Override
+    public String toString() {
+      return value;
+    }
 }

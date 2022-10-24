@@ -6,5 +6,7 @@ public abstract class Symbol {
         return new Expression(this);
     }
 
-    abstract public boolean isConstant();
+   abstract public boolean isConstant();
+
+   abstract public boolean isTerminal();
 }

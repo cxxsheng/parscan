@@ -49,5 +49,8 @@ public class VarDeclaration extends Symbol {
     return value;
   }
 
-
+  @Override
+  public boolean isTerminal() {
+    return false;
+  }
 }

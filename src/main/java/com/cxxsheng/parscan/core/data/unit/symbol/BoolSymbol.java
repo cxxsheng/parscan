@@ -29,8 +29,13 @@ public class BoolSymbol extends Symbol {
       return Objects.hash(value);
     }
 
-  @Override
-  public String toString() {
-    return ""+value;
-  }
+    @Override
+    public String toString() {
+      return ""+value;
+    }
+
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
 }

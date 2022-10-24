@@ -28,7 +28,12 @@ public class PointSymbol extends Symbol {
         return ""+ exp.toString() + "." +v.toString();
     }
 
-    public Expression getExp() {
+    @Override
+    public boolean isTerminal() {
+      return false;
+    }
+
+  public Expression getExp() {
     return exp;
   }
 

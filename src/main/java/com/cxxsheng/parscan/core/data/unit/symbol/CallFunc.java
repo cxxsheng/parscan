@@ -49,6 +49,11 @@ public class CallFunc extends Symbol {
     }
 
     @Override
+    public boolean isTerminal() {
+      return false;
+    }
+
+  @Override
     public boolean equals(Object o) {
         return false;
     }
@@ -81,7 +86,7 @@ public class CallFunc extends Symbol {
       this.extraClass = extraClass;
     }
 
-  public JavaClass extraClass() {
+    public JavaClass extraClass() {
     return extraClass;
   }
 }

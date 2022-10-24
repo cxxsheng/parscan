@@ -53,8 +53,10 @@ class JavaExample
     }
 
     /* declare the i-th inverse of f: finv */
+
     Sort finv_domain = f.getRange();
     Sort finv_range = domain[i];
+    //f_fresh 参数是f第i个参数，返回值是f的返回值
     FuncDecl finv = ctx.mkFuncDecl("f_fresh", finv_domain, finv_range);
 
     /* allocate temporary arrays */

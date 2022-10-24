@@ -12,11 +12,16 @@ public class FloatSymbol extends Symbol {
 
     @Override
     public final boolean isConstant() {
+        return true;
+      }
+
+    @Override
+    public boolean isTerminal() {
       return true;
     }
 
     @Override
-    public String toString() {
-      return ""+value;
-    }
+      public String toString() {
+        return ""+value;
+      }
 }

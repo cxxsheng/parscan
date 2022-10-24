@@ -32,8 +32,13 @@ public class ArrayInitSymbol extends Symbol {
       return true;
     }
 
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
+
   @Override
-  public String toString() {
-    return value;
-  }
+    public String toString() {
+      return value;
+    }
 }

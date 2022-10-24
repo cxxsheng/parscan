@@ -90,32 +90,70 @@ public class ASTIterator {
    * the iterator and wait to evaluate the state between
    * two functions.
    */
+
   private boolean handleExpression(Expression e){
     if (e.isTerminal()){
         Symbol s = e.getSymbol();
         if (s instanceof PointSymbol){
+
+              boolean prefixExp = false;
+              boolean surfixSymbol = false;
               Expression exp = ((PointSymbol)s).getExp();
-
-              //fixme tommorow
-              return handleExpression(exp);
-        }else if (s instanceof CallFunc){
-              boolean result = false;
-              for(Expression ps : ((CallFunc)s).getParams()){
-                  result |= handleExpression(ps);
+              if (!exp.isTerminalSymbol()){
+                    // this expression can be decomposed
+                prefixExp = handleExpression(e);
+              }else {
+                    //only has one id
+                    Symbol terminal_sym = exp.getSymbol();
+                    prefixExp = checkTraceList(terminal_sym.toString());
               }
-              return result;
-        }
 
+
+              //this is a function
+              if (((PointSymbol)s).isFunc()){
+
+                  //handling params first
+                  CallFunc callFunc = (CallFunc)((PointSymbol)s).getV();
+                  List<Expression> params = callFunc.getParams();
+                  if (params!=null)
+                    for(Expression p : callFunc.getParams()){
+                      if (!p.isTerminalSymbol())
+                        surfixSymbol |= handleExpression(p);
+                    }
+                  if (prefixExp){
+                      //prefix is tainted
+                      LOG.info(s.toString());
+                  }
+
+              }else {
+                   //identifier
+
+              }
+
+              return prefixExp | surfixSymbol;
+        }
+        else if (s instanceof CallFunc){
+          boolean ret = false;
+          List<Expression> params = ((CallFunc)s).getParams();
+          if (params != null)
+            for(Expression p : ((CallFunc)s).getParams()){
+              ret |= handleExpression(p);
+            }
+          return ret;
+        }
         return false;
     }else{
 
         boolean left = false;
         boolean right  = false;
-        if(e.hasLeft())
-          left = handleExpression(e.getL());
-        if (e.hasRight())
-          right = handleExpression(e.getR());
 
+        if (e.leftCanDecompose())
+        {
+           left = handleExpression(e.getL());
+        }
+        if (e.rightCanDecompose()){
+           right = handleExpression(e.getR());
+        }
         return left | right;
     }
 

@@ -35,10 +35,16 @@ public class ConditionalExpression extends Symbol {
       return false;
     }
 
+
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
+
   @Override
-  public String toString() {
-    return ""+ cond +
-           "?" + left +
-           ":" + right;
-  }
+    public String toString() {
+      return ""+ cond +
+             "?" + left +
+             ":" + right;
+    }
 }

@@ -75,13 +75,9 @@ public class Expression extends ExpressionOrBlock {
       return op.isAssign();
     }
 
-
-
-
     public boolean isTerminal(){
-        return symbol != null;
+        return  symbol != null;
     }
-
 
     public boolean isUnitary(){
         return isUnitary;
@@ -109,6 +105,32 @@ public class Expression extends ExpressionOrBlock {
         return left != null;
     }
 
+    public boolean leftCanDecompose(){
+        if (hasLeft()){
+            if (left.isTerminal()) // it is symbol
+            {
+              Symbol symbol = left.symbol;
+              return !symbol.isTerminal(); // some symbol can be decomposed
+            }
+        }else
+          return true;
+        return false;
+    }
+
+    public boolean rightCanDecompose(){
+      if (hasRight()){
+        if (right.isTerminal())
+        {
+          Symbol symbol = right.symbol; // symbol also can be decomposed
+          return !symbol.isTerminal();
+        }else
+          return true;
+      }
+      return false;
+    }
 
 
+    public boolean isTerminalSymbol(){
+     return isTerminal() && symbol.isTerminal();
+  }
 }

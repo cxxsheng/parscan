@@ -19,10 +19,15 @@ public class ArrayGetSymbol extends Symbol {
       return false;
     }
 
-  @Override
-  public String toString() {
-    return array +
-           "[" + index +
-           ']';
-  }
+    @Override
+    public boolean isTerminal() {
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return array +
+             "[" + index +
+             ']';
+    }
 }

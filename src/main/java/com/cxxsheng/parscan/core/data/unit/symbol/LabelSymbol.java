@@ -13,4 +13,8 @@ public class LabelSymbol extends Symbol {
 
     private final String name;
 
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
 }

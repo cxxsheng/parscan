@@ -17,12 +17,17 @@ public class StringSymbol extends Symbol {
       return true;
     }
 
-  @Override
+    @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       StringSymbol that = (StringSymbol)o;
       return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public boolean isTerminal() {
+      return true;
     }
 
     @Override

@@ -16,9 +16,15 @@ public class IntSymbol extends Symbol {
       return true;
     }
 
-  @Override
-  public String toString() {
 
-    return ""+value;
-  }
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
+
+  @Override
+    public String toString() {
+
+      return ""+value;
+    }
 }

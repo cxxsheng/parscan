@@ -20,6 +20,11 @@ public class Creator extends Symbol {
     }
 
     @Override
+    public boolean isTerminal() {
+      return false;
+    }
+
+  @Override
     public String toString() {
 
       return "new " + javaType.toString() + "["+size.toString()+"]";

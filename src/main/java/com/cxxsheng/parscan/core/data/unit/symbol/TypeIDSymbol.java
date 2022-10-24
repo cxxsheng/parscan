@@ -18,9 +18,13 @@ public class TypeIDSymbol extends Symbol {
     }
 
 
-      @Override
-      public boolean isConstant() {
+    @Override
+    public boolean isConstant() {
         return false;
       }
 
+    @Override
+    public boolean isTerminal() {
+      return true;
+    }
 }
