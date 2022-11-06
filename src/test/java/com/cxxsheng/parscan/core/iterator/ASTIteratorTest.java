@@ -13,7 +13,7 @@ class ASTIteratorTest {
 
     @Test
     void continueToTaint() {
-
+      FunctionReaderTest.openWithAntlr();
 
       try {
         FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
@@ -21,12 +21,23 @@ class ASTIteratorTest {
         Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
         AntlrCore core = new AntlrCore(cp);
         core.parse();
-        ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc());
+        ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
+        ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc());
 
         while (iterator.hasNextStage()){
           System.out.println("nextStage");
           iterator.continueToTaint();
         }
+
+
+        while (iterator1.hasNextStage()){
+          System.out.println("nextStage");
+          iterator1.continueToTaint();
+        }
+
+
+
+
       }
       catch (IOException e) {
 

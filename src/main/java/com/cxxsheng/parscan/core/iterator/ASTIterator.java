@@ -2,7 +2,10 @@ package com.cxxsheng.parscan.core.iterator;
 
 import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
 import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
+import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_POINT_SYMBOL;
+import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_UNIVERSAL;
 
+import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.data.Block;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
@@ -14,7 +17,6 @@ import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
-import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -31,7 +33,7 @@ public class ASTIterator {
 
   public final FunctionImp imp;
 
-  public final ExpressionOrBlockList content;
+  public final ExpressionOrBlockList methodBody;
 
   private final static Logger LOG = LoggerFactory.getLogger(ASTIterator.class);
 
@@ -39,6 +41,13 @@ public class ASTIterator {
 
   private final List<String> traceList;
 
+  private final Tree dataTree = new Tree();
+
+  private final ExpressionHandler H;
+
+  private final ExpressionHandler condH;
+
+  private Condition current_condition = null;
 
   private void initTraceList(){
     List<FunctionPattern> ps = FunctionPattern.getPatterns();
@@ -46,7 +55,7 @@ public class ASTIterator {
       String type = p.getPatternType();
       if ("methodParam".equals(type)){
           Integer index = p.getPatternInt("index");
-          if (index!=null && index >=0 ){
+          if (index != null && index >= 0 ){
             Parameter param = imp.getFunDec().getParams().get(index);
             traceList.add(param.getName());
           }
@@ -58,13 +67,77 @@ public class ASTIterator {
 
 
   public ASTIterator(JavaClass javaClass, FunctionImp functionImp) {
-    this.imp = functionImp;
-    this.content = functionImp.getBody();
-    this.javaClass = javaClass;
-    traceList = new ArrayList<>();
-    initTraceList();
-    indexStack = new Stack<>();
-    indexStack.push(0);
+      this.imp = functionImp;
+      this.methodBody = functionImp.getBody();
+      this.javaClass = javaClass;
+      traceList = new ArrayList<>();
+      initTraceList();
+      indexStack = new Stack<>();
+      indexStack.push(0);
+
+
+      H = new ExpressionHandler();
+      H.addCallback(new ExpressionHandlerCallback() {
+        @Override
+        public void handleSymbol(Symbol s, boolean isHit) {
+          if (isHit){
+            //prefix is tainted
+            if(!(s instanceof CallFunc)){
+              throw new ASTParsingException("Cannot handle such symbol " + s + "and expect CallFunc.");
+            }
+            ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s);
+            //ParcelDataNode node = ParcelDataNode
+            if (indexStack.size()==1){
+              dataTree.addNewNode(Condition.TRUE, node);
+            }
+            else {
+              dataTree.addNewNode(constructCondition(), node);
+            }
+            LOG.info("construct "+ node.toString());
+          }
+        }
+        @Override
+        public void handleExpression(Expression e, boolean isHit) {
+        }
+
+        @Override
+        public boolean broadcastHit(Symbol terminalSymbol) {
+          if (!terminalSymbol.isTerminal())
+            throw new ASTParsingException("Cannot handle such symbol " + terminalSymbol + "and expect a terminal symbol.");
+
+          return checkTraceList(terminalSymbol.toString());
+        }
+
+        @Override
+        public String getTag() {
+          return TAG_POINT_SYMBOL;
+        }
+      });
+
+        condH = new ExpressionHandler();
+        condH.addCallback(new ExpressionHandlerCallback() {
+        @Override
+        public void handleSymbol(Symbol s, boolean isHit) {
+
+        }
+
+        @Override
+        public void handleExpression(Expression e, boolean isHit) {
+
+        }
+
+        @Override
+        public boolean broadcastHit(Symbol terminalSymbol) {
+          return false;
+        }
+
+        @Override
+        public String getTag() {
+          return TAG_UNIVERSAL;
+        }
+      });
+
+
   }
 
 
@@ -83,83 +156,27 @@ public class ASTIterator {
     return false;
   }
 
-
-  /**
-   * @param e the expression we need to handle
-   * @return true when we hit some traceList so we block
-   * the iterator and wait to evaluate the state between
-   * two functions.
-   */
-
-  private boolean handleExpression(Expression e){
-    if (e.isTerminal()){
-        Symbol s = e.getSymbol();
-        if (s instanceof PointSymbol){
-
-              boolean prefixExp = false;
-              boolean surfixSymbol = false;
-              Expression exp = ((PointSymbol)s).getExp();
-              if (!exp.isTerminalSymbol()){
-                    // this expression can be decomposed
-                prefixExp = handleExpression(e);
-              }else {
-                    //only has one id
-                    Symbol terminal_sym = exp.getSymbol();
-                    prefixExp = checkTraceList(terminal_sym.toString());
-              }
-
-
-              //this is a function
-              if (((PointSymbol)s).isFunc()){
-
-                  //handling params first
-                  CallFunc callFunc = (CallFunc)((PointSymbol)s).getV();
-                  List<Expression> params = callFunc.getParams();
-                  if (params!=null)
-                    for(Expression p : callFunc.getParams()){
-                      if (!p.isTerminalSymbol())
-                        surfixSymbol |= handleExpression(p);
-                    }
-                  if (prefixExp){
-                      //prefix is tainted
-                      LOG.info(s.toString());
-                  }
-
-              }else {
-                   //identifier
-
-              }
-
-              return prefixExp | surfixSymbol;
-        }
-        else if (s instanceof CallFunc){
-          boolean ret = false;
-          List<Expression> params = ((CallFunc)s).getParams();
-          if (params != null)
-            for(Expression p : ((CallFunc)s).getParams()){
-              ret |= handleExpression(p);
-            }
-          return ret;
-        }
-        return false;
-    }else{
-
-        boolean left = false;
-        boolean right  = false;
-
-        if (e.leftCanDecompose())
-        {
-           left = handleExpression(e.getL());
-        }
-        if (e.rightCanDecompose()){
-           right = handleExpression(e.getR());
-        }
-        return left | right;
-    }
-
+  private Condition constructConditionByExpression(Expression e){
+      condH.handleExpression(e);
+      if (current_condition == null )
+        throw new ASTParsingException("cannot access condition at " + e);
+      Condition tmp = current_condition;
+      current_condition = null; //Clear it is very important for checking constructCondition sucessful or not
+      return tmp;
   }
 
+  private Condition constructCondition(){
+      int i = indexStack.peek();
+      Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtPoint(indexStack.size()-1);
+      ExpressionOrBlock block = pair.getLeft();
 
+      if (block instanceof ConditionalBlock){
+
+        Expression e = ((ConditionalBlock)block).getBoolExp();
+        return constructConditionByExpression(e);
+      }
+      return Condition.TRUE;
+  }
 
 
   private void handleStatement(Statement e){
@@ -212,38 +229,59 @@ public class ASTIterator {
 
 
 
+  /**
+   * @return index the i-th stack to the current Expression and ExpressionOrBlockList(content) Pair
+   */
+  private Pair<ExpressionOrBlock, ExpressionOrBlockList> indexStackAtPoint(int point){
+    ExpressionOrBlock cur = null;
+    ExpressionOrBlockList curList = methodBody;
+    int size = indexStack.size();
+
+    if (point>0 && point < indexStack.size())
+      size = point;
+
+    for (int i =0  ; i < size; ++i){
+      int index = indexStack.get(i);
+
+      cur = curList.get(index);
+      if (cur instanceof Block){
+
+        if (cur instanceof ConditionalBlock){
+          int condIndex = getCondIndex(++i);
+          if (condIndex == COND_INDEX_IF)
+          {
+            curList = ((ConditionalBlock)cur).getContent();
+          }
+          else if (condIndex == COND_INDEX_ELSE)
+          {
+            curList = ((ConditionalBlock)cur).getElseBlock();
+          }else {
+            curList = ((Block)cur).getContent();
+          }
+          continue;
+        }
+
+        curList = ((Block)cur).getContent();
+      }
+    }
+    return new Pair<>(cur, curList);
+  }
+
+  private Pair<ExpressionOrBlock, ExpressionOrBlockList> indexStackAtCurrentPoint() {
+    return indexStackAtPoint(-1);
+  }
+
+
   public void continueToTaint(){
+
     while (!indexStack.empty()){
 
         System.out.println(indexStack);
 
-        ExpressionOrBlock cur = null;
-        ExpressionOrBlockList curList = content;
+        Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtCurrentPoint();
+        ExpressionOrBlock cur = pair.getLeft();
+        ExpressionOrBlockList curList = pair.getRight();
 
-
-        for (int i =0  ; i < indexStack.size(); ++i){
-            int index = indexStack.get(i);
-
-            cur = curList.get(index);
-            if (cur instanceof Block){
-
-              if (cur instanceof ConditionalBlock){
-                int condIndex = getCondIndex(++i);
-                if (condIndex == COND_INDEX_IF)
-                {
-                  curList = ((ConditionalBlock)cur).getContent();
-                }
-                else if (condIndex == COND_INDEX_ELSE)
-                {
-                  curList = ((ConditionalBlock)cur).getElseBlock();
-                }else {
-                  curList = ((Block)cur).getContent();
-                }
-                continue;
-              }
-              curList = ((Block)cur).getContent();
-            }
-        }
 
         if (cur == null){
           //empty block handle
@@ -251,9 +289,9 @@ public class ASTIterator {
         }
 
         else if (cur instanceof Expression){
-
           LOG.info("handling expression "+ cur.toString());
-          boolean hitTaint = handleExpression((Expression)cur);
+
+          boolean hitTaint = H.handleExpression((Expression)cur);
           selfAddIndex();
 
           if (hitTaint)

@@ -1,5 +1,8 @@
 package com.cxxsheng.parscan.core.extractor;
 
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseExpression;
+import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseVariableDeclarators;
+
 import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
@@ -10,11 +13,8 @@ import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
 import com.cxxsheng.parscan.core.data.unit.Expression;
-import org.apache.log4j.Logger;
-
 import java.util.List;
-
-import static com.cxxsheng.parscan.core.extractor.CommonExtractor.*;
+import org.apache.log4j.Logger;
 
 public class JavaMethodBodyTreeExtractor {
 
@@ -270,8 +270,9 @@ public class JavaMethodBodyTreeExtractor {
        * @return*/
       public ExpressionOrBlockList parseMethodBody(JavaParser.MethodBodyContext methodBodyContext){
           JavaParser.BlockContext block = methodBodyContext.block();
-          ExpressionOrBlockList ret = parseBlock(block);
-          return ret;
+          if (block!=null)
+            return parseBlock(block);
+          return null;
       }
 
 

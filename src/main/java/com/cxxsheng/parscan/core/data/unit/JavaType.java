@@ -108,4 +108,8 @@ public class JavaType {
   public boolean isVoid(){
     return this == VOID;
   }
+
+  public boolean isArray() {
+    return isArray;
+  }
 }

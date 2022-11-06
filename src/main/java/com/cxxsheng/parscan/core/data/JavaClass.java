@@ -13,6 +13,7 @@ public class JavaClass {
   private final List<VarDeclaration> varList = new ArrayList<>();
   private ExpressionOrBlockList staticDomain;
 
+
   public JavaClass(String name, List<String> interfaceName, String superClassName) {
       this.name = name;
       this.interfaceName = interfaceName;
@@ -63,5 +64,9 @@ public class JavaClass {
         return v;
     }
     return null;
+  }
+
+  public List<FunctionImp> getMethods() {
+    return methods;
   }
 }

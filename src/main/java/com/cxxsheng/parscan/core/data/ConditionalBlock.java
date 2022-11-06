@@ -28,7 +28,11 @@ public class ConditionalBlock extends Block {
        }
 
 
-        public ExpressionOrBlockList getElseBlock() {
+      public Expression getBoolExp() {
+        return boolExp;
+      }
+
+      public ExpressionOrBlockList getElseBlock() {
           return elseBlock;
         }
 
