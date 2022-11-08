@@ -38,4 +38,8 @@ public class BoolSymbol extends Symbol {
     public boolean isTerminal() {
       return true;
     }
+
+    public boolean getValue(){
+      return value;
+    }
 }

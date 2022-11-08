@@ -17,4 +17,8 @@ public class LabelSymbol extends Symbol {
     public boolean isTerminal() {
       return true;
     }
+
+  public String getName() {
+    return name;
+  }
 }

@@ -2,7 +2,9 @@ package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tree {
 
@@ -12,6 +14,7 @@ public class Tree {
 
   private final List<Pair<Integer,Integer>> edges;
 
+  private final Map<String, Integer> identifier2TreeNodeIndex = new HashMap();
 
   public Tree(TreeNode root) {
     this();
@@ -21,6 +24,7 @@ public class Tree {
   public Tree() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
+    this.root = ParcelDataNode.initEmptyInstance();
   }
 
   private void setRoot(TreeNode root) {
@@ -35,23 +39,21 @@ public class Tree {
       int ret;
       if (allNodes.size() == 0)
       {
-        setRoot(node);
-
-        ret =  0;
+        throw new ASTParsingException("set root node first");
       }
 
       int index = allNodes.indexOf(node);
 
-      if (index >=0)
+      if (index >= 0)
           ret = index;
       else {
-
           allNodes.add(node);
           node.setTree(this);
           node.setIndexAtTree(allNodes.size() - 1);
           ret = allNodes.size() - 1;
+        identifier2TreeNodeIndex.put(node.getIdentifier(), ret) ;
       }
-      return  ret;
+      return ret;
   }
 
   public int addEdges(int src, int dst){

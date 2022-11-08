@@ -102,55 +102,65 @@ public class ParcelDataNode implements TreeNode {
         this.index = index;
     }
 
-    public static ParcelDataNode parseCallFunc(CallFunc func){
-        int type = 0;
-        String funcName = func.getFuncName();
-        JavaType jType = null;
-        boolean isArray = false;
-        FunctionDeclaration d = FunctionReader.findDeclarationByName(funcName);
-        String attachedSymbolName = null;
-        if (funcName.startsWith("read")){
-          type = FUNC_TYPE_READ;
-          jType = d.getReturnType();
-          //fixme we need to record the return value
-          if (jType.isVoid() && d.hasParameter()){
-            jType = d.getParameterByIndex(0).getType();
-            Expression e = func.getParams().get(0);
-            if (e.isTerminalSymbol()){
-              attachedSymbolName = e.getSymbol().toString();
-            }
-          }
-        }else if (funcName.startsWith("write")){
-          type = FUNC_TYPE_WRITE;
-          if (d.hasParameter()){
-            jType  = d.getParameterByIndex(0).getType();
-            Expression e = func.getParams().get(0);
-            if (e.isTerminalSymbol()){
-              attachedSymbolName = e.getSymbol().toString();
-            }
-          }
-        }else if (funcName.startsWith("create")){
-          type = FUNC_TYPE_CREATE;
-          jType = d.getReturnType();
-        }
-
-        if (jType == null || jType.isVoid()){
-          throw new ASTParsingException("cannot handle this call-func: " + func.toString());
-        }
-        return new ParcelDataNode(attachedSymbolName, jType, type);
-    }
-
-    public boolean isArray(){
-      return jtype.isArray();
+    @Override
+    public boolean isRoot() {
+      return tree.getRoot() == this;
     }
 
     @Override
-    public String toString() {
-      final StringBuffer sb = new StringBuffer("ParcelDataNode{");
-      sb.append("func_type=").append(func_type);
-      sb.append(", jtype=").append(jtype);
-      sb.append(", attachedSymbolName=").append(attachedSymbolName);
-      sb.append('}');
-      return sb.toString();
+    public String getIdentifier() {
+      return attachedSymbolName;
     }
+
+    public static ParcelDataNode parseCallFunc(CallFunc func){
+          int type = 0;
+          String funcName = func.getFuncName();
+          JavaType jType = null;
+          boolean isArray = false;
+          FunctionDeclaration d = FunctionReader.findDeclarationByName(funcName);
+          String attachedSymbolName = null;
+          if (funcName.startsWith("read")){
+            type = FUNC_TYPE_READ;
+            jType = d.getReturnType();
+            //fixme we need to record the return value
+            if (jType.isVoid() && d.hasParameter()){
+              jType = d.getParameterByIndex(0).getType();
+              Expression e = func.getParams().get(0);
+              if (e.isTerminalSymbol()){
+                attachedSymbolName = e.getSymbol().toString();
+              }
+            }
+          }else if (funcName.startsWith("write")){
+            type = FUNC_TYPE_WRITE;
+            if (d.hasParameter()){
+              jType  = d.getParameterByIndex(0).getType();
+              Expression e = func.getParams().get(0);
+              if (e.isTerminalSymbol()){
+                attachedSymbolName = e.getSymbol().toString();
+              }
+            }
+          }else if (funcName.startsWith("create")){
+            type = FUNC_TYPE_CREATE;
+            jType = d.getReturnType();
+          }
+
+          if (jType == null || jType.isVoid()){
+            throw new ASTParsingException("cannot handle this call-func: " + func.toString());
+          }
+          return new ParcelDataNode(attachedSymbolName, jType, type);
+      }
+
+      public boolean isArray(){
+        return jtype.isArray();
+      }
+
+      @Override
+      public String toString() {
+        final StringBuffer sb = new StringBuffer("ParcelDataNode{");
+        sb.append("func_type=").append(func_type);
+        sb.append(", jtype=").append(jtype);
+        sb.append(", attachedSymbolName=").append(attachedSymbolName);
+        sb.append('}');
+        return sb.toString();
+      }
 }

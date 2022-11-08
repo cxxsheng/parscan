@@ -18,6 +18,7 @@ public class ExpressionHandler {
   public static final String TAG_UNIVERSAL = "Universal";
   public static final String TAG_POINT_SYMBOL = "PointSymbol";
 
+
   public ExpressionHandler(){
     callbacks = new ArrayList<>();
   }
@@ -33,6 +34,7 @@ public class ExpressionHandler {
     }
     return null;
   }
+
   /**
    * @param e the expression we need to handle
    * @return true when we hit some traceList so we block
@@ -40,28 +42,28 @@ public class ExpressionHandler {
    * two functions.
    */
 
-  public boolean handleExpression(Expression e){
+  public void handleExpression(Expression e){
     ExpressionHandlerCallback universalCallback = getCallbackByName(TAG_UNIVERSAL);
     if (e.isTerminal()){
       Symbol s = e.getSymbol();
 
       if (universalCallback!=null)
-        universalCallback.handleSymbol(s, false);
+        universalCallback.handleSymbol(s, true);
 
 
       if (s instanceof PointSymbol){
         ExpressionHandlerCallback callback = getCallbackByName(TAG_POINT_SYMBOL);
-        boolean prefixExp = false;
-        boolean surfixSymbol = false;
         Expression exp = ((PointSymbol)s).getExp();
+
+        boolean hitFlag = false;
         if (!exp.isTerminalSymbol()){
           // this expression can be decomposed
-          prefixExp = handleExpression(e);
+          handleExpression(e);
         }else {
-          //only has one id
+          //only has one identifier and cannot be decomposed
           Symbol terminal_sym = exp.getSymbol();
           if (callback != null)
-            prefixExp = callback.broadcastHit(terminal_sym);
+            hitFlag = callback.broadcastHit(terminal_sym);
             //prefixExp = iterator.checkTraceList(terminal_sym.toString());
         }
 
@@ -73,26 +75,12 @@ public class ExpressionHandler {
           if (params!=null)
             for(Expression p : callFunc.getParams()){
               if (!p.isTerminalSymbol())
-                surfixSymbol |= handleExpression(p);
+                 handleExpression(p);
             }
 
           if (callback!=null){
-            callback.handleSymbol(callFunc, prefixExp);
+            callback.handleSymbol(callFunc, hitFlag);
           }
-          //if (prefixExp){
-          //  //prefix is tainted
-          //  //fixme
-          //
-          //  ParcelDataNode node = ParcelDataNode.parseCallFunc(callFunc);
-          //  //ParcelDataNode node = ParcelDataNode
-          //  if (indexStack.size()==1){
-          //    dataTree.addNewNode(Condition.TRUE, node);
-          //  }
-          //  else {
-          //    dataTree.addNewNode(constructCondition(), node);
-          //  }
-          //  LOG.info(node.toString());
-          //}
 
         }else {
           //identifier
@@ -100,7 +88,7 @@ public class ExpressionHandler {
 
         }
 
-        return prefixExp | surfixSymbol;
+        return;
       }
       //pure function call instead of point call func
       else if (s instanceof CallFunc){
@@ -108,13 +96,13 @@ public class ExpressionHandler {
         List<Expression> params = ((CallFunc)s).getParams();
         if (params != null)
           for(Expression p : ((CallFunc)s).getParams()){
-            ret |= handleExpression(p);
+             handleExpression(p);
           }
-        return ret;
+        return;
       }
 
 
-      return false;
+      return ;
     }else{
 
       boolean left = false;
@@ -122,16 +110,16 @@ public class ExpressionHandler {
 
       if (e.leftCanDecompose())
       {
-        left = handleExpression(e.getL());
+        handleExpression(e.getL());
       }
       if (e.rightCanDecompose()){
-        right = handleExpression(e.getR());
+        handleExpression(e.getR());
       }
 
       if (universalCallback!=null)
-        universalCallback.handleExpression(e, left|right);
+        universalCallback.handleExpression(e, true);
 
-      return left | right;
+      return;
     }
 
   }

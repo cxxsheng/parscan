@@ -22,9 +22,13 @@ public class IntSymbol extends Symbol {
       return true;
     }
 
-  @Override
-    public String toString() {
+    @Override
+      public String toString() {
 
-      return ""+value;
+        return ""+value;
+      }
+
+    public long getValue() {
+      return value;
     }
 }

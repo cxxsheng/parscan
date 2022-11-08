@@ -15,5 +15,7 @@ public interface TreeNode {
 
   void setIndexAtTree(int index);
 
+  boolean isRoot();
 
+  String getIdentifier();
 }

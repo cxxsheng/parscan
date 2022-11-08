@@ -33,7 +33,7 @@ public class PointSymbol extends Symbol {
       return false;
     }
 
-  public Expression getExp() {
+    public Expression getExp() {
     return exp;
   }
 

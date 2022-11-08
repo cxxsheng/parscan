@@ -38,4 +38,8 @@ public class CharSymbol extends Symbol {
     public String toString() {
       return ""+value;
     }
+
+    public char getValue() {
+      return value;
+    }
 }

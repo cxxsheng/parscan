@@ -291,11 +291,8 @@ public class ASTIterator {
         else if (cur instanceof Expression){
           LOG.info("handling expression "+ cur.toString());
 
-          boolean hitTaint = H.handleExpression((Expression)cur);
+          H.handleExpression((Expression)cur);
           selfAddIndex();
-
-          if (hitTaint)
-            return;
         }
 
         else if (cur instanceof Block){

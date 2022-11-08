@@ -39,4 +39,8 @@ public class IdentifierSymbol extends Symbol {
     public String toString() {
       return value;
     }
+
+    public String getValue() {
+      return value;
+    }
 }

@@ -58,7 +58,7 @@ public class CommonExtractor {
       return new IntSymbol(Utils.parseIntString(literalContext.integerLiteral().getText(), mode));
     }
     if (literalContext.floatLiteral() != null){
-      return new FloatSymbol(Utils.parseFloatString(literalContext.integerLiteral().getText()));
+      return new FloatSymbol((literalContext.integerLiteral().getText()));
     }
     if (literalContext.BOOL_LITERAL() != null){
       if ("true".equals(literalContext.BOOL_LITERAL().getText()))
