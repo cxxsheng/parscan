@@ -53,4 +53,12 @@ public class VarDeclaration extends Symbol {
   public boolean isTerminal() {
     return false;
   }
+
+  public JavaType getType() {
+    return type;
+  }
+
+  public IdentifierSymbol getName() {
+    return name;
+  }
 }

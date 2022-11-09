@@ -401,7 +401,7 @@ public class CommonExtractor {
           if (arrayInit != null)
             ret = ret.addOne(new Expression(symbol, new ArrayInitSymbol(arrayInit.getText()), Operator.AS));
 
-          JavaParser.ExpressionContext e = vInitializerContext.expression();//expression
+            JavaParser.ExpressionContext e = vInitializerContext.expression();//expression
           if (e != null)
             ret = ret.addOne(new Expression(symbol, parseExpression(e), Operator.AS));
         }else {

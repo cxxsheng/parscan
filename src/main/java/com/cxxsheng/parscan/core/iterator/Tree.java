@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
+import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ public class Tree {
 
   private final List<Pair<Integer,Integer>> edges;
 
-  private final Map<String, Integer> identifier2TreeNodeIndex = new HashMap();
+  private final Map<String, Integer> attachedName2TreeNodeIndex = new HashMap();
 
   public Tree(TreeNode root) {
     this();
@@ -24,18 +25,20 @@ public class Tree {
   public Tree() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
-    this.root = ParcelDataNode.initEmptyInstance();
+    setRoot (ParcelDataNode.initEmptyInstance());
   }
 
   private void setRoot(TreeNode root) {
     this.root = root;
+    allNodes.clear();
+    allNodes.add(root);
   }
 
   public TreeNode getRoot() {
     return root;
   }
 
-  public int addNewNode(Condition condition, TreeNode node){
+  public int addNewNode(Expr condition, TreeNode node){
       int ret;
       if (allNodes.size() == 0)
       {
@@ -51,7 +54,7 @@ public class Tree {
           node.setTree(this);
           node.setIndexAtTree(allNodes.size() - 1);
           ret = allNodes.size() - 1;
-        identifier2TreeNodeIndex.put(node.getIdentifier(), ret) ;
+        attachedName2TreeNodeIndex.put(node.getIdentifier(), ret) ;
       }
       return ret;
   }
@@ -67,6 +70,14 @@ public class Tree {
           edges.add(edge);
           return edges.size() - 1;
       }
+  }
+
+  public int getIndexByAttachedName(String attachedName){
+    Integer i =  attachedName2TreeNodeIndex.get(attachedName);
+    if (i == null)
+      return -1;
+    else
+      return i;
   }
 
 

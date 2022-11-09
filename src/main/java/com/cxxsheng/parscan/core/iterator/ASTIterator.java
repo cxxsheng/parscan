@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
+import com.cxxsheng.parscan.core.z3.Z3Core;
+import com.microsoft.z3.Expr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,9 @@ public class ASTIterator {
 
   private final ExpressionHandler condH;
 
-  private Condition current_condition = null;
+  private Expr current_condition = null;
+
+  private final Z3Core core;
 
   private void initTraceList(){
     List<FunctionPattern> ps = FunctionPattern.getPatterns();
@@ -72,6 +76,9 @@ public class ASTIterator {
       this.javaClass = javaClass;
       traceList = new ArrayList<>();
       initTraceList();
+
+      core = new Z3Core(javaClass, this) ;
+
       indexStack = new Stack<>();
       indexStack.push(0);
 
@@ -88,7 +95,7 @@ public class ASTIterator {
             ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s);
             //ParcelDataNode node = ParcelDataNode
             if (indexStack.size()==1){
-              dataTree.addNewNode(Condition.TRUE, node);
+              dataTree.addNewNode(core.EXP_TRUE, node);
             }
             else {
               dataTree.addNewNode(constructCondition(), node);
@@ -123,7 +130,7 @@ public class ASTIterator {
 
         @Override
         public void handleExpression(Expression e, boolean isHit) {
-
+              current_condition = core.mkExpression(e);
         }
 
         @Override
@@ -156,16 +163,16 @@ public class ASTIterator {
     return false;
   }
 
-  private Condition constructConditionByExpression(Expression e){
+  private Expr constructConditionByExpression(Expression e){
       condH.handleExpression(e);
       if (current_condition == null )
         throw new ASTParsingException("cannot access condition at " + e);
-      Condition tmp = current_condition;
+      Expr tmp = current_condition;
       current_condition = null; //Clear it is very important for checking constructCondition sucessful or not
       return tmp;
   }
 
-  private Condition constructCondition(){
+  private Expr constructCondition(){
       int i = indexStack.peek();
       Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtPoint(indexStack.size()-1);
       ExpressionOrBlock block = pair.getLeft();
@@ -175,7 +182,7 @@ public class ASTIterator {
         Expression e = ((ConditionalBlock)block).getBoolExp();
         return constructConditionByExpression(e);
       }
-      return Condition.TRUE;
+      return core.EXP_TRUE;
   }
 
 
@@ -351,5 +358,9 @@ public class ASTIterator {
     return !indexStack.empty();
   }
 
+
+  public final int getNodeIndexByAttachedName(String name){
+    return dataTree.getIndexByAttachedName(name);
+  }
 
 }
