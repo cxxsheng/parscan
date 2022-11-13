@@ -1,20 +1,28 @@
 package com.cxxsheng.parscan.core.iterator;
 
+import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
+import com.microsoft.z3.Expr;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParcelDataNode implements TreeNode {
 
     private Tree tree;
 
-    private List<TreeNode> children = null;
+
+    private List<Pair<Expr, Integer>> children = null;
 
     private TreeNode father = null;
 
+    private Expr cond;
+
     private final String attachedSymbolName;
+
+    private final boolean isPlaceHolder;
 
     //FUNC_TYPE_READ when read function (etc. readInt, readString)
     //FUNC_TYPE_READ when write function (etc. writeInt, writeString)
@@ -38,6 +46,7 @@ public class ParcelDataNode implements TreeNode {
       jtype = JavaType.getVOID();
       isEmpty = true;
       attachedSymbolName = null;
+      isPlaceHolder = true;
     }
 
     public static ParcelDataNode initEmptyInstance(){
@@ -54,27 +63,30 @@ public class ParcelDataNode implements TreeNode {
       this.attachedSymbolName = attachedSymbolName;
       this.jtype = jtype;
       this.func_type =  func_type;
+      isPlaceHolder = false;
     }
 
 
     @Override
-    public TreeNode getChild(int i) {
+    public Pair<Expr, Integer> getChildIndex(int i) {
       return children.get(i);
     }
 
     @Override
-    public void addChild(TreeNode node) {
-        //if (children == null)
-        //    children = new ArrayList<>();
-        //
-        //children.add(node);
-        //
-        //
-        //int dst = tree.addNewNode(node);
-        //if (index < 0)
-        //  throw new ASTParsingException("index must be more than -1");
-        //tree.addEdges(index, dst);
-    }
+    public void addChild(Expr cond, int dstIndex) {
+          if (children == null)
+              children = new ArrayList<>();
+
+          children.add(new Pair<>(cond, dstIndex));
+
+          //set father
+          TreeNode node = tree.getNodeById(dstIndex);
+          node.setFather(this);
+
+          if (index < 0)
+            throw new ASTParsingException("index must be more than -1");
+          tree.addEdge(index, dstIndex);
+      }
 
 
     @Override
@@ -84,7 +96,7 @@ public class ParcelDataNode implements TreeNode {
 
     @Override
     public void setFather(TreeNode node) {
-        this.father = father;
+        this.father = node;
     }
 
 
@@ -110,6 +122,11 @@ public class ParcelDataNode implements TreeNode {
     @Override
     public String getIdentifier() {
       return attachedSymbolName;
+    }
+
+    @Override
+    public boolean isPlaceholder() {
+      return false;
     }
 
     public static ParcelDataNode parseCallFunc(CallFunc func){
@@ -148,19 +165,44 @@ public class ParcelDataNode implements TreeNode {
             throw new ASTParsingException("cannot handle this call-func: " + func.toString());
           }
           return new ParcelDataNode(attachedSymbolName, jType, type);
-      }
+    }
 
-      public boolean isArray(){
-        return jtype.isArray();
-      }
+    public JavaType getJtype() {
+      return jtype;
+    }
 
-      @Override
-      public String toString() {
+    public boolean isArray(){
+          return jtype.isArray();
+        }
+
+    @Override
+    public String toString() {
+        if (isPlaceHolder)
+          return "PlaceHolderNode";
+
         final StringBuffer sb = new StringBuffer("ParcelDataNode{");
         sb.append("func_type=").append(func_type);
         sb.append(", jtype=").append(jtype);
         sb.append(", attachedSymbolName=").append(attachedSymbolName);
         sb.append('}');
         return sb.toString();
-      }
+    }
+
+    public boolean isPlaceHolder() {
+      return isPlaceHolder;
+    }
+
+    public Expr getCond() {
+      return cond;
+    }
+
+    @Override
+    public void setCond(Expr cond) {
+      this.cond = cond;
+    }
+
+    @Override
+    public int getIndex() {
+      return index;
+    }
 }

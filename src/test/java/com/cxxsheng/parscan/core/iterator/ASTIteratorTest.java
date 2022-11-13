@@ -18,7 +18,7 @@ class ASTIteratorTest {
       try {
         FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
         assertTrue(FunctionPattern.isInit());
-        Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
+        Path cp = Paths.get("src", "test", "resources", "JavaDemo", "GateKeeperResponse.java");
         AntlrCore core = new AntlrCore(cp);
         core.parse();
         ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
@@ -27,6 +27,7 @@ class ASTIteratorTest {
         while (iterator.hasNextStage()){
           System.out.println("nextStage");
           iterator.continueToTaint();
+          System.out.println(iterator.getDataTree());
         }
 
 

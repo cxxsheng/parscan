@@ -1,13 +1,12 @@
 package com.cxxsheng.parscan.antlr;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.cxxsheng.parscan.core.AntlrCore;
-
-
 import java.io.IOException;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class AntlrCoreTest {
@@ -28,7 +27,7 @@ class AntlrCoreTest {
     @org.junit.jupiter.api.Test
     void parse() {
 
-      Path cp = Paths.get("src", "test", "resources", "JavaDemo", "test.java");
+      Path cp = Paths.get("src", "test", "resources", "JavaDemo", "GateKeeperResponse.java");
       AntlrCore core = new AntlrCore(cp);
       try {
         core.parse();

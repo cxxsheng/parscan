@@ -10,6 +10,15 @@ public class JavaType {
 
   private static final JavaType VOID = new JavaType();
 
+  public static final JavaType INT = new JavaType(Primitive.INT, false);
+  public static final JavaType FLOAT = new JavaType(Primitive.FLOAT, false);
+  public static final JavaType BOOL = new JavaType(Primitive.BOOL, false);
+  public static final JavaType BYTE = new JavaType(Primitive.BYTE, false);
+  public static final JavaType SHORT = new JavaType(Primitive.SHORT, false);
+  public static final JavaType DOUBLE = new JavaType(Primitive.DOUBLE, false);
+  public static final JavaType CHAR = new JavaType(Primitive.CHAR, false);
+  public static final JavaType LONG = new JavaType(Primitive.LONG, false);
+
   private JavaType(){
     primitive = null;
     ObjectName = null;

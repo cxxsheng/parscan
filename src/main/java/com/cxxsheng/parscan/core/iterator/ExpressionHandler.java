@@ -116,7 +116,7 @@ public class ExpressionHandler {
         handleExpression(e.getR());
       }
 
-      if (universalCallback!=null)
+      if (universalCallback != null)
         universalCallback.handleExpression(e, true);
 
       return;

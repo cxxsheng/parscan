@@ -17,21 +17,64 @@ public class Tree {
 
   private final Map<String, Integer> attachedName2TreeNodeIndex = new HashMap();
 
+  private volatile int preCurrentNodeIndex = -1;
+
+  private volatile int currentNodeIndex;
+
+
   public Tree(TreeNode root) {
     this();
-    this.root = root;
+    setRoot(root);
+    allNodes.add(root);
+    updateNodeIndex(0);
   }
 
   public Tree() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
     setRoot (ParcelDataNode.initEmptyInstance());
+    allNodes.add(root);
+    updateNodeIndex(0);
+  }
+
+  private void clearNodes(){
+    allNodes.clear();
+  }
+
+
+  public TreeNode preCurrentNode(){
+    return this.getNodeById(preCurrentNodeIndex);
+  }
+
+
+  public TreeNode currentNode(){
+    return this.getNodeById(currentNodeIndex);
+  }
+
+  public void updateNodeIndex(int index){
+      currentNodeIndex = index;
+      preCurrentNodeIndex = currentNodeIndex;
+      System.out.println("current index " + index  + "/" + currentNode());
+
+  }
+
+  public void popCurrent(){
+      TreeNode father = currentNode().getFather();
+      System.out.println(currentNode());
+      if (father == null){
+        System.out.println();
+      }
+      int father_index = father.getIndex();
+      if (father_index < 0)
+        throw new ASTParsingException("father index cannot less than 0");
+      currentNodeIndex = father_index;
   }
 
   private void setRoot(TreeNode root) {
+    clearNodes();
     this.root = root;
-    allNodes.clear();
-    allNodes.add(root);
+    root.setIndexAtTree(0);
+    root.setTree(this);
   }
 
   public TreeNode getRoot() {
@@ -44,22 +87,26 @@ public class Tree {
       {
         throw new ASTParsingException("set root node first");
       }
-
+      //already existed just return index
       int index = allNodes.indexOf(node);
 
-      if (index >= 0)
-          ret = index;
-      else {
-          allNodes.add(node);
+      if (index <= 0)
+       {
+          index = allNodes.size();
           node.setTree(this);
-          node.setIndexAtTree(allNodes.size() - 1);
-          ret = allNodes.size() - 1;
-        attachedName2TreeNodeIndex.put(node.getIdentifier(), ret) ;
+          node.setIndexAtTree(index);
+          node.setCond(condition);
+          attachedName2TreeNodeIndex.put(node.getIdentifier(), index) ;
+          allNodes.add(node);
       }
-      return ret;
+
+
+      currentNode().addChild(condition, index);
+      updateNodeIndex(index);
+      return index;
   }
 
-  public int addEdges(int src, int dst){
+  public int addEdge(int src, int dst){
       Pair<Integer, Integer> edge = new Pair<>(src, dst);
       int index = edges.indexOf(edge);
 
@@ -80,5 +127,29 @@ public class Tree {
       return i;
   }
 
+  public TreeNode getNodeById(int id){
+    if (id< allNodes.size()){
+      return allNodes.get(id);
+    }
 
+    return null;
+  }
+
+
+  @Override
+  public String toString() {
+    final StringBuffer sb = new StringBuffer("Tree{");
+    for (Pair<Integer, Integer> edge :edges){
+      int src = edge.getLeft();
+      int dst = edge.getRight();
+
+      sb.append(getNodeById(dst).getCond());
+      sb.append(getNodeById(src));
+      sb.append("->");
+      sb.append(getNodeById(dst));
+      sb.append('\n');
+    }
+    sb.append('}');
+    return sb.toString();
+  }
 }

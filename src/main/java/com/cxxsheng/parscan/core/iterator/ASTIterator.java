@@ -18,12 +18,12 @@ import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
+import com.cxxsheng.parscan.core.z3.Z3Core;
+import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
-import com.cxxsheng.parscan.core.z3.Z3Core;
-import com.microsoft.z3.Expr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +93,7 @@ public class ASTIterator {
               throw new ASTParsingException("Cannot handle such symbol " + s + "and expect CallFunc.");
             }
             ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s);
-            //ParcelDataNode node = ParcelDataNode
+
             if (indexStack.size()==1){
               dataTree.addNewNode(core.EXP_TRUE, node);
             }
@@ -172,15 +172,26 @@ public class ASTIterator {
       return tmp;
   }
 
+  private ExpressionOrBlock getRecentBlock(){
+    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>>  blocks = allCurrentBlocks();
+    ExpressionOrBlock curblock = blocks.get(blocks.size()-2).getLeft();
+    return curblock;
+  }
+
+  private int lastSize;
   private Expr constructCondition(){
       int i = indexStack.peek();
-      Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtPoint(indexStack.size()-1);
-      ExpressionOrBlock block = pair.getLeft();
+      ExpressionOrBlock curblock = getRecentBlock();
 
-      if (block instanceof ConditionalBlock){
 
-        Expression e = ((ConditionalBlock)block).getBoolExp();
-        return constructConditionByExpression(e);
+      if (curblock instanceof ConditionalBlock){
+
+
+        Expression e = ((ConditionalBlock)curblock).getBoolExp();
+        if (indexStack.get(indexStack.size()-2) == COND_INDEX_IF){
+          LOG.info("construct if condition by " + e);
+          return constructConditionByExpression(e);
+        }
       }
       return core.EXP_TRUE;
   }
@@ -238,15 +249,14 @@ public class ASTIterator {
 
   /**
    * @return index the i-th stack to the current Expression and ExpressionOrBlockList(content) Pair
+   * if point < 0 , just return the methodBody handle
    */
-  private Pair<ExpressionOrBlock, ExpressionOrBlockList> indexStackAtPoint(int point){
+  private  List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks(){
     ExpressionOrBlock cur = null;
     ExpressionOrBlockList curList = methodBody;
     int size = indexStack.size();
-
-    if (point>0 && point < indexStack.size())
-      size = point;
-
+    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> rets = new ArrayList<>();
+    rets.add(new Pair<>(cur, curList));
     for (int i =0  ; i < size; ++i){
       int index = indexStack.get(i);
 
@@ -265,17 +275,22 @@ public class ASTIterator {
           }else {
             curList = ((Block)cur).getContent();
           }
-          continue;
+        }else {
+          curList = ((Block)cur).getContent();
         }
-
-        curList = ((Block)cur).getContent();
       }
+
+      Pair p =  new Pair<>(cur, curList);
+      rets.add(p);
     }
-    return new Pair<>(cur, curList);
+    return rets;
   }
 
   private Pair<ExpressionOrBlock, ExpressionOrBlockList> indexStackAtCurrentPoint() {
-    return indexStackAtPoint(-1);
+    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurBlocks = allCurrentBlocks();
+    if (allCurBlocks.size()<1)
+      throw new ASTParsingException("allCurBlocks size less than 1");
+    return allCurBlocks.get(allCurBlocks.size()-1);
   }
 
 
@@ -283,7 +298,7 @@ public class ASTIterator {
 
     while (!indexStack.empty()){
 
-        System.out.println(indexStack);
+        LOG.info("current index stack is " + indexStack.toString());
 
         Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtCurrentPoint();
         ExpressionOrBlock cur = pair.getLeft();
@@ -324,13 +339,13 @@ public class ASTIterator {
 
         //get out of current block
         if (indexStack.peek() >= curList.size()){
-          indexStack.pop();
+          indexStackPop();
           if (indexStack.empty())
             break;
 
           int top = indexStack.peek();
           if (top == COND_INDEX_ELSE){
-            indexStack.pop();// clear cond index because else executed finished
+            indexStackPop();// clear cond index because else executed finished
 
             if (indexStack.empty())
               break;
@@ -339,6 +354,13 @@ public class ASTIterator {
             //go to else statement
             modifyStackByIndex(indexStack.size()-1 , COND_INDEX_ELSE);
             indexStack.push(0);
+
+            ExpressionOrBlock curBlock = getRecentBlock();
+            if (curBlock instanceof ConditionalBlock){
+              constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
+              if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
+                dataTree.addNewNode(constructCondition(), ParcelDataNode.initEmptyInstance());
+            }
             continue;
           }
           //this block finished, so that father pointer must self-add
@@ -348,6 +370,10 @@ public class ASTIterator {
   }
 
 
+  private final void indexStackPop(){
+    indexStack.pop();
+   // getDataTree().popCurrent();
+  }
 
   public boolean nextStage(){
     continueToTaint();
@@ -363,4 +389,7 @@ public class ASTIterator {
     return dataTree.getIndexByAttachedName(name);
   }
 
+  public Tree getDataTree() {
+    return dataTree;
+  }
 }

@@ -1,13 +1,16 @@
 package com.cxxsheng.parscan.core.iterator;
 
+import com.cxxsheng.parscan.core.common.Pair;
+import com.microsoft.z3.Expr;
+
 public interface TreeNode {
 
 
-  TreeNode getChild(int i);
+  Pair<Expr, Integer> getChildIndex(int i);
 
   TreeNode getFather();
 
-  void addChild(TreeNode node);
+  void addChild(Expr cond, int nodeIndex);
 
   void setFather(TreeNode node);
 
@@ -18,4 +21,12 @@ public interface TreeNode {
   boolean isRoot();
 
   String getIdentifier();
+
+  boolean isPlaceholder();
+
+  void setCond(Expr condition);
+
+  Expr getCond();
+
+  int getIndex();
 }

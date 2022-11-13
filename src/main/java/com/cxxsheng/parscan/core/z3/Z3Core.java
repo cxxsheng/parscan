@@ -11,9 +11,12 @@ import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.FloatSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.IntSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.NullSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.StringSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import com.cxxsheng.parscan.core.iterator.ASTIterator;
+import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
+import com.cxxsheng.parscan.core.iterator.TreeNode;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 
@@ -88,6 +91,8 @@ public class Z3Core {
   }
 
   public Expr mkExpression(Expression e){
+    if (e==null)
+      return null;
     Expr left = null;
     Expr right = null;
     if (e.isTerminalSymbol()){
@@ -116,25 +121,35 @@ public class Z3Core {
           return  ctx.mkString(((StringSymbol)s).getValue());
 
         }else if (s instanceof IdentifierSymbol){
+
+          String name = ((IdentifierSymbol)s).getValue();
+          int index = iterator.getNodeIndexByAttachedName(name);
+          //find index in dataTree first
+          if (index >= 0)
+          {
+            name = "$" + index;
+            //fixme type get may have some problem
+            TreeNode node = iterator.getDataTree().getNodeById(index);
+            JavaType javaType = JavaType.parseJavaTypeString("int", false);
+            if (node instanceof ParcelDataNode)
+              javaType = ((ParcelDataNode)node).getJtype();
+            return mkConst(javaType, name);
+          }else {
+            //check it is a constant, if this var is constant, replace the symbol by the real value
             VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
-            Expr result;
-            if (d != null){
-              result = mkExpression(d.getValue());
-            }else {
-
-              String name = ((IdentifierSymbol)s).getValue();
-              int index = iterator.getNodeIndexByAttachedName(name);
-
-              if (index >= 0)
-                name = "$" + index;
-              //fixme typeget
-              result = mkConst("", name);
-
+            if (d != null && d.getValue()!=null) {
+              return mkExpression(d.getValue());
             }
+            else {
+              return mkConst(JavaType.INT, name);
+            }
+          }
 
-
-          return result;
-
+        }else if (s instanceof NullSymbol){
+          return ctx.mkInt(0 );
+        }
+        else {
+          throw new Z3ParsingException("cannot handle " + e );
         }
 
     }
@@ -147,9 +162,11 @@ public class Z3Core {
     right = mkExpression(e.getR());
     switch (op){
       case EQ:
+
         return ctx.mkEq(left, right);
       case NE:
-        return ctx.mkNot(right);
+        return ctx.mkNot(ctx.mkEq(left, right));
+
       case AND2:
         return ctx.mkAnd(left, right);
 
@@ -173,6 +190,15 @@ public class Z3Core {
 
   }
 
+  public Expr mkNot(Expr e){
+    return ctx.mkNot(e).simplify();
+  }
 
+  public Expr mkAnd(Expr left, Expr right){
+    return ctx.mkAnd(left, right).simplify();
+  }
 
+  public Expr mkOr(Expr left, Expr right){
+    return ctx.mkOr(left, right).simplify();
+  }
 }
