@@ -6,6 +6,7 @@ import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_POINT_SYM
 import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_UNIVERSAL;
 
 import com.cxxsheng.parscan.core.common.Pair;
+import com.cxxsheng.parscan.core.common.Stack;
 import com.cxxsheng.parscan.core.data.Block;
 import com.cxxsheng.parscan.core.data.ConditionalBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
@@ -23,7 +24,6 @@ import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class ASTIterator {
 
   private final static Logger LOG = LoggerFactory.getLogger(ASTIterator.class);
 
-  private Stack<Integer> indexStack;
+  private Stack indexStack;
 
   private final List<String> traceList;
 
@@ -79,7 +79,7 @@ public class ASTIterator {
 
       core = new Z3Core(javaClass, this) ;
 
-      indexStack = new Stack<>();
+      indexStack = new Stack();
       indexStack.push(0);
 
 
@@ -92,7 +92,10 @@ public class ASTIterator {
             if(!(s instanceof CallFunc)){
               throw new ASTParsingException("Cannot handle such symbol " + s + "and expect CallFunc.");
             }
-            ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s);
+
+
+
+            ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s, indexStack.toIntArray());
 
             if (indexStack.size()==1){
               dataTree.addNewNode(core.EXP_TRUE, node);
@@ -359,7 +362,7 @@ public class ASTIterator {
             if (curBlock instanceof ConditionalBlock){
               constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
               if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
-                dataTree.addNewNode(constructCondition(), ParcelDataNode.initEmptyInstance());
+                dataTree.addNewNode(constructCondition(), ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
             }
             continue;
           }

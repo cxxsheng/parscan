@@ -32,7 +32,7 @@ public class Tree {
   public Tree() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
-    setRoot (ParcelDataNode.initEmptyInstance());
+    setRoot (ParcelDataNode.initEmptyInstance(null));
     allNodes.add(root);
     updateNodeIndex(0);
   }

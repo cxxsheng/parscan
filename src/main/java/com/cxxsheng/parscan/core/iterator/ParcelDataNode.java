@@ -36,12 +36,14 @@ public class ParcelDataNode implements TreeNode {
 
     private final JavaType jtype;
 
+    private final int[] mark;
 
     private int index = -1;
 
     private boolean isEmpty = false;
 
-    private ParcelDataNode(){
+    private ParcelDataNode(int[] mark){
+      this.mark = mark;
       func_type = 0;
       jtype = JavaType.getVOID();
       isEmpty = true;
@@ -49,8 +51,8 @@ public class ParcelDataNode implements TreeNode {
       isPlaceHolder = true;
     }
 
-    public static ParcelDataNode initEmptyInstance(){
-       return new ParcelDataNode();
+    public static ParcelDataNode initEmptyInstance(int[] mark){
+       return new ParcelDataNode(mark);
     }
 
     //return true means this node is
@@ -59,11 +61,12 @@ public class ParcelDataNode implements TreeNode {
       return isEmpty;
     }
 
-    public ParcelDataNode(String attachedSymbolName, JavaType jtype, int func_type){
+    public ParcelDataNode(String attachedSymbolName, JavaType jtype, int func_type, int[] mark){
       this.attachedSymbolName = attachedSymbolName;
       this.jtype = jtype;
       this.func_type =  func_type;
       isPlaceHolder = false;
+      this.mark = mark;
     }
 
 
@@ -129,7 +132,7 @@ public class ParcelDataNode implements TreeNode {
       return false;
     }
 
-    public static ParcelDataNode parseCallFunc(CallFunc func){
+    public static ParcelDataNode parseCallFunc(CallFunc func, int[] marks){
           int type = 0;
           String funcName = func.getFuncName();
           JavaType jType = null;
@@ -164,7 +167,7 @@ public class ParcelDataNode implements TreeNode {
           if (jType == null || jType.isVoid()){
             throw new ASTParsingException("cannot handle this call-func: " + func.toString());
           }
-          return new ParcelDataNode(attachedSymbolName, jType, type);
+          return new ParcelDataNode(attachedSymbolName, jType, type, marks);
     }
 
     public JavaType getJtype() {
