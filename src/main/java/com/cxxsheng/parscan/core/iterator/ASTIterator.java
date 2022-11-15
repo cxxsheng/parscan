@@ -41,6 +41,7 @@ public class ASTIterator {
 
   private Stack indexStack;
 
+
   private final List<String> traceList;
 
   private final Tree dataTree = new Tree();
@@ -97,12 +98,8 @@ public class ASTIterator {
 
             ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s, indexStack.toIntArray());
 
-            if (indexStack.size()==1){
-              dataTree.addNewNode(core.EXP_TRUE, node);
-            }
-            else {
-              dataTree.addNewNode(constructCondition(), node);
-            }
+            dataTree.addNewNode(constructCondition(), node);
+
             LOG.info("construct "+ node.toString());
           }
         }
@@ -176,27 +173,78 @@ public class ASTIterator {
   }
 
   private ExpressionOrBlock getRecentBlock(){
-    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>>  blocks = allCurrentBlocks();
+    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>>  blocks = allCurrentBlocks(0);
     ExpressionOrBlock curblock = blocks.get(blocks.size()-2).getLeft();
     return curblock;
   }
 
-  private int lastSize;
+  //Compare two mask, if they have the same mask, two nodes are in the same domain
+  private static int indexInSameDomain(int[] mask1, int[] mask2){
+    int i = 0;
+    if (mask1 !=null && mask2!=null){
+      int length = Math.min(mask1.length, mask2.length);
+      for (; i < length; i++){
+        if (mask1[i]!=mask2[i])
+          break;
+      }
+    }
+    return i;
+  }
+
+
   private Expr constructCondition(){
-      int i = indexStack.peek();
-      ExpressionOrBlock curblock = getRecentBlock();
+      TreeNode last = dataTree.currentNode();
+      int[] last_mark = last.mark();
+      int[] current_mark = indexStack.toIntArray();
+
+      int last_len = last_mark.length;
 
 
-      if (curblock instanceof ConditionalBlock){
+      int same_index =  indexInSameDomain(last_mark, current_mark);
 
+      //last node need to pop current
+      // until they have the same prefix until the last index(exclude the last element)
+      // when i < len-1 means they are not in the same domain
+      // last node need to pop up until current node and last node
+      // are in the same domain
+      while (same_index < last_len-1) {
+        // last node = last node's father node
+        dataTree.popCurrent();
+        last_mark = dataTree.currentNode().mark();
+        last_len = last_mark.length;
+      }
 
-        Expression e = ((ConditionalBlock)curblock).getBoolExp();
-        if (indexStack.get(indexStack.size()-2) == COND_INDEX_IF){
-          LOG.info("construct if condition by " + e);
-          return constructConditionByExpression(e);
+      Expr cond = core.EXP_TRUE;
+
+      //from same_index to current_node mark index to construct condition
+      //reflesh same_index
+      same_index =  indexInSameDomain(last_mark, current_mark);
+      List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
+      int start = same_index;
+      for (Pair<ExpressionOrBlock, ExpressionOrBlockList> block : allCurrentBlocks){
+        if (block.getLeft() instanceof ConditionalBlock){
+            Expression e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+            Expr exp = constructConditionByExpression(e);
+            same_index +=2;
+            if (same_index > indexStack.size())
+              break;
+            int cond_flag = indexStack.get(same_index-1);
+            if (cond_flag == COND_INDEX_IF)
+              ;
+            else if (cond_flag == COND_INDEX_ELSE)
+              exp = core.mkNot(exp);
+            else
+            {
+              throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
+            }
+
+            cond = core.mkAnd(cond, exp);
         }
       }
-      return core.EXP_TRUE;
+
+
+      return cond;
+
   }
 
 
@@ -251,15 +299,18 @@ public class ASTIterator {
 
 
   /**
-   * @return index the i-th stack to the current Expression and ExpressionOrBlockList(content) Pair
+   * @return from stack index start to the current Expression and the current ExpressionOrBlockList
+   * (which contains the current expression) Pair
    * if point < 0 , just return the methodBody handle
+   *
    */
-  private  List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks(){
+  private  List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks(int start){
     ExpressionOrBlock cur = null;
     ExpressionOrBlockList curList = methodBody;
     int size = indexStack.size();
     List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> rets = new ArrayList<>();
-    rets.add(new Pair<>(cur, curList));
+    if (0 >= start)
+      rets.add(new Pair<>(cur, curList));
     for (int i =0  ; i < size; ++i){
       int index = indexStack.get(i);
 
@@ -284,13 +335,14 @@ public class ASTIterator {
       }
 
       Pair p =  new Pair<>(cur, curList);
-      rets.add(p);
+      if (index >= start)
+        rets.add(p);
     }
     return rets;
   }
 
   private Pair<ExpressionOrBlock, ExpressionOrBlockList> indexStackAtCurrentPoint() {
-    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurBlocks = allCurrentBlocks();
+    List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurBlocks = allCurrentBlocks(0);
     if (allCurBlocks.size()<1)
       throw new ASTParsingException("allCurBlocks size less than 1");
     return allCurBlocks.get(allCurBlocks.size()-1);

@@ -7,6 +7,7 @@ import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.microsoft.z3.Expr;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ParcelDataNode implements TreeNode {
@@ -184,6 +185,7 @@ public class ParcelDataNode implements TreeNode {
           return "PlaceHolderNode";
 
         final StringBuffer sb = new StringBuffer("ParcelDataNode{");
+        sb.append(Arrays.toString(mark));
         sb.append("func_type=").append(func_type);
         sb.append(", jtype=").append(jtype);
         sb.append(", attachedSymbolName=").append(attachedSymbolName);
@@ -208,4 +210,9 @@ public class ParcelDataNode implements TreeNode {
     public int getIndex() {
       return index;
     }
+
+  @Override
+  public int[] mark() {
+    return mark;
+  }
 }

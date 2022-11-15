@@ -29,4 +29,6 @@ public interface TreeNode {
   Expr getCond();
 
   int getIndex();
+
+  int[] mark();
 }

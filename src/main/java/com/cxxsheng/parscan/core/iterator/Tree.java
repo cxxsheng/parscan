@@ -32,7 +32,8 @@ public class Tree {
   public Tree() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
-    setRoot (ParcelDataNode.initEmptyInstance(null));
+    int [] d = {-1};
+    setRoot(ParcelDataNode.initEmptyInstance(d));
     allNodes.add(root);
     updateNodeIndex(0);
   }
@@ -60,10 +61,6 @@ public class Tree {
 
   public void popCurrent(){
       TreeNode father = currentNode().getFather();
-      System.out.println(currentNode());
-      if (father == null){
-        System.out.println();
-      }
       int father_index = father.getIndex();
       if (father_index < 0)
         throw new ASTParsingException("father index cannot less than 0");
@@ -151,5 +148,44 @@ public class Tree {
     }
     sb.append('}');
     return sb.toString();
+  }
+
+
+  public static int getTwoNodeSamePrefixIndexAtMark(TreeNode node1, TreeNode node2){
+    int ret = -1;
+    int[] mark1 = node1.mark();
+    int[] mark2 = node2.mark();
+    if (mark1 == mark2)
+      return -1;
+
+    if (mark1!=null && mark2!=null && mark1.length==mark2.length){
+      int len = mark1.length;
+      //two mark have two the same
+      for (int i = 0; i < len; i++){
+        ret ++;
+        if(mark1[i]!=mark2[i])
+          return ret;
+      }
+    }
+    return ret;
+  }
+
+
+  public static boolean twoNodeHaveSameMarkPrefix(TreeNode node1, TreeNode node2){
+    int[] mark1 = node1.mark();
+    int[] mark2 = node2.mark();
+    if (mark1 == mark2)
+      return true;
+
+    if (mark1!=null && mark2!=null && mark1.length==mark2.length){
+      int len = mark1.length;
+      //two mark have two the same
+      for (int i = 0; i < len-1; i++){
+        if(mark1[i]!=mark2[i])
+          return false;
+      }
+      return true;
+    }
+    return false;
   }
 }
