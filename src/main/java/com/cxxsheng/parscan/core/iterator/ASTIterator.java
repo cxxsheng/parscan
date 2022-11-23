@@ -46,10 +46,9 @@ public class ASTIterator {
 
   private Stack indexStack;
 
-
   private final List<String> traceList;
 
-  private final Graph dataGraph = new Graph();
+  private final Graph dataGraph;
 
   private final ExpressionHandler H;
 
@@ -58,6 +57,12 @@ public class ASTIterator {
   private Expr current_condition = null;
 
   private final Z3Core core;
+
+  public final static int DEFAULT_MODE = 0;
+
+  public final static int EXECUTION_MODE = 1;
+
+  private final int mode;
 
   private void initTraceList(){
     List<FunctionPattern> ps = FunctionPattern.getPatterns();
@@ -75,11 +80,20 @@ public class ASTIterator {
     }
   }
 
+  public ASTIterator(JavaClass javaClass, FunctionImp imp){
+    this(javaClass, imp, DEFAULT_MODE, new Graph());
+  }
 
-  public ASTIterator(JavaClass javaClass, FunctionImp functionImp) {
+  public ASTIterator(JavaClass javaClass, FunctionImp imp, Graph givenGraph){
+      this(javaClass, imp, EXECUTION_MODE, givenGraph);
+  }
+
+  public ASTIterator(JavaClass javaClass, FunctionImp functionImp, int mode, Graph graph) {
       this.imp = functionImp;
       this.methodBody = functionImp.getBody();
       this.javaClass = javaClass;
+      this.mode = mode;
+      this.dataGraph = graph;
       traceList = new ArrayList<>();
       initTraceList();
 
@@ -99,13 +113,14 @@ public class ASTIterator {
               throw new ASTParsingException("Cannot handle such symbol " + s + "and expect CallFunc.");
             }
 
+            if (mode == DEFAULT_MODE) {
+              ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
+              dataGraph.addNewNode(constructCondition(false), node);
+              LOG.info("construct " + node.toString());
+            }else if (mode == EXECUTION_MODE){
 
 
-            ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
-
-            dataGraph.addNewNode(constructCondition(false), node);
-
-            LOG.info("construct "+ node.toString());
+            }
           }
         }
         @Override
@@ -426,16 +441,22 @@ public class ASTIterator {
               break;
 
           }else if (top == COND_INDEX_IF){
+
             //go to else statement
             modifyStackByIndex(indexStack.size()-1 , COND_INDEX_ELSE);
             indexStack.push(0);
 
-            ExpressionOrBlock curBlock = getRecentBlock();
-            if (curBlock instanceof ConditionalBlock){
-              constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
-              if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
-                dataGraph.addNewNode(core.EXP_TRUE, ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+            if (mode == DEFAULT_MODE){
+              ExpressionOrBlock curBlock = getRecentBlock();
+              if (curBlock instanceof ConditionalBlock){
+                constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
+                if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
+                  dataGraph.addNewNode(constructCondition(true), ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+              }
+            }else if (mode == EXECUTION_MODE){
+
             }
+
             continue;
           }
           //this block finished, so that father pointer must self-add
@@ -447,32 +468,37 @@ public class ASTIterator {
 
   private final void indexStackPop(){
 
-    if (indexStack.size() > 1){
-      int cond_index = indexStack.get(indexStack.size()-2);
+    if (mode == DEFAULT_MODE){
+      if (indexStack.size() > 1){
+        int cond_index = indexStack.get(indexStack.size()-2);
 
-      if (cond_index == COND_INDEX_IF)
-      {
-        // the finished index
-        //dataGraph.addNewNode(core.EXP_TRUE, ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
-      }else if (cond_index == COND_INDEX_ELSE){
+        if (cond_index == COND_INDEX_IF)
+        {
+          // the finished index
+          dataGraph.addNewNode(core.EXP_TRUE, ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+        }else if (cond_index == COND_INDEX_ELSE){
 
-        ////to find last expression in if statement
-        //int [] mark = indexStack.toIntArray();
-        //mark[mark.length-2] = COND_INDEX_IF;
-        //GraphNode node = dataGraph.findNodeByMark(mark, mark.length-1);
-        //if (node == null)
-        //  throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
-        //while (node.getChildren()!=null && node.getChildren().size() > 0){
-        //  Pair<Expr, Integer> childIndexPair =  node.getChildren().get(0);
-        //  int index = childIndexPair.getRight();
-        //  node = dataGraph.getNodeById(index);
-        //}
-        //if (!node.isPlaceholder())
-        //  throw new ASTParsingException("Expect a placeholder but a "+ node.toString());
-        //dataGraph.addNewNode(core.EXP_TRUE, node);
+          //to find last expression in if statement
+          int [] mark = indexStack.toIntArray();
+          mark[mark.length-2] = COND_INDEX_IF;
+          GraphNode node = dataGraph.findNodeByMark(mark, mark.length-1);
+          if (node == null)
+            throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
+          while (node.getChildren()!=null && node.getChildren().size() > 0){
+            Pair<Expr, Integer> childIndexPair =  node.getChildren().get(0);
+            int index = childIndexPair.getRight();
+            node = dataGraph.getNodeById(index);
+          }
+          if (!node.isPlaceholder())
+            throw new ASTParsingException("Expect a placeholder but a "+ node.toString());
+          dataGraph.addNewNode(core.EXP_TRUE, node);
+        }
+      }else {
+        //exit
       }
-    }else {
-      //exit
+    }else if (mode == EXECUTION_MODE){
+
+
     }
     indexStack.pop();
   }
