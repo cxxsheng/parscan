@@ -22,6 +22,7 @@ import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import com.cxxsheng.parscan.core.z3.Z3Core;
 import com.microsoft.z3.Expr;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.List;
 import org.slf4j.Logger;
@@ -39,12 +40,16 @@ public class ASTIterator {
 
   private final static Logger LOG = LoggerFactory.getLogger(ASTIterator.class);
 
+
+
+
+
   private Stack indexStack;
 
 
   private final List<String> traceList;
 
-  private final Tree dataTree = new Tree();
+  private final Graph dataGraph = new Graph();
 
   private final ExpressionHandler H;
 
@@ -96,9 +101,9 @@ public class ASTIterator {
 
 
 
-            ParcelDataNode node = ParcelDataNode.parseCallFunc((CallFunc)s, indexStack.toIntArray());
+            ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
 
-            dataTree.addNewNode(constructCondition(), node);
+            dataGraph.addNewNode(constructCondition(false), node);
 
             LOG.info("construct "+ node.toString());
           }
@@ -179,7 +184,7 @@ public class ASTIterator {
   }
 
   //Compare two mask, if they have the same mask, two nodes are in the same domain
-  private static int indexInSameDomain(int[] mask1, int[] mask2){
+  private static int sizeInSameDomain(int[] mask1, int[] mask2){
     int i = 0;
     if (mask1 !=null && mask2!=null){
       int length = Math.min(mask1.length, mask2.length);
@@ -192,25 +197,25 @@ public class ASTIterator {
   }
 
 
-  private Expr constructCondition(){
-      TreeNode last = dataTree.currentNode();
+  private Expr constructCondition(boolean isPlaceHolder){
+      GraphNode last = dataGraph.currentNode();
       int[] last_mark = last.mark();
       int[] current_mark = indexStack.toIntArray();
 
       int last_len = last_mark.length;
 
 
-      int same_index =  indexInSameDomain(last_mark, current_mark);
+      int same_size =  sizeInSameDomain(last_mark, current_mark);
 
       //last node need to pop current
       // until they have the same prefix until the last index(exclude the last element)
       // when i < len-1 means they are not in the same domain
       // last node need to pop up until current node and last node
       // are in the same domain
-      while (same_index < last_len-1) {
+      while (same_size < last_len-1) {
         // last node = last node's father node
-        dataTree.popCurrent();
-        last_mark = dataTree.currentNode().mark();
+        dataGraph.popCurrent();
+        last_mark = dataGraph.currentNode().mark();
         last_len = last_mark.length;
       }
 
@@ -218,17 +223,30 @@ public class ASTIterator {
 
       //from same_index to current_node mark index to construct condition
       //reflesh same_index
-      same_index =  indexInSameDomain(last_mark, current_mark);
+      int same_index =  sizeInSameDomain(last_mark, current_mark);
+      same_index |= 1; // odd num not change, even num self-add
+
+
+      System.out.println("last_mark " + Arrays.toString(last_mark));
+      System.out.println("current_mark " + Arrays.toString(current_mark));
+
       List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
-      int start = same_index;
-      for (Pair<ExpressionOrBlock, ExpressionOrBlockList> block : allCurrentBlocks){
+      for (int j = 0; j < allCurrentBlocks.size(); j++){
+        Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
         if (block.getLeft() instanceof ConditionalBlock){
+
             Expression e = ((ConditionalBlock)block.getLeft()).getBoolExp();
             Expr exp = constructConditionByExpression(e);
-            same_index +=2;
-            if (same_index > indexStack.size())
+
+
+
+            //skip the last one is the block... when we construct a placeholder node
+            //we are not in the expression area, so that there are some problems to be fixed
+            // if last block is the block, we just skip it.
+            if (isPlaceHolder && same_index >= indexStack.size() && j==allCurrentBlocks.size()-1)
               break;
-            int cond_flag = indexStack.get(same_index-1);
+
+            int cond_flag = indexStack.get(same_index);
             if (cond_flag == COND_INDEX_IF)
               ;
             else if (cond_flag == COND_INDEX_ELSE)
@@ -239,6 +257,8 @@ public class ASTIterator {
             }
 
             cond = core.mkAnd(cond, exp);
+            same_index +=2; //depth of one block in index stack
+
         }
       }
 
@@ -335,7 +355,7 @@ public class ASTIterator {
       }
 
       Pair p =  new Pair<>(cur, curList);
-      if (index >= start)
+      if (i >= start)
         rets.add(p);
     }
     return rets;
@@ -414,7 +434,7 @@ public class ASTIterator {
             if (curBlock instanceof ConditionalBlock){
               constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
               if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
-                dataTree.addNewNode(constructCondition(), ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+                dataGraph.addNewNode(core.EXP_TRUE, ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
             }
             continue;
           }
@@ -426,8 +446,35 @@ public class ASTIterator {
 
 
   private final void indexStackPop(){
+
+    if (indexStack.size() > 1){
+      int cond_index = indexStack.get(indexStack.size()-2);
+
+      if (cond_index == COND_INDEX_IF)
+      {
+        // the finished index
+        //dataGraph.addNewNode(core.EXP_TRUE, ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+      }else if (cond_index == COND_INDEX_ELSE){
+
+        ////to find last expression in if statement
+        //int [] mark = indexStack.toIntArray();
+        //mark[mark.length-2] = COND_INDEX_IF;
+        //GraphNode node = dataGraph.findNodeByMark(mark, mark.length-1);
+        //if (node == null)
+        //  throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
+        //while (node.getChildren()!=null && node.getChildren().size() > 0){
+        //  Pair<Expr, Integer> childIndexPair =  node.getChildren().get(0);
+        //  int index = childIndexPair.getRight();
+        //  node = dataGraph.getNodeById(index);
+        //}
+        //if (!node.isPlaceholder())
+        //  throw new ASTParsingException("Expect a placeholder but a "+ node.toString());
+        //dataGraph.addNewNode(core.EXP_TRUE, node);
+      }
+    }else {
+      //exit
+    }
     indexStack.pop();
-   // getDataTree().popCurrent();
   }
 
   public boolean nextStage(){
@@ -441,10 +488,12 @@ public class ASTIterator {
 
 
   public final int getNodeIndexByAttachedName(String name){
-    return dataTree.getIndexByAttachedName(name);
+    return dataGraph.getIndexByAttachedName(name);
   }
 
-  public Tree getDataTree() {
-    return dataTree;
+  public Graph getDataGraph() {
+    return dataGraph;
   }
+
+
 }

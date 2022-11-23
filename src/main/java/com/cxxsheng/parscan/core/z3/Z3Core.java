@@ -15,8 +15,8 @@ import com.cxxsheng.parscan.core.data.unit.symbol.NullSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.StringSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import com.cxxsheng.parscan.core.iterator.ASTIterator;
+import com.cxxsheng.parscan.core.iterator.GraphNode;
 import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
-import com.cxxsheng.parscan.core.iterator.TreeNode;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 
@@ -31,6 +31,9 @@ public class Z3Core {
   public final Expr EXP_TRUE = ctx.mkTrue();
   public final Expr EXP_FALSE = ctx.mkFalse();
 
+  public final Expr VALUE = ctx.mkConst("$VALUE", ctx.getIntSort());
+
+  private volatile Expr conditionExpression_left = null;
 
   public Z3Core(JavaClass javaClass, ASTIterator iterator) {
     this.javaClass = javaClass;
@@ -129,7 +132,7 @@ public class Z3Core {
           {
             name = "$" + index;
             //fixme type get may have some problem
-            TreeNode node = iterator.getDataTree().getNodeById(index);
+            GraphNode node = iterator.getDataGraph().getNodeById(index);
             JavaType javaType = JavaType.parseJavaTypeString("int", false);
             if (node instanceof ParcelDataNode)
               javaType = ((ParcelDataNode)node).getJtype();
@@ -153,6 +156,8 @@ public class Z3Core {
         }
 
     }
+
+
 
     Operator op = e.getOp();
     if (op == null)
@@ -185,7 +190,7 @@ public class Z3Core {
         return ctx.mkLe(left, right);
 
       default:
-        throw new Z3ParsingException("cannot handle such type " + op.getName());
+        throw new Z3ParsingException("cannot handle such type " + op.getName() + " in exp:" + e.toString());
     }
 
   }
@@ -200,5 +205,34 @@ public class Z3Core {
 
   public Expr mkOr(Expr left, Expr right){
     return ctx.mkOr(left, right).simplify();
+  }
+
+  public Expr mkEq(Expr left, Expr right){
+    return ctx.mkEq(left, right);
+  }
+
+  public Expr mkLe(Expr left, Expr right){
+    return ctx.mkLe(left, right);
+  }
+
+  public Expr mkLt(Expr left, Expr right){
+    return ctx.mkLt(left, right);
+  }
+
+  public Expr mkGt(Expr left, Expr right){
+    return ctx.mkGt(left, right);
+  }
+
+  public Expr mkGe(Expr left, Expr right){
+    return ctx.mkGe(left, right);
+  }
+
+  public Expr mkInt(long i){
+    return ctx.mkInt(i);
+  }
+
+
+  public void setConditionExpression_left(Expr conditionExpression_left) {
+    this.conditionExpression_left = conditionExpression_left;
   }
 }

@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Tree {
+public class Graph {
 
-  private TreeNode root;
+  private GraphNode root;
 
-  private final List<TreeNode> allNodes;
+  private GraphNode terminal;
+
+  private final List<GraphNode> allNodes;
 
   private final List<Pair<Integer,Integer>> edges;
 
@@ -22,14 +24,14 @@ public class Tree {
   private volatile int currentNodeIndex;
 
 
-  public Tree(TreeNode root) {
+  public Graph(GraphNode root) {
     this();
     setRoot(root);
     allNodes.add(root);
     updateNodeIndex(0);
   }
 
-  public Tree() {
+  public Graph() {
     this.edges = new ArrayList<>();
     allNodes = new ArrayList<>();
     int [] d = {-1};
@@ -43,12 +45,12 @@ public class Tree {
   }
 
 
-  public TreeNode preCurrentNode(){
+  public GraphNode preCurrentNode(){
     return this.getNodeById(preCurrentNodeIndex);
   }
 
 
-  public TreeNode currentNode(){
+  public GraphNode currentNode(){
     return this.getNodeById(currentNodeIndex);
   }
 
@@ -60,25 +62,31 @@ public class Tree {
   }
 
   public void popCurrent(){
-      TreeNode father = currentNode().getFather();
+      List<GraphNode> fathers = currentNode().getFathers();
+      if(fathers.size() < 1){
+          throw new ASTParsingException("List fathers length cannot less than 0");
+      }
+      GraphNode father = currentNode().getFathers().get(0);
       int father_index = father.getIndex();
       if (father_index < 0)
-        throw new ASTParsingException("father index cannot less than 0");
+          throw new ASTParsingException("father index cannot less than 0");
       currentNodeIndex = father_index;
   }
 
-  private void setRoot(TreeNode root) {
+  private void setRoot(GraphNode root) {
+    terminal = ParcelDataNode.initEmptyInstance(null);
     clearNodes();
     this.root = root;
     root.setIndexAtTree(0);
-    root.setTree(this);
+    root.setGraph(this);
   }
 
-  public TreeNode getRoot() {
+  public GraphNode getRoot() {
     return root;
   }
 
-  public int addNewNode(Expr condition, TreeNode node){
+
+  public int addNewNode(Expr condition, GraphNode node){
       int ret;
       if (allNodes.size() == 0)
       {
@@ -90,13 +98,12 @@ public class Tree {
       if (index <= 0)
        {
           index = allNodes.size();
-          node.setTree(this);
+          node.setGraph(this);
           node.setIndexAtTree(index);
           node.setCond(condition);
           attachedName2TreeNodeIndex.put(node.getIdentifier(), index) ;
           allNodes.add(node);
       }
-
 
       currentNode().addChild(condition, index);
       updateNodeIndex(index);
@@ -124,7 +131,7 @@ public class Tree {
       return i;
   }
 
-  public TreeNode getNodeById(int id){
+  public GraphNode getNodeById(int id){
     if (id< allNodes.size()){
       return allNodes.get(id);
     }
@@ -151,7 +158,7 @@ public class Tree {
   }
 
 
-  public static int getTwoNodeSamePrefixIndexAtMark(TreeNode node1, TreeNode node2){
+  public static int getTwoNodeSamePrefixIndexAtMark(GraphNode node1, GraphNode node2){
     int ret = -1;
     int[] mark1 = node1.mark();
     int[] mark2 = node2.mark();
@@ -171,7 +178,7 @@ public class Tree {
   }
 
 
-  public static boolean twoNodeHaveSameMarkPrefix(TreeNode node1, TreeNode node2){
+  public static boolean twoNodeHaveSameMarkPrefix(GraphNode node1, GraphNode node2){
     int[] mark1 = node1.mark();
     int[] mark2 = node2.mark();
     if (mark1 == mark2)
@@ -187,5 +194,26 @@ public class Tree {
       return true;
     }
     return false;
+  }
+
+
+  public GraphNode findNodeByMark(int [] mark, int len){
+      for (GraphNode node : allNodes){
+          int [] node_mark = node.mark();
+
+          if (mark.length != node_mark.length)
+            continue;
+
+          if (len > mark.length)
+            continue;
+
+          for (int i = 0; i < len; i++){
+            if (node_mark[i] != mark[i])
+              return null;
+          }
+
+          return node;
+      }
+      return null;
   }
 }

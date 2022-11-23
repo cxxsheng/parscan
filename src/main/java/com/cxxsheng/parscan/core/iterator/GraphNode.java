@@ -2,19 +2,22 @@ package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
 import com.microsoft.z3.Expr;
+import java.util.List;
 
-public interface TreeNode {
+public interface GraphNode {
 
 
   Pair<Expr, Integer> getChildIndex(int i);
 
-  TreeNode getFather();
+  List<GraphNode> getFathers();
 
   void addChild(Expr cond, int nodeIndex);
 
-  void setFather(TreeNode node);
+  List<Pair<Expr, Integer>> getChildren();
 
-  void setTree(Tree tree);
+  void addFather(GraphNode node);
+
+  void setGraph(Graph graph);
 
   void setIndexAtTree(int index);
 

@@ -27,7 +27,7 @@ class ASTIteratorTest {
         while (iterator.hasNextStage()){
           System.out.println("nextStage");
           iterator.continueToTaint();
-          System.out.println(iterator.getDataTree());
+          System.out.println(iterator.getDataGraph());
         }
 
 

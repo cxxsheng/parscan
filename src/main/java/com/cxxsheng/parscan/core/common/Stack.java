@@ -2,7 +2,6 @@ package com.cxxsheng.parscan.core.common;
 
 public final class Stack {
 
-  //
   // Data
   //
 
@@ -89,13 +88,13 @@ public final class Stack {
   }
 
   public void set(int index, int value) {
-    if (index > fDepth)
+    if (index >= fDepth)
       throw new IndexOutOfBoundsException();
     fData[index] = value;
   }
 
   public int get(int index){
-    if (index > fDepth)
+    if (index >= fDepth)
       throw new IndexOutOfBoundsException();
     return fData[index];
   }

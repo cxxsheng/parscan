@@ -5,21 +5,27 @@ import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
+import com.cxxsheng.parscan.core.data.unit.symbol.ConditionalExpression;
+import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
+import com.cxxsheng.parscan.core.z3.Z3Core;
 import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ParcelDataNode implements TreeNode {
+public class ParcelDataNode implements GraphNode {
 
-    private Tree tree;
+    private Graph graph;
 
 
     private List<Pair<Expr, Integer>> children = null;
 
-    private TreeNode father = null;
+    private List<GraphNode> fathers = new ArrayList<>();
 
     private Expr cond;
+
+    private Expr value;
 
     private final String attachedSymbolName;
 
@@ -70,6 +76,10 @@ public class ParcelDataNode implements TreeNode {
       this.mark = mark;
     }
 
+    @Override
+    public List<Pair<Expr, Integer>> getChildren() {
+      return children;
+    }
 
     @Override
     public Pair<Expr, Integer> getChildIndex(int i) {
@@ -84,33 +94,33 @@ public class ParcelDataNode implements TreeNode {
           children.add(new Pair<>(cond, dstIndex));
 
           //set father
-          TreeNode node = tree.getNodeById(dstIndex);
-          node.setFather(this);
+          GraphNode node = graph.getNodeById(dstIndex);
+          node.addFather(this);
 
           if (index < 0)
             throw new ASTParsingException("index must be more than -1");
-          tree.addEdge(index, dstIndex);
+          graph.addEdge(index, dstIndex);
       }
 
 
     @Override
-    public TreeNode getFather() {
-        return father;
+    public List<GraphNode> getFathers() {
+        return fathers;
     }
 
     @Override
-    public void setFather(TreeNode node) {
-        this.father = node;
+    public void addFather(GraphNode node) {
+      fathers.add(node);
     }
 
 
-    public Tree getTree() {
-        return tree;
+    public Graph getGraph() {
+        return graph;
     }
 
     @Override
-    public void setTree(Tree tree) {
-        this.tree = tree;
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
 
 
@@ -120,7 +130,7 @@ public class ParcelDataNode implements TreeNode {
 
     @Override
     public boolean isRoot() {
-      return tree.getRoot() == this;
+      return graph.getRoot() == this;
     }
 
     @Override
@@ -130,15 +140,17 @@ public class ParcelDataNode implements TreeNode {
 
     @Override
     public boolean isPlaceholder() {
-      return false;
+      return isPlaceHolder;
     }
 
-    public static ParcelDataNode parseCallFunc(CallFunc func, int[] marks){
+    public static ParcelDataNode parseCallFunc(Z3Core core, CallFunc func, int[] marks){
           int type = 0;
           String funcName = func.getFuncName();
           JavaType jType = null;
           boolean isArray = false;
           FunctionDeclaration d = FunctionReader.findDeclarationByName(funcName);
+          Expr value = null;
+
           String attachedSymbolName = null;
           if (funcName.startsWith("read")){
             type = FUNC_TYPE_READ;
@@ -147,8 +159,23 @@ public class ParcelDataNode implements TreeNode {
             if (jType.isVoid() && d.hasParameter()){
               jType = d.getParameterByIndex(0).getType();
               Expression e = func.getParams().get(0);
-              if (e.isTerminalSymbol()){
+              if (e.getSymbol() instanceof IdentifierSymbol){
                 attachedSymbolName = e.getSymbol().toString();
+              }else {
+                if (e.getSymbol() instanceof ConditionalExpression){
+                  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
+                  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
+
+                  Expr LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                  Expr RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                  value = core.mkOr(LL, RR);
+
+                }else if (e.getSymbol() instanceof PointSymbol){
+                  if (e.getSymbol().toString().endsWith(".length"))
+                    value = core.mkGe(core.VALUE, core.mkInt(1));
+                }
+                else
+                  value = core.mkEq(core.VALUE, core.mkExpression(e));
               }
             }
           }else if (funcName.startsWith("write")){
@@ -156,8 +183,23 @@ public class ParcelDataNode implements TreeNode {
             if (d.hasParameter()){
               jType  = d.getParameterByIndex(0).getType();
               Expression e = func.getParams().get(0);
-              if (e.isTerminalSymbol()){
+              if (e.getSymbol() instanceof IdentifierSymbol){
                 attachedSymbolName = e.getSymbol().toString();
+              }else {
+                if (e.getSymbol() instanceof ConditionalExpression){
+                  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
+                  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
+
+                  Expr LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                  Expr RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                  value = core.mkOr(LL, RR);
+
+                }else if (e.getSymbol() instanceof PointSymbol){
+                  if (e.getSymbol().toString().endsWith(".length"))
+                    value = core.mkGe(core.VALUE, core.mkInt(1));
+                }
+                else
+                  value = core.mkEq(core.VALUE, core.mkExpression(e));
               }
             }
           }else if (funcName.startsWith("create")){
@@ -168,7 +210,9 @@ public class ParcelDataNode implements TreeNode {
           if (jType == null || jType.isVoid()){
             throw new ASTParsingException("cannot handle this call-func: " + func.toString());
           }
-          return new ParcelDataNode(attachedSymbolName, jType, type, marks);
+          ParcelDataNode ret = new ParcelDataNode(attachedSymbolName, jType, type, marks);
+          ret.setValue(value);
+          return ret;
     }
 
     public JavaType getJtype() {
@@ -211,8 +255,14 @@ public class ParcelDataNode implements TreeNode {
       return index;
     }
 
-  @Override
-  public int[] mark() {
-    return mark;
-  }
+    @Override
+    public int[] mark() {
+      return mark;
+    }
+
+
+    public void setValue(Expr exp){
+        value = exp;
+    }
+
 }

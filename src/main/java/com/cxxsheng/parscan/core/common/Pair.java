@@ -46,7 +46,7 @@ public class Pair<L,R> {
   public String toString() {
     final StringBuffer sb = new StringBuffer("Pair{");
     sb.append(left);
-    sb.append("/").append(right);
+    sb.append("/").append(right).append("}");
     return sb.toString();
   }
 }

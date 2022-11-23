@@ -38,7 +38,7 @@ public class ConditionalExpression extends Symbol {
 
     @Override
     public boolean isTerminal() {
-      return true;
+      return false;
     }
 
   @Override
