@@ -17,7 +17,7 @@ public class ExpressionHandler {
 
   public static final String TAG_UNIVERSAL = "Universal";
   public static final String TAG_POINT_SYMBOL = "PointSymbol";
-
+  public static final String TAG_BINARY_EXP = "BinExpression";
 
   public ExpressionHandler(){
     callbacks = new ArrayList<>();
@@ -42,7 +42,8 @@ public class ExpressionHandler {
    * two functions.
    */
 
-  public void handleExpression(Expression e){
+  public List<RuntimeValue> handleExpression(Expression e){
+    List<RuntimeValue> ret = new ArrayList<>();
     ExpressionHandlerCallback universalCallback = getCallbackByName(TAG_UNIVERSAL);
     if (e.isTerminal()){
       Symbol s = e.getSymbol();
@@ -58,7 +59,7 @@ public class ExpressionHandler {
         boolean hitFlag = false;
         if (!exp.isTerminalSymbol()){
           // this expression can be decomposed
-          handleExpression(e);
+         return handleExpression(e);
         }else {
           //only has one identifier and cannot be decomposed
           Symbol terminal_sym = exp.getSymbol();
@@ -72,54 +73,56 @@ public class ExpressionHandler {
           //handling params first
           CallFunc callFunc = (CallFunc)((PointSymbol)s).getV();
           List<Expression> params = callFunc.getParams();
-          if (params!=null)
+          if (params != null)
             for(Expression p : callFunc.getParams()){
               if (!p.isTerminalSymbol())
-                 handleExpression(p);
+                  handleExpression(p);
             }
 
           if (callback!=null){
-            callback.handleSymbol(callFunc, hitFlag);
+            ret.add(callback.handleSymbol(callFunc, hitFlag));
+            return ret;
           }
 
         }else {
           //identifier
-
-
+          if (callback!=null)
+             callback.handleExpression(((PointSymbol)s).getExp(),false);
         }
 
-        return;
       }
       //pure function call instead of point call func
       else if (s instanceof CallFunc){
-        boolean ret = false;
         List<Expression> params = ((CallFunc)s).getParams();
         if (params != null)
           for(Expression p : ((CallFunc)s).getParams()){
-             handleExpression(p);
+             List t = handleExpression(p);
+             if (t!=null && t.size()>0)
+              ret.addAll(t);
           }
-        return;
+        return ret;
       }
-
-
-      return ;
+      ret.add(e.getSymbol());
+      return ret;
     }else{
 
-      boolean left = false;
-      boolean right  = false;
+      List<RuntimeValue> left = null;
+      List<RuntimeValue> right = null;
 
-      if (e.leftCanDecompose())
-      {
-        handleExpression(e.getL());
-      }
-      if (e.rightCanDecompose()){
-        handleExpression(e.getR());
-      }
+      left=handleExpression(e.getL());
+      right=handleExpression(e.getR());
+
+
+
+
+      ExpressionHandlerCallback callback = getCallbackByName(TAG_BINARY_EXP);
+      if(callback !=null)
+          callback.handleBinExpression(left, e.getOp() , right, true);
+
 
       if (universalCallback != null)
         universalCallback.handleExpression(e, true);
-
-      return;
+      return null;
     }
 
   }

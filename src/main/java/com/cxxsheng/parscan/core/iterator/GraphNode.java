@@ -1,19 +1,20 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
-import com.microsoft.z3.Expr;
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
+import com.cxxsheng.parscan.core.z3.Z3Core;
 import java.util.List;
 
 public interface GraphNode {
 
 
-  Pair<Expr, Integer> getChildIndex(int i);
+  Pair<ExprWithTypeVariable, Integer> getChildIndex(int i);
 
   List<GraphNode> getFathers();
 
-  void addChild(Expr cond, int nodeIndex);
+  void addChild(ExprWithTypeVariable cond, int nodeIndex);
 
-  List<Pair<Expr, Integer>> getChildren();
+  List<Pair<ExprWithTypeVariable, Integer>> getChildren();
 
   void addFather(GraphNode node);
 
@@ -23,15 +24,17 @@ public interface GraphNode {
 
   boolean isRoot();
 
-  String getIdentifier();
+  List<String> getIdentifier();
 
   boolean isPlaceholder();
-
-  void setCond(Expr condition);
-
-  Expr getCond();
 
   int getIndex();
 
   int[] mark();
+
+  void clearMark();
+
+  void setMark(int[] mark);
+
+  void chooseBranch(Z3Core core, ExprWithTypeVariable exp);
 }

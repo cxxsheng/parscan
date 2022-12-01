@@ -1,11 +1,8 @@
 package com.cxxsheng.parscan.core.iterator;
 
-import com.cxxsheng.parscan.core.common.Pair;
-import com.microsoft.z3.Expr;
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Graph {
 
@@ -15,9 +12,8 @@ public class Graph {
 
   private final List<GraphNode> allNodes;
 
-  private final List<Pair<Integer,Integer>> edges;
+  private final List<Edge> edges;
 
-  private final Map<String, Integer> attachedName2TreeNodeIndex = new HashMap();
 
   private volatile int preCurrentNodeIndex = -1;
 
@@ -25,19 +21,19 @@ public class Graph {
 
 
   public Graph(GraphNode root) {
-    this();
-    setRoot(root);
-    allNodes.add(root);
-    updateNodeIndex(0);
+      this();
+      setRoot(root);
+      allNodes.add(root);
+      updateNodeIndex(0);
   }
 
   public Graph() {
-    this.edges = new ArrayList<>();
-    allNodes = new ArrayList<>();
-    int [] d = {-1};
-    setRoot(ParcelDataNode.initEmptyInstance(d));
-    allNodes.add(root);
-    updateNodeIndex(0);
+      this.edges = new ArrayList<>();
+      allNodes = new ArrayList<>();
+      int [] d = {-1};
+      setRoot(ParcelDataNode.initEmptyInstance(d));
+      allNodes.add(root);
+      updateNodeIndex(0);
   }
 
   private void clearNodes(){
@@ -54,11 +50,24 @@ public class Graph {
     return this.getNodeById(currentNodeIndex);
   }
 
-  public void updateNodeIndex(int index){
+  public void updateNodeIndex(int index, boolean isExecutedMode){
       currentNodeIndex = index;
       preCurrentNodeIndex = currentNodeIndex;
-      System.out.println("current index " + index  + "/" + currentNode());
+      //if isExecutedMode
+      if (isExecutedMode){
+        for (Edge edge : edges){
+          if (edge.getLeft() == preCurrentNodeIndex && edge.getRight() == currentNodeIndex){
+            edge.setPassed(true);
+            break;
+          }
 
+        }
+      }
+      System.out.println("current index " + index  + "/" + currentNode());
+  }
+
+  public void updateNodeIndex(int index) {
+      updateNodeIndex(index, false);
   }
 
   public void popCurrent(){
@@ -74,19 +83,18 @@ public class Graph {
   }
 
   private void setRoot(GraphNode root) {
-    terminal = ParcelDataNode.initEmptyInstance(null);
-    clearNodes();
-    this.root = root;
-    root.setIndexAtTree(0);
-    root.setGraph(this);
+      terminal = ParcelDataNode.initEmptyInstance(null);
+      clearNodes();
+      this.root = root;
+      root.setIndexAtTree(0);
+      root.setGraph(this);
   }
 
   public GraphNode getRoot() {
     return root;
   }
 
-
-  public int addNewNode(Expr condition, GraphNode node){
+  public int addNewNode(ExprWithTypeVariable condition, GraphNode node){
       int ret;
       if (allNodes.size() == 0)
       {
@@ -100,8 +108,6 @@ public class Graph {
           index = allNodes.size();
           node.setGraph(this);
           node.setIndexAtTree(index);
-          node.setCond(condition);
-          attachedName2TreeNodeIndex.put(node.getIdentifier(), index) ;
           allNodes.add(node);
       }
 
@@ -111,7 +117,7 @@ public class Graph {
   }
 
   public int addEdge(int src, int dst){
-      Pair<Integer, Integer> edge = new Pair<>(src, dst);
+      Edge edge = new Edge(src, dst);
       int index = edges.indexOf(edge);
 
       if (index >= 0){
@@ -124,18 +130,25 @@ public class Graph {
   }
 
   public int getIndexByAttachedName(String attachedName){
-    Integer i =  attachedName2TreeNodeIndex.get(attachedName);
-    if (i == null)
+    if (attachedName == null)
       return -1;
-    else
-      return i;
+    for (GraphNode node : allNodes){
+      if (node.isPlaceholder())
+        continue;
+
+      List<String> names = node.getIdentifier();
+
+      if (names!=null)
+        if(names.contains(attachedName))
+          return node.getIndex();
+    }
+    return -1;
   }
 
   public GraphNode getNodeById(int id){
     if (id< allNodes.size()){
       return allNodes.get(id);
     }
-
     return null;
   }
 
@@ -143,11 +156,10 @@ public class Graph {
   @Override
   public String toString() {
     final StringBuffer sb = new StringBuffer("Tree{");
-    for (Pair<Integer, Integer> edge :edges){
+    for (Edge edge :edges){
       int src = edge.getLeft();
       int dst = edge.getRight();
 
-      sb.append(getNodeById(dst).getCond());
       sb.append(getNodeById(src));
       sb.append("->");
       sb.append(getNodeById(dst));
@@ -196,7 +208,6 @@ public class Graph {
     return false;
   }
 
-
   public GraphNode findNodeByMark(int [] mark, int len){
       for (GraphNode node : allNodes){
           int [] node_mark = node.mark();
@@ -211,9 +222,29 @@ public class Graph {
             if (node_mark[i] != mark[i])
               return null;
           }
-
           return node;
       }
       return null;
+  }
+
+  //recovery current node at root node
+  //and clear all node_mark
+  public void recovery(){
+    int rootIndex = allNodes.indexOf(getRoot());
+    currentNodeIndex = rootIndex;
+    for (GraphNode node : allNodes){
+      if (root != node)
+        node.clearMark();
+      if (node instanceof ParcelDataNode)
+        ((ParcelDataNode)node).clearIdentifier();
+    }
+  }
+
+  public Edge findEdgeByIndex(int src, int dst){
+    for (Edge edge : edges){
+      if (edge.getLeft() == src && edge.getRight() == dst)
+        return edge;
+    }
+    return null;
   }
 }

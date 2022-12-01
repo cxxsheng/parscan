@@ -19,6 +19,8 @@ import com.cxxsheng.parscan.core.iterator.GraphNode;
 import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Sort;
 
 public class Z3Core {
 
@@ -28,10 +30,14 @@ public class Z3Core {
 
   private Context ctx = new Context();
 
-  public final Expr EXP_TRUE = ctx.mkTrue();
-  public final Expr EXP_FALSE = ctx.mkFalse();
+  //private Solver solver = ctx.mkSolver();
 
-  public final Expr VALUE = ctx.mkConst("$VALUE", ctx.getIntSort());
+  public final ExprWithTypeVariable EXP_TRUE = new ExprWithTypeVariable(ctx.mkTrue());
+  public final ExprWithTypeVariable EXP_FALSE = new ExprWithTypeVariable(ctx.mkFalse());
+
+  private final Expr VALUE_EXP = ctx.mkConst("$VALUE", ctx.getIntSort());
+
+  public final ExprWithTypeVariable VALUE = new ExprWithTypeVariable(VALUE_EXP, VALUE_EXP);
 
   private volatile Expr conditionExpression_left = null;
 
@@ -66,7 +72,9 @@ public class Z3Core {
 
 
 
-  public Expr mkConst(JavaType type, String name){
+  public ExprWithTypeVariable mkConst(JavaType type, String name){
+    com.microsoft.z3.Symbol symbol = ctx.mkSymbol(name);
+    Sort sort;
     if (type.isPrimitive()){
       Primitive p = type.getPrimitive();
       switch (p){
@@ -76,15 +84,22 @@ public class Z3Core {
         case INT:
         case LONG:
         case CHAR:
-          return ctx.mkIntConst(name);
+
+          sort = ctx.getIntSort();
+          break;
         case FLOAT:
         case DOUBLE:
-          return ctx.mkRealConst(name);
+          sort = ctx.getRealSort();
+          break;
         case BOOL:
-          return ctx.mkBoolConst(name);
+          sort = ctx.getBoolSort();
+          break;
         default:
           throw new Z3ParsingException("Cannot handle unknown JavaType: " + type);
       }
+
+      Expr expr = ctx.mkConst(symbol, sort);
+      return new ExprWithTypeVariable(expr, expr);
     }
     else {
       throw new Z3ParsingException("Cannot handle object: "+ type);
@@ -93,11 +108,11 @@ public class Z3Core {
 
   }
 
-  public Expr mkExpression(Expression e){
+  public ExprWithTypeVariable mkExpression(Expression e){
     if (e==null)
       return null;
-    Expr left = null;
-    Expr right = null;
+    ExprWithTypeVariable left = null;
+    ExprWithTypeVariable right = null;
     if (e.isTerminalSymbol()){
        Symbol s = e.getSymbol();
         if (s instanceof FloatSymbol)
@@ -111,17 +126,17 @@ public class Z3Core {
             sb.append("/");
             sb.append(denominator);
           }
-          return ctx.mkReal(sb.toString());
+          return new ExprWithTypeVariable(ctx.mkReal(sb.toString()));
         }else if (s instanceof IntSymbol){
-          return ctx.mkInt(((IntSymbol)s).getValue());
+          return new ExprWithTypeVariable(ctx.mkInt(((IntSymbol)s).getValue()));
         }else if(s instanceof BoolSymbol){
-          return ((BoolSymbol)s).getValue() ? ctx.mkTrue() : ctx.mkFalse();
+          return new ExprWithTypeVariable(((BoolSymbol)s).getValue() ? ctx.mkTrue() : ctx.mkFalse());
         }else if (s instanceof CharSymbol){
-          return ctx.mkInt(((CharSymbol)s).getValue());
+          return new ExprWithTypeVariable(ctx.mkInt(((CharSymbol)s).getValue()));
         }
 
         else if (s instanceof StringSymbol){
-          return  ctx.mkString(((StringSymbol)s).getValue());
+          return new ExprWithTypeVariable(ctx.mkString(((StringSymbol)s).getValue()));
 
         }else if (s instanceof IdentifierSymbol){
 
@@ -149,7 +164,7 @@ public class Z3Core {
           }
 
         }else if (s instanceof NullSymbol){
-          return ctx.mkInt(0 );
+          return new ExprWithTypeVariable(ctx.mkInt(0 ));
         }
         else {
           throw new Z3ParsingException("cannot handle " + e );
@@ -165,70 +180,92 @@ public class Z3Core {
 
     left =  mkExpression(e.getL());
     right = mkExpression(e.getR());
+    Expr new_exp;
     switch (op){
       case EQ:
-
-        return ctx.mkEq(left, right);
+        new_exp = ctx.mkEq(left.getExpr(), right.getExpr());
+        break;
       case NE:
-        return ctx.mkNot(ctx.mkEq(left, right));
-
+        new_exp = ctx.mkNot(ctx.mkEq(left.getExpr(), right.getExpr()));
+        break;
       case AND2:
-        return ctx.mkAnd(left, right);
-
+        new_exp = ctx.mkAnd(left.getExpr(), right.getExpr());
+        break;
       case OR2:
-        return ctx.mkOr(left, right);
-
+        new_exp = ctx.mkOr(left.getExpr(), right.getExpr());
+        break;
       case GT:
-        return ctx.mkGt(left, right);
-
+        new_exp = ctx.mkGt(left.getExpr(), right.getExpr());
+        break;
       case GE:
-        return ctx.mkGe(left, right);
-
+        new_exp = ctx.mkGe(left.getExpr(), right.getExpr());
+        break;
       case LT:
-        return ctx.mkLt(left, right);
+        new_exp = ctx.mkLt(left.getExpr(), right.getExpr());
+        break;
       case LE:
-        return ctx.mkLe(left, right);
-
+        new_exp = ctx.mkLe(left.getExpr(), right.getExpr());
+        break;
       default:
         throw new Z3ParsingException("cannot handle such type " + op.getName() + " in exp:" + e.toString());
     }
 
+
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkNot(Expr e){
-    return ctx.mkNot(e).simplify();
+  public ExprWithTypeVariable mkNot(ExprWithTypeVariable e){
+    e.setExpr(ctx.mkNot(e.getExpr()));
+    return e;
   }
 
-  public Expr mkAnd(Expr left, Expr right){
-    return ctx.mkAnd(left, right).simplify();
+  public ExprWithTypeVariable mkAnd(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkAnd(left.getExpr(), right.getExpr());
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkOr(Expr left, Expr right){
-    return ctx.mkOr(left, right).simplify();
+  public ExprWithTypeVariable mkOr(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkOr(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkEq(Expr left, Expr right){
-    return ctx.mkEq(left, right);
+  public ExprWithTypeVariable mkEq(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkEq(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkLe(Expr left, Expr right){
-    return ctx.mkLe(left, right);
+  public ExprWithTypeVariable mkLe(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkLe(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkLt(Expr left, Expr right){
-    return ctx.mkLt(left, right);
+  public ExprWithTypeVariable mkLt(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkLt(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkGt(Expr left, Expr right){
-    return ctx.mkGt(left, right);
+  public ExprWithTypeVariable mkGt(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkGt(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkGe(Expr left, Expr right){
-    return ctx.mkGe(left, right);
+  public ExprWithTypeVariable mkGe(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    Expr new_exp = ctx.mkGe(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
-  public Expr mkInt(long i){
-    return ctx.mkInt(i);
+  public ExprWithTypeVariable mkInt(long i){
+    return new ExprWithTypeVariable(ctx.mkInt(i));
+  }
+
+  public Expr mkAll(ExprWithTypeVariable e){
+    Expr[] vars = new Expr[e.getVars().size()];
+    e.getVars().toArray(vars);
+    return ctx.mkForall(vars, e.getExpr(),1, null, null, null, null);
+  }
+
+  public Solver mkSolver(){
+    return ctx.mkSolver();
   }
 
 

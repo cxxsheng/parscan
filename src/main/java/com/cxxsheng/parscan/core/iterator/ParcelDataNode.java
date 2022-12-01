@@ -8,26 +8,26 @@ import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.ConditionalExpression;
 import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ParcelDataNode implements GraphNode {
+public class ParcelDataNode extends RuntimeValue implements GraphNode {
 
     private Graph graph;
 
-
-    private List<Pair<Expr, Integer>> children = null;
+    private List<Pair<ExprWithTypeVariable, Integer>> children = null;
 
     private List<GraphNode> fathers = new ArrayList<>();
 
-    private Expr cond;
+    private ExprWithTypeVariable value;
 
-    private Expr value;
-
-    private final String attachedSymbolName;
+    private List<String> attachedSymbolName;
 
     private final boolean isPlaceHolder;
 
@@ -43,33 +43,26 @@ public class ParcelDataNode implements GraphNode {
 
     private final JavaType jtype;
 
-    private final int[] mark;
+    private int[] mark;
 
     private int index = -1;
 
-    private boolean isEmpty = false;
-
     private ParcelDataNode(int[] mark){
-      this.mark = mark;
       func_type = 0;
       jtype = JavaType.getVOID();
-      isEmpty = true;
       attachedSymbolName = null;
       isPlaceHolder = true;
+      this.mark = mark;
     }
 
     public static ParcelDataNode initEmptyInstance(int[] mark){
        return new ParcelDataNode(mark);
     }
 
-    //return true means this node is
-    //a placeholder node
-    public boolean isEmpty(){
-      return isEmpty;
-    }
 
     public ParcelDataNode(String attachedSymbolName, JavaType jtype, int func_type, int[] mark){
-      this.attachedSymbolName = attachedSymbolName;
+      this.attachedSymbolName = new ArrayList<>();
+      this.attachedSymbolName.add(attachedSymbolName);
       this.jtype = jtype;
       this.func_type =  func_type;
       isPlaceHolder = false;
@@ -77,17 +70,17 @@ public class ParcelDataNode implements GraphNode {
     }
 
     @Override
-    public List<Pair<Expr, Integer>> getChildren() {
+    public List<Pair<ExprWithTypeVariable, Integer>> getChildren() {
       return children;
     }
 
     @Override
-    public Pair<Expr, Integer> getChildIndex(int i) {
+    public Pair<ExprWithTypeVariable, Integer> getChildIndex(int i) {
       return children.get(i);
     }
 
     @Override
-    public void addChild(Expr cond, int dstIndex) {
+    public void addChild(ExprWithTypeVariable cond, int dstIndex) {
           if (children == null)
               children = new ArrayList<>();
 
@@ -133,8 +126,19 @@ public class ParcelDataNode implements GraphNode {
       return graph.getRoot() == this;
     }
 
+    public void clearIdentifier(){
+      if (attachedSymbolName!=null)
+        attachedSymbolName.clear();
+    }
+
+    public void addIdentifier(String name){
+      if (attachedSymbolName!=null)
+        attachedSymbolName.add(name);
+    }
+
+
     @Override
-    public String getIdentifier() {
+    public List<String> getIdentifier() {
       return attachedSymbolName;
     }
 
@@ -149,7 +153,7 @@ public class ParcelDataNode implements GraphNode {
           JavaType jType = null;
           boolean isArray = false;
           FunctionDeclaration d = FunctionReader.findDeclarationByName(funcName);
-          Expr value = null;
+          ExprWithTypeVariable value = null;
 
           String attachedSymbolName = null;
           if (funcName.startsWith("read")){
@@ -166,8 +170,8 @@ public class ParcelDataNode implements GraphNode {
                   Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
                   Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
 
-                  Expr LL = core.mkEq(core.VALUE, core.mkExpression(L));
-                  Expr RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
                   value = core.mkOr(LL, RR);
 
                 }else if (e.getSymbol() instanceof PointSymbol){
@@ -190,8 +194,8 @@ public class ParcelDataNode implements GraphNode {
                   Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
                   Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
 
-                  Expr LL = core.mkEq(core.VALUE, core.mkExpression(L));
-                  Expr RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
                   value = core.mkOr(LL, RR);
 
                 }else if (e.getSymbol() instanceof PointSymbol){
@@ -237,19 +241,6 @@ public class ParcelDataNode implements GraphNode {
         return sb.toString();
     }
 
-    public boolean isPlaceHolder() {
-      return isPlaceHolder;
-    }
-
-    public Expr getCond() {
-      return cond;
-    }
-
-    @Override
-    public void setCond(Expr cond) {
-      this.cond = cond;
-    }
-
     @Override
     public int getIndex() {
       return index;
@@ -257,12 +248,49 @@ public class ParcelDataNode implements GraphNode {
 
     @Override
     public int[] mark() {
+      if (mark == null)
+        throw new ASTParsingException("Cannot get a cleared mark data");
       return mark;
     }
 
 
-    public void setValue(Expr exp){
+    public void setValue(ExprWithTypeVariable exp){
         value = exp;
     }
 
+    @Override
+    public void clearMark(){
+      mark = null;
+    }
+
+    @Override
+    public void setMark(int[] mark) {
+      this.mark = mark;
+    }
+
+  @Override
+    public void chooseBranch(Z3Core core, ExprWithTypeVariable curCond) {
+
+      for (Pair<ExprWithTypeVariable, Integer> childPair :  children){
+        Solver solver = core.mkSolver();
+
+        ExprWithTypeVariable childCond = childPair.getLeft();
+        Status status = solver.check();
+        ExprWithTypeVariable eq = core.mkEq(curCond, childCond);
+        Expr all_eq = core.mkAll(eq);
+        solver.add(all_eq);
+        solver.check();
+        if (status == Status.SATISFIABLE)
+        {
+          Graph graph = getGraph();
+          graph.updateNodeIndex(childPair.getRight());
+
+          Edge edge = graph.findEdgeByIndex(index, childPair.getRight());
+          if (edge == null)
+            throw new ParcelMismatchException("cannot find edge ["+index +"->" + childPair.getRight() + "]");
+          edge.setPassed(true);
+          break;
+        }
+      }
+    }
 }

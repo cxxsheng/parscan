@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.iterator;
 
 import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
 import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
+import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_BINARY_EXP;
 import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_POINT_SYMBOL;
 import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_UNIVERSAL;
 
@@ -15,12 +16,13 @@ import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
-import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EmptyStackException;
@@ -40,10 +42,6 @@ public class ASTIterator {
 
   private final static Logger LOG = LoggerFactory.getLogger(ASTIterator.class);
 
-
-
-
-
   private Stack indexStack;
 
   private final List<String> traceList;
@@ -54,12 +52,18 @@ public class ASTIterator {
 
   private final ExpressionHandler condH;
 
-  private Expr current_condition = null;
+  private ExprWithTypeVariable current_condition = null;
 
   private final Z3Core core;
 
+  private final VariableTable vt = new VariableTable();
+
+  //Default mode means ASTIterator construct a data node graph
+  //while iterating the ast.
   public final static int DEFAULT_MODE = 0;
 
+  //Execution mode means ASTIterator check the given graph
+  //while iterating the ast.
   public final static int EXECUTION_MODE = 1;
 
   private final int mode;
@@ -81,11 +85,12 @@ public class ASTIterator {
   }
 
   public ASTIterator(JavaClass javaClass, FunctionImp imp){
-    this(javaClass, imp, DEFAULT_MODE, new Graph());
+      this(javaClass, imp, DEFAULT_MODE, new Graph());
   }
 
   public ASTIterator(JavaClass javaClass, FunctionImp imp, Graph givenGraph){
       this(javaClass, imp, EXECUTION_MODE, givenGraph);
+      givenGraph.recovery();
   }
 
   public ASTIterator(JavaClass javaClass, FunctionImp functionImp, int mode, Graph graph) {
@@ -106,7 +111,7 @@ public class ASTIterator {
       H = new ExpressionHandler();
       H.addCallback(new ExpressionHandlerCallback() {
         @Override
-        public void handleSymbol(Symbol s, boolean isHit) {
+        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
           if (isHit){
             //prefix is tainted
             if(!(s instanceof CallFunc)){
@@ -114,24 +119,58 @@ public class ASTIterator {
             }
 
             if (mode == DEFAULT_MODE) {
-              ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
-              dataGraph.addNewNode(constructCondition(false), node);
-              LOG.info("construct " + node.toString());
+                ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
+                dataGraph.addNewNode(constructCondition(false), node);
+                LOG.info("construct " + node.toString());
             }else if (mode == EXECUTION_MODE){
+              List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
+              while (childrenPair.size() == 1 && dataGraph.getNodeById(childrenPair.get(0).getRight()).isPlaceholder()){
+                //only have one path and it is a placeholder
+                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
+                //broadcast the mark
+                nextNode.setMark(dataGraph.currentNode().mark());
+                dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+              }
 
+              GraphNode cur = dataGraph.currentNode();
+
+              if (cur instanceof ParcelDataNode){
+
+                ExprWithTypeVariable variable =  constructCondition(false);
+              }
+
+
+              //if (node instanceof ParcelDataNode){
+              //      System.out.println("current conditoin " + variable);
+              //      ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
+              //      System.out.println("comparing " + tmpNode.toString() +" /:/ "+node.toString());
+              //      if (!((ParcelDataNode)node).getJtype().equals(tmpNode.getJtype()))
+              //        throw new ParcelMismatchException("java type mismatch!");
+              //
+              //      node.setMark(indexStack.toIntArray());
+              //  }
 
             }
           }
+          return null;
         }
         @Override
-        public void handleExpression(Expression e, boolean isHit) {
+        public RuntimeValue handleExpression(Expression e, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left,
+                                                      Operator op,
+                                                      List<RuntimeValue> right,
+                                                      boolean isHit) {
+          return null;
         }
 
         @Override
         public boolean broadcastHit(Symbol terminalSymbol) {
           if (!terminalSymbol.isTerminal())
             throw new ASTParsingException("Cannot handle such symbol " + terminalSymbol + "and expect a terminal symbol.");
-
           return checkTraceList(terminalSymbol.toString());
         }
 
@@ -141,19 +180,71 @@ public class ASTIterator {
         }
       });
 
-        condH = new ExpressionHandler();
-        condH.addCallback(new ExpressionHandlerCallback() {
+      H.addCallback(new ExpressionHandlerCallback() {
         @Override
-        public void handleSymbol(Symbol s, boolean isHit) {
-
+        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
+          return null;
         }
 
         @Override
-        public void handleExpression(Expression e, boolean isHit) {
+        public RuntimeValue handleExpression(Expression e, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left, Operator op, List<RuntimeValue> right, boolean isHit) {
+          if (isHit){
+            if (op == Operator.AS){
+              if (left.size() > 1){
+                throw new ASTParsingException("assign expression's left identifier more than 1");
+              }
+              RuntimeValue left_ = left.get(0);
+              //if (right)
+              for (int i =0; i < right.size(); i++){
+                RuntimeValue v = right.get(i);
+                if (v instanceof ParcelDataNode){
+                  ((ParcelDataNode)v).addIdentifier(left_.toString());
+                }
+              }
+            }
+
+          }
+          return null;
+        }
+
+        @Override
+        public boolean broadcastHit(Symbol terminalSymbol) {
+          return false;
+        }
+
+        @Override
+        public String getTag() {
+          return TAG_BINARY_EXP;
+        }
+      });
+
+      condH = new ExpressionHandler();
+      condH.addCallback(new ExpressionHandlerCallback() {
+        @Override
+        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleExpression(Expression e, boolean isHit) {
               current_condition = core.mkExpression(e);
+              return null;
         }
 
         @Override
+        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left,
+                                                      Operator op,
+                                                      List<RuntimeValue> right,
+                                                      boolean isHit) {
+          return null;
+        }
+
+          @Override
         public boolean broadcastHit(Symbol terminalSymbol) {
           return false;
         }
@@ -183,12 +274,12 @@ public class ASTIterator {
     return false;
   }
 
-  private Expr constructConditionByExpression(Expression e){
+  private ExprWithTypeVariable constructConditionByExpression(Expression e){
       condH.handleExpression(e);
       if (current_condition == null )
         throw new ASTParsingException("cannot access condition at " + e);
-      Expr tmp = current_condition;
-      current_condition = null; //Clear it is very important for checking constructCondition sucessful or not
+      ExprWithTypeVariable tmp = current_condition;
+      current_condition = null; //Clear it is very important for checking constructCondition successful or not
       return tmp;
   }
 
@@ -211,15 +302,11 @@ public class ASTIterator {
     return i;
   }
 
-
-  private Expr constructCondition(boolean isPlaceHolder){
+  private ExprWithTypeVariable constructCondition(boolean isPlaceHolder){
       GraphNode last = dataGraph.currentNode();
       int[] last_mark = last.mark();
       int[] current_mark = indexStack.toIntArray();
-
       int last_len = last_mark.length;
-
-
       int same_size =  sizeInSameDomain(last_mark, current_mark);
 
       //last node need to pop current
@@ -234,7 +321,7 @@ public class ASTIterator {
         last_len = last_mark.length;
       }
 
-      Expr cond = core.EXP_TRUE;
+      ExprWithTypeVariable cond = core.EXP_TRUE;
 
       //from same_index to current_node mark index to construct condition
       //reflesh same_index
@@ -251,8 +338,7 @@ public class ASTIterator {
         if (block.getLeft() instanceof ConditionalBlock){
 
             Expression e = ((ConditionalBlock)block.getLeft()).getBoolExp();
-            Expr exp = constructConditionByExpression(e);
-
+            ExprWithTypeVariable exp = constructConditionByExpression(e);
 
 
             //skip the last one is the block... when we construct a placeholder node
@@ -276,17 +362,12 @@ public class ASTIterator {
 
         }
       }
-
-
       return cond;
-
   }
-
 
   private void handleStatement(Statement e){
 
     switch (e.getType()){
-
       case RETURN_STATEMENT://fixme it is a terminal
         break;
       case THROW_STATEMENT:
@@ -408,7 +489,6 @@ public class ASTIterator {
         }
 
         else if (cur instanceof Block){
-
           //start a new block
           if (cur instanceof ConditionalBlock){
                 indexStack.push(COND_INDEX_IF); // mark it is a statement
@@ -449,7 +529,8 @@ public class ASTIterator {
             if (mode == DEFAULT_MODE){
               ExpressionOrBlock curBlock = getRecentBlock();
               if (curBlock instanceof ConditionalBlock){
-                constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
+                ExprWithTypeVariable expr =  constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
+                System.out.println(expr);
                 if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
                   dataGraph.addNewNode(constructCondition(true), ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
               }
@@ -485,8 +566,8 @@ public class ASTIterator {
           if (node == null)
             throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
           while (node.getChildren()!=null && node.getChildren().size() > 0){
-            Pair<Expr, Integer> childIndexPair =  node.getChildren().get(0);
-            int index = childIndexPair.getRight();
+            Pair<ExprWithTypeVariable, Integer> childIndexEdge =  node.getChildren().get(0);
+            int index = childIndexEdge.getRight();
             node = dataGraph.getNodeById(index);
           }
           if (!node.isPlaceholder())
@@ -497,7 +578,15 @@ public class ASTIterator {
         //exit
       }
     }else if (mode == EXECUTION_MODE){
+        if (indexStack.size()>1){
+          int cond_index = indexStack.get(indexStack.size() - 2);
+          if (cond_index == COND_INDEX_IF){
+              //need to pop?
 
+          }else if (cond_index == COND_INDEX_ELSE){
+
+          }
+        }
 
     }
     indexStack.pop();
@@ -521,5 +610,10 @@ public class ASTIterator {
     return dataGraph;
   }
 
+
+  public void putRuntimeValue(String name , RuntimeValue value){
+    RuntimeVariable var = new RuntimeVariable(indexStack.toIntArray(), name);
+    vt.putVariable(var, value);
+  }
 
 }

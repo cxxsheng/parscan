@@ -1,13 +1,17 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import java.util.List;
 
 public interface ExpressionHandlerCallback {
 
-    void handleSymbol(Symbol s, boolean isHit);
+    RuntimeValue handleSymbol(Symbol s, boolean isHit);
 
-    void handleExpression(Expression e, boolean isHit);
+    RuntimeValue handleExpression(Expression e, boolean isHit);
+
+    List<RuntimeValue> handleBinExpression(List<RuntimeValue> left, Operator op, List<RuntimeValue> right, boolean isHit);
 
     boolean broadcastHit(Symbol terminalSymbol);
 
