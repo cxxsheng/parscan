@@ -13,11 +13,6 @@ public class StringSymbol extends Symbol {
 
 
     @Override
-    public final boolean isConstant() {
-      return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
@@ -25,10 +20,6 @@ public class StringSymbol extends Symbol {
       return Objects.equals(value, that.value);
     }
 
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
     @Override
     public int hashCode() {

@@ -2,25 +2,24 @@ package com.cxxsheng.parscan.core.data.unit.symbol;
 
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.JavaClass;
-import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
-
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import java.util.List;
 
 public class CallFunc extends Symbol {
     private final String funcName;
-    private final List<Expression> params;
+    private final List<TerminalSymbol> params;
 
 
     private final Coordinate coordinate;
     private final boolean isConstructFunc;
 
     private JavaClass extraClass = null;
-    public CallFunc(Coordinate x, String funcName, List<Expression> params) {
+    public CallFunc(Coordinate x, String funcName, List<TerminalSymbol> params) {
         this(x, funcName,params,false);
     }
 
-    public CallFunc(Coordinate x, String funcName, List<Expression> params, boolean isConstructFunc) {
+    public CallFunc(Coordinate x, String funcName, List<TerminalSymbol> params, boolean isConstructFunc) {
       this.funcName = funcName;
       this.params = params;
       this.coordinate = x;
@@ -34,7 +33,7 @@ public class CallFunc extends Symbol {
         return funcName;
     }
 
-    public List<Expression> getParams() {
+    public List<TerminalSymbol> getParams() {
         return params;
     }
 
@@ -42,16 +41,6 @@ public class CallFunc extends Symbol {
         return coordinate;
     }
 
-
-    @Override
-    public final boolean isConstant() {
-      return false;
-    }
-
-    @Override
-    public boolean isTerminal() {
-      return false;
-    }
 
   @Override
     public boolean equals(Object o) {
@@ -64,7 +53,7 @@ public class CallFunc extends Symbol {
         return funcName+"()";
       }
       StringBuilder sb = new StringBuilder("(");
-      for (Expression e : params){
+      for (TerminalSymbol e : params){
           sb.append(e);
           sb.append(", ");
       }

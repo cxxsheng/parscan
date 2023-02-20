@@ -27,16 +27,6 @@ public class ArrayInitSymbol extends Symbol {
       return Objects.hash(value);
     }
 
-    @Override
-    public boolean isConstant() {
-      return true;
-    }
-
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
-
   @Override
     public String toString() {
       return value;

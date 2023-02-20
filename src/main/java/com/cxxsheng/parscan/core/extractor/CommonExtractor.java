@@ -7,11 +7,14 @@ import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionList;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Primitive;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.ArrayGetSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.ArrayInitSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
@@ -25,6 +28,10 @@ import com.cxxsheng.parscan.core.data.unit.symbol.IntSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.NullSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.StringSymbol;
+import com.cxxsheng.parscan.core.extractor.callback.BinaryCreator;
+import com.cxxsheng.parscan.core.extractor.callback.ListCreator;
+import com.cxxsheng.parscan.core.extractor.callback.TernaryCreator;
+import com.cxxsheng.parscan.core.extractor.callback.UnaryCreator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,24 +99,23 @@ public class CommonExtractor {
   //    | typeTypeOrVoid '.' CLASS
   //    | nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
   //
-  public static Expression parsePrimary(JavaParser.PrimaryContext primaryContext){
+  public static ExpressionList parsePrimary(JavaParser.PrimaryContext primaryContext){
     //cannot handle explicitGenericInvocationSuffix
     if (primaryContext.nonWildcardTypeArguments() != null)
       throw new JavaASTExtractorException("Cannot handle nonWildcardTypeArguments during primary's parsing ", primaryContext);
 
     if (primaryContext.literal() != null){
-      return parseLiteral(primaryContext.literal()).toExp();
+      return parseLiteral(primaryContext.literal()).toExp().wrapToList();
     }
     if (primaryContext.expression() != null)
       return parseExpression(primaryContext.expression());
-
-    return parseIDENTIFIER(primaryContext.getText()).toExp();
+    return parseIDENTIFIER(primaryContext.getText()).toExp().wrapToList();
   }
 
 
 
-  public static List<Expression> parseExpressionList(JavaParser.ExpressionListContext params){
-    List<Expression> list = null;
+  public static List<ExpressionList> parseExpressionList(JavaParser.ExpressionListContext params){
+    List<ExpressionList> list = null;
     if (params!=null){
       List<JavaParser.ExpressionContext> ps = params.expression();
       for (JavaParser.ExpressionContext p : ps){
@@ -122,7 +128,7 @@ public class CommonExtractor {
   }
 
 
-  public static CallFunc parseMethodCall(JavaParser.MethodCallContext methodCallContext){
+  public static ExpressionList parseMethodCall(JavaParser.MethodCallContext methodCallContext){
       String funcName="";
       if (methodCallContext.SUPER()!=null)
         funcName = methodCallContext.SUPER().getText();
@@ -132,7 +138,8 @@ public class CommonExtractor {
         funcName = methodCallContext.IDENTIFIER().getText();
 
       Coordinate x = new Coordinate(methodCallContext.start.getLine(), methodCallContext.start.getCharPositionInLine());
-      List<Expression> list = parseExpressionList(methodCallContext.expressionList());
+      List<ExpressionList> list = parseExpressionList(methodCallContext.expressionList());
+
       return new CallFunc(x, funcName, list);
   }
 
@@ -141,6 +148,86 @@ public class CommonExtractor {
       return s;
   }
 
+
+  private static TerminalSymbol createTmpSymbolIfNeed(ExpressionList e){
+     Expression last = e.getLastExpression();
+     if (last.isSymbol()){
+       Symbol s = last.getSymbol();
+       if (s instanceof TerminalSymbol)
+       {
+         return (TerminalSymbol)s;
+       }
+     }
+     return TmpSymbolManager.createNewTmpSymbol(last);
+  }
+
+  public static ExpressionList createExpressionListUnary(ExpressionList e, UnaryCreator callback){
+    TerminalSymbol t = createTmpSymbolIfNeed(e);
+    Expression last = callback.create(t);
+    ExpressionList el = new ExpressionList(last);
+    if (e.hasPreExpression())
+      el.addPrevs(e.getPrevs());
+    if (t instanceof TmpSymbol)
+      el.addPrev(t.toExp());
+    return el;
+  }
+
+  public static ExpressionList createExpressionListBinary(ExpressionList e1, ExpressionList e2, BinaryCreator callback){
+    TerminalSymbol t1 = createTmpSymbolIfNeed(e1);
+    TerminalSymbol t2 = createTmpSymbolIfNeed(e2);
+    Expression last = callback.create(t1, t2);
+    ExpressionList el = new ExpressionList(last);
+    if (e1.hasPreExpression())
+      el.addPrevs(e1.getPrevs());
+    if (e2.hasPreExpression())
+      el.addPrevs(e2.getPrevs());
+    if (t1 instanceof TmpSymbol)
+      el.addPrev(t1.toExp());
+    if (t2 instanceof TmpSymbol)
+      el.addPrev(t2.toExp());
+    return el;
+  }
+
+  public static ExpressionList createExpressionListTernary(ExpressionList e1, ExpressionList e2,ExpressionList e3, TernaryCreator callback){
+    TerminalSymbol t1 = createTmpSymbolIfNeed(e1);
+    TerminalSymbol t2 = createTmpSymbolIfNeed(e2);
+    TerminalSymbol t3 = createTmpSymbolIfNeed(e3);
+
+    Expression last = callback.create(t1, t2, t3);
+    ExpressionList el = new ExpressionList(last);
+    if (e1.hasPreExpression())
+      el.addPrevs(e1.getPrevs());
+    if (e2.hasPreExpression())
+      el.addPrevs(e2.getPrevs());
+    if (e3.hasPreExpression())
+      el.addPrevs(e3.getPrevs());
+    if (t1 instanceof TmpSymbol)
+      el.addPrev(t1.toExp());
+    if (t2 instanceof TmpSymbol)
+      el.addPrev(t2.toExp());
+    if (t3 instanceof TmpSymbol)
+      el.addPrev(t3.toExp());
+    return el;
+  }
+
+  public static ExpressionList createExpressionListList(List<ExpressionList> ell, ListCreator callback){
+    List<TerminalSymbol> terminalList = new ArrayList<>();
+    for (ExpressionList el : ell){
+      TerminalSymbol t = createTmpSymbolIfNeed(el);
+      terminalList.add(t);
+    }
+    Expression last = callback.create(terminalList);
+    ExpressionList retEl = new ExpressionList(last);
+    for (ExpressionList el : ell){
+          if (el.hasPreExpression())
+            retEl.addPrevs(el.getPrevs());
+    }
+    for (TerminalSymbol ts : terminalList){
+      if (ts instanceof TmpSymbol)
+        retEl.addPrev(ts.toExp());
+    }
+    return retEl;
+  }
 
   /*****************************************************************
    *   X  means unfinished
@@ -184,7 +271,7 @@ public class CommonExtractor {
    | classType '::' typeArguments? NEW                                                                     X fixme unhandled
    ;
    *****************************************************************/
-  public static Expression parseExpression(JavaParser.ExpressionContext expressionContext){
+  public static ExpressionList parseExpression(JavaParser.ExpressionContext expressionContext){
 
     Coordinate x = Coordinate.createFromCtx(expressionContext);
     if (expressionContext.primary() != null){  //primary
@@ -194,9 +281,9 @@ public class CommonExtractor {
     if (expressionContext.LBRACK()!=null && expressionContext.RBRACK()!=null) //expression '[' expression ']'
     {
 
-      Expression e1 = parseExpression(expressionContext.expression(0));
-      Expression e2 = parseExpression(expressionContext.expression(1));
-      return new Expression(new ArrayGetSymbol(e1, e2));
+      ExpressionList e1 = parseExpression(expressionContext.expression(0));
+      ExpressionList e2 = parseExpression(expressionContext.expression(1));
+      return createExpressionListBinary(e1, e2, ((t1, t2) -> new ArrayGetSymbol(t1, t2).toExp()));
     }
 
     // expression ('<' '<' | '>' '>' '>' | '>' '>') expression
@@ -207,9 +294,12 @@ public class CommonExtractor {
 
         JavaParser.ExpressionContext left_e = expressionContext.expression().get(0);
         JavaParser.ExpressionContext right_e = expressionContext.expression().get(1);
-        return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf("<<"));
+        ExpressionList e1 = parseExpression(left_e);
+        ExpressionList e2 = parseExpression(right_e);
+
+        return createExpressionListBinary(e1, e2, ((t1, t2) -> new Expression(Operator.nameOf("<<"), t1, t2)));
       }
-      throw  new JavaASTExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
+      throw new JavaASTExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
 
     }
 
@@ -218,11 +308,14 @@ public class CommonExtractor {
 
       JavaParser.ExpressionContext left_e = expressionContext.expression().get(0);
       JavaParser.ExpressionContext right_e = expressionContext.expression().get(1);
+      ExpressionList e1 = parseExpression(left_e);
+      ExpressionList e2 = parseExpression(right_e);
+
       if (i==2){
-        return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(">>"));
+        return createExpressionListBinary(e1, e2, ((t1, t2) -> new Expression(Operator.nameOf(">>"), t1, t2)));
       }
       if (i==3){
-        return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(">>>"));
+        return createExpressionListBinary(e1, e2, ((t1, t2) -> new Expression(Operator.nameOf(">>>"), t1, t2)));
       }
       throw new JavaASTExtractorException("unreachable syntax during parsing  [expression ('<' '<' | '>' '>' '>' | '>' '>') expression]", expressionContext);
     }
@@ -242,9 +335,9 @@ public class CommonExtractor {
       //    ;
       if (creator.arrayCreatorRest()!=null){
         //
-        Expression size1 = parseExpression(creator.arrayCreatorRest().expression(0));
+        ExpressionList size1 = parseExpression(creator.arrayCreatorRest().expression(0));
         JavaType javaType = new JavaType(Primitive.nameOf(name), true);
-        return new Creator(size1, javaType).toExp();
+        return createExpressionListUnary(size1, t -> new Creator(t, javaType).toExp());
       }
 
 
@@ -256,16 +349,19 @@ public class CommonExtractor {
         //;
         JavaParser.ClassCreatorRestContext ccr = creator.classCreatorRest();
          JavaParser.ExpressionListContext es = ccr.arguments().expressionList();
-         List<Expression> ps = parseExpressionList(es);
+         List<ExpressionList> ps = parseExpressionList(es);
 
-         CallFunc callFunc = new CallFunc(x, name, ps, true);
+         return createExpressionListList(ps, tle -> {
+           CallFunc callFunc = new CallFunc(x, name, tle, true);
 
-         if (ccr.classBody()!=null){
-            JavaClassExtractor ext = new JavaClassExtractor();
-            JavaClass javaClass = ext.parseAnonymousClass(ccr.classBody());
-            callFunc.setExtraClass(javaClass);
-         }
-         return callFunc.toExp();
+           if (ccr.classBody()!=null){
+             JavaClassExtractor ext = new JavaClassExtractor();
+             JavaClass javaClass = ext.parseAnonymousClass(ccr.classBody());
+             callFunc.setExtraClass(javaClass);
+           }
+           return callFunc.toExp();
+         });
+
       }
 
       throw new JavaASTExtractorException("unhandled creator", expressionContext);
@@ -284,12 +380,13 @@ public class CommonExtractor {
           throw new JavaASTExtractorException("Cannot handle SUPER keyword during point expression's parsing", expressionContext);
 
         JavaParser.ExpressionContext e = expressionContext.expression(0);
-        Expression expression = parseExpression(e);
+        ExpressionList expression = parseExpression(e);
         if (expressionContext.methodCall()!=null){
-          return new PointSymbol(expression, parseMethodCall(expressionContext.methodCall())).toExp();
+          return createExpressionListUnary(expression,
+                                           (t-> new PointSymbol(t, parseMethodCall(expressionContext.methodCall())).toExp()));
         }
         if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
-          return new PointSymbol(expression, parseIDENTIFIER(expressionContext.IDENTIFIER().getText())).toExp();
+          return createExpressionListUnary(expression, t -> new PointSymbol(t, parseIDENTIFIER(expressionContext.IDENTIFIER().getText())).toExp());
         }
       }
 
@@ -297,14 +394,20 @@ public class CommonExtractor {
       if (expressions.size() == 2){
         JavaParser.ExpressionContext left_e = expressions.get(0);
         JavaParser.ExpressionContext right_e = expressions.get(1);
-        return new Expression(parseExpression(left_e), parseExpression(right_e), Operator.nameOf(expressionContext.bop.getText()));
+        ExpressionList e1 = parseExpression(left_e);
+        ExpressionList e2 = parseExpression(right_e);
+        Operator op = Operator.nameOf(expressionContext.bop.getText());
+        return createExpressionListBinary(e1, e2, (t1, t2) -> new Expression(op, t1, t2));
       }else if (expressions.size()==3){
         //ConditionalExpression
         JavaParser.ExpressionContext cond = expressions.get(0);
         JavaParser.ExpressionContext left =  expressions.get(1);
         JavaParser.ExpressionContext right =  expressions.get(2);
 
-        return new Expression(new ConditionalExpression(parseExpression(cond), parseExpression(left), parseExpression(right)));
+        ExpressionList e1 = parseExpression(cond);
+        ExpressionList e2 = parseExpression(left);
+        ExpressionList e3 = parseExpression(right);
+        return createExpressionListTernary(e1, e2, e3, ((t1, t2, t3) -> new ConditionalExpression(t1, t2, t3).toExp()));
 
       }else {
         throw  new JavaASTExtractorException("unreachable syntax during paring op", expressionContext);
@@ -313,12 +416,14 @@ public class CommonExtractor {
 
     if (expressionContext.prefix!=null){
       assert (expressionContext.expression().size()==1); // it is Unitary
-      return new Expression(null, parseExpression(expressionContext.expression().get(0)), Operator.nameOf(expressionContext.prefix.getText()), true);
+      ExpressionList e = parseExpression(expressionContext.expression().get(0));
+      return createExpressionListUnary(e, (t) -> new Expression(Operator.nameOf(expressionContext.prefix.getText()), null, t, true));
     }
 
     if (expressionContext.postfix!=null){
       assert (expressionContext.expression().size()==1); // it is Unitary
-      return new Expression(parseExpression(expressionContext.expression().get(0)), null , Operator.nameOf(expressionContext.postfix.getText()), true);
+      ExpressionList e = parseExpression(expressionContext.expression().get(0));
+      return createExpressionListUnary(e, (t) -> new Expression(Operator.nameOf(expressionContext.postfix.getText()), null, t, true));
     }
 
 

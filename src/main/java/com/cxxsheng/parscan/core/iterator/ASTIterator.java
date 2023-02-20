@@ -2,9 +2,7 @@ package com.cxxsheng.parscan.core.iterator;
 
 import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
 import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
-import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_BINARY_EXP;
-import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_POINT_SYMBOL;
-import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.TAG_UNIVERSAL;
+import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.*;
 
 import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.common.Stack;
@@ -160,10 +158,15 @@ public class ASTIterator {
         }
 
         @Override
-        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left,
-                                                      Operator op,
-                                                      List<RuntimeValue> right,
-                                                      boolean isHit) {
+        public RuntimeValue handleBinExpression(Expression left,
+                                                Operator op,
+                                                Expression right,
+                                                boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
           return null;
         }
 
@@ -192,23 +195,50 @@ public class ASTIterator {
         }
 
         @Override
-        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left, Operator op, List<RuntimeValue> right, boolean isHit) {
+        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
+            return null;
+        }
+
+        @Override
+        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
           if (isHit){
-            if (op == Operator.AS){
-              if (left.size() > 1){
-                throw new ASTParsingException("assign expression's left identifier more than 1");
-              }
-              RuntimeValue left_ = left.get(0);
-              //if (right)
-              for (int i =0; i < right.size(); i++){
-                RuntimeValue v = right.get(i);
-                if (v instanceof ParcelDataNode){
-                  ((ParcelDataNode)v).addIdentifier(left_.toString());
-                }
-              }
+              RuntimeVariable name = new RuntimeVariable(indexStack.toIntArray(), left);
+              vt.putVariable(name, v);
             }
 
-          }
+          return v;
+
+        }
+
+        @Override
+        public boolean broadcastHit(Symbol terminalSymbol) {
+          return false;
+        }
+
+        @Override
+        public String getTag() {
+          return TAG_ASSIGN_EXP;
+        }
+      });
+
+      H.addCallback(new ExpressionHandlerCallback() {
+        @Override
+        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleExpression(Expression e, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
           return null;
         }
 
@@ -219,10 +249,41 @@ public class ASTIterator {
 
         @Override
         public String getTag() {
-          return TAG_BINARY_EXP;
+          return null;
         }
       });
 
+      H.addCallback(new ExpressionHandlerCallback() {
+        @Override
+        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleExpression(Expression e, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
+          return null;
+        }
+
+        @Override
+        public boolean broadcastHit(Symbol terminalSymbol) {
+          return false;
+        }
+
+        @Override
+        public String getTag() {
+          return null;
+        }
+      });
       condH = new ExpressionHandler();
       condH.addCallback(new ExpressionHandlerCallback() {
         @Override
@@ -237,14 +298,19 @@ public class ASTIterator {
         }
 
         @Override
-        public List<RuntimeValue> handleBinExpression(List<RuntimeValue> left,
-                                                      Operator op,
-                                                      List<RuntimeValue> right,
-                                                      boolean isHit) {
+        public RuntimeValue handleBinExpression(Expression left,
+                                                Operator op,
+                                                Expression right,
+                                                boolean isHit) {
           return null;
         }
 
-          @Override
+        @Override
+        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
+          return null;
+        }
+
+        @Override
         public boolean broadcastHit(Symbol terminalSymbol) {
           return false;
         }

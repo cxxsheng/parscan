@@ -254,7 +254,6 @@ public class JavaMethodBodyTreeExtractor {
           for (JavaParser.BlockStatementContext blockStatement: blockStatements){
              blockDomain = blockDomain.combine(parseBlockStatement(blockStatement));
           }
-
           return blockDomain;
 
       }

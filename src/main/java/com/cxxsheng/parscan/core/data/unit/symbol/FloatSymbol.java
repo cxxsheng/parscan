@@ -1,24 +1,14 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
-public class FloatSymbol extends Symbol {
+public class FloatSymbol extends TerminalSymbol {
     private final String value;
 
     public FloatSymbol(String value) {
         this.value = value;
     }
 
-
-    @Override
-    public final boolean isConstant() {
-        return true;
-      }
-
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
     @Override
       public String toString() {

@@ -35,12 +35,6 @@ public class VarDeclaration extends Symbol {
 
 
   @Override
-  public boolean isConstant() {
-    return false;
-  }
-
-
-  @Override
   public String toString() {
     return name.toString();
   }
@@ -49,10 +43,6 @@ public class VarDeclaration extends Symbol {
     return value;
   }
 
-  @Override
-  public boolean isTerminal() {
-    return false;
-  }
 
   public JavaType getType() {
     return type;

@@ -1,9 +1,9 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
 import com.cxxsheng.parscan.core.data.unit.Primitive;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
-public class TypeIDSymbol extends Symbol {
+public class TypeIDSymbol extends TerminalSymbol {
 
     private final Primitive type;
 
@@ -17,14 +17,4 @@ public class TypeIDSymbol extends Symbol {
       this.isArray = isArray;
     }
 
-
-    @Override
-    public boolean isConstant() {
-        return false;
-      }
-
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 }

@@ -1,9 +1,9 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import java.util.Objects;
 
-public class IdentifierSymbol extends Symbol {
+public class IdentifierSymbol extends TerminalSymbol {
 
     private final String value;
 
@@ -11,16 +11,6 @@ public class IdentifierSymbol extends Symbol {
         this.value = value;
     }
 
-
-    @Override
-    public final boolean isConstant() {
-      return false;
-    }
-
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
   @Override
     public boolean equals(Object o) {

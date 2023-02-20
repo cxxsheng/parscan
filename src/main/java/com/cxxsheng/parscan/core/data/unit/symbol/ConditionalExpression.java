@@ -1,44 +1,32 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
 public class ConditionalExpression extends Symbol {
 
-    private final Expression cond;
-    private final Expression left;
-    private final Expression right;
+    private final TerminalSymbol cond;
+    private final TerminalSymbol left;
+    private final TerminalSymbol right;
 
 
-    public ConditionalExpression(Expression cond, Expression left, Expression right) {
+    public ConditionalExpression(TerminalSymbol cond, TerminalSymbol left, TerminalSymbol right) {
         this.cond = cond;
         this.left = left;
         this.right = right;
 
     }
 
-    public Expression getCond() {
+    public TerminalSymbol getCond() {
         return cond;
     }
 
-    public Expression getLeft() {
+    public TerminalSymbol getLeft() {
         return left;
     }
 
-    public Expression getRight() {
+    public TerminalSymbol getRight() {
         return right;
-    }
-
-
-    @Override
-    public final boolean isConstant() {
-      return false;
-    }
-
-
-    @Override
-    public boolean isTerminal() {
-      return false;
     }
 
   @Override

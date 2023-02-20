@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
@@ -17,7 +18,8 @@ public class ExpressionHandler {
 
   public static final String TAG_UNIVERSAL = "Universal";
   public static final String TAG_POINT_SYMBOL = "PointSymbol";
-  public static final String TAG_BINARY_EXP = "BinExpression";
+  public static final String TAG_ASSIGN_EXP = "AssignExpression";
+  public static final String TAG_EXP = "Expression";
 
   public ExpressionHandler(){
     callbacks = new ArrayList<>();
@@ -42,15 +44,10 @@ public class ExpressionHandler {
    * two functions.
    */
 
-  public List<RuntimeValue> handleExpression(Expression e){
-    List<RuntimeValue> ret = new ArrayList<>();
+  public RuntimeValue handleExpression(Expression e){
     ExpressionHandlerCallback universalCallback = getCallbackByName(TAG_UNIVERSAL);
     if (e.isTerminal()){
       Symbol s = e.getSymbol();
-
-      if (universalCallback!=null)
-        universalCallback.handleSymbol(s, true);
-
 
       if (s instanceof PointSymbol){
         ExpressionHandlerCallback callback = getCallbackByName(TAG_POINT_SYMBOL);
@@ -59,7 +56,9 @@ public class ExpressionHandler {
         boolean hitFlag = false;
         if (!exp.isTerminalSymbol()){
           // this expression can be decomposed
-         return handleExpression(e);
+          //fixme cannot handle
+          return null;
+
         }else {
           //only has one identifier and cannot be decomposed
           Symbol terminal_sym = exp.getSymbol();
@@ -71,7 +70,12 @@ public class ExpressionHandler {
         //this is a point function
         if (((PointSymbol)s).isFunc()){
           //handling params first
+
           CallFunc callFunc = (CallFunc)((PointSymbol)s).getV();
+          if (callback!=null){
+            return callback.handleSymbol(callFunc, hitFlag);
+          }
+
           List<Expression> params = callFunc.getParams();
           if (params != null)
             for(Expression p : callFunc.getParams()){
@@ -79,10 +83,6 @@ public class ExpressionHandler {
                   handleExpression(p);
             }
 
-          if (callback!=null){
-            ret.add(callback.handleSymbol(callFunc, hitFlag));
-            return ret;
-          }
 
         }else {
           //identifier
@@ -94,37 +94,42 @@ public class ExpressionHandler {
       //pure function call instead of point call func
       else if (s instanceof CallFunc){
         List<Expression> params = ((CallFunc)s).getParams();
+        RuntimeFunction rf = new RuntimeFunction(((CallFunc)s).getFuncName());
         if (params != null)
           for(Expression p : ((CallFunc)s).getParams()){
-             List t = handleExpression(p);
-             if (t!=null && t.size()>0)
-              ret.addAll(t);
+             rf.addParam(handleExpression(p));
           }
-        return ret;
+        return rf;
       }
-      ret.add(e.getSymbol());
-      return ret;
+
+      if (universalCallback!=null)
+        return universalCallback.handleSymbol(s, true);
+
+      return null;
+
     }else{
 
-      List<RuntimeValue> left = null;
-      List<RuntimeValue> right = null;
-
-      left=handleExpression(e.getL());
-      right=handleExpression(e.getR());
 
 
+      ExpressionHandlerCallback callback = getCallbackByName(TAG_ASSIGN_EXP);
 
+      if (e.getOp() == Operator.AS){
 
-      ExpressionHandlerCallback callback = getCallbackByName(TAG_BINARY_EXP);
-      if(callback !=null)
-          callback.handleBinExpression(left, e.getOp() , right, true);
+        RuntimeValue right = handleExpression(e.getR());
+        if(callback !=null)
+          return callback.handleAssignExpression(e.getL().toString(), right, true);
+        return right;
+      }
 
+      if (e.getOp() != null){
+        callback = getCallbackByName(TAG_EXP);
+        if (callback!=null)
+          return callback.handleExpression(e,true);
+      }
 
-      if (universalCallback != null)
-        universalCallback.handleExpression(e, true);
-      return null;
     }
 
+    throw new ASTParsingException("cannot handing " +e.toString()+ "during expression handler ");
   }
 
 

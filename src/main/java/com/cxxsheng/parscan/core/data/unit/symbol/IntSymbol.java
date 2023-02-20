@@ -1,26 +1,15 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
 // int value, include long value
-public class IntSymbol extends Symbol {
+public class IntSymbol extends TerminalSymbol {
     private final long value;
 
     public IntSymbol(long value){
         this.value = value;
     }
 
-
-    @Override
-    public final boolean isConstant() {
-      return true;
-    }
-
-
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
     @Override
       public String toString() {

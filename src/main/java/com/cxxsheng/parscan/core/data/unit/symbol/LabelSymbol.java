@@ -1,22 +1,14 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
-public class LabelSymbol extends Symbol {
+public class LabelSymbol extends TerminalSymbol {
 
-    public LabelSymbol(String name) {this.name = name;}
+  private final String name;
 
-    @Override
-    public final boolean isConstant() {
-      return false;
-    }
+  public LabelSymbol(String name) {this.name = name;}
 
-    private final String name;
 
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
   public String getName() {
     return name;

@@ -1,27 +1,17 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
 public class Creator extends Symbol {
 
-    final Expression size;
+    final TerminalSymbol size;
     private final JavaType javaType;
 
-    public Creator(Expression size, JavaType javaType) {
+    public Creator(TerminalSymbol size, JavaType javaType) {
       this.size = size;
       this.javaType = javaType;
-    }
-
-    @Override
-    public boolean isConstant() {
-      return false;
-    }
-
-    @Override
-    public boolean isTerminal() {
-      return false;
     }
 
   @Override

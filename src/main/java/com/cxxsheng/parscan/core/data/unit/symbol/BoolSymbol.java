@@ -1,19 +1,13 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import java.util.Objects;
 
-public class BoolSymbol extends Symbol {
+public class BoolSymbol extends TerminalSymbol {
     private final boolean value;
 
     public BoolSymbol(boolean value) {
         this.value = value;
-    }
-
-
-    @Override
-    public final boolean isConstant() {
-      return true;
     }
 
     @Override
@@ -34,10 +28,6 @@ public class BoolSymbol extends Symbol {
       return ""+value;
     }
 
-    @Override
-    public boolean isTerminal() {
-      return true;
-    }
 
     public boolean getValue(){
       return value;

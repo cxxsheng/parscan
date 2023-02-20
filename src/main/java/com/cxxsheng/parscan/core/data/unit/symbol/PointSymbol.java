@@ -1,14 +1,14 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 
 public class PointSymbol extends Symbol {
-    private final Expression exp;
+    private final TerminalSymbol exp;
     //ID or CallFunc
     private final Symbol v;
 
-    public PointSymbol(Expression exp, Symbol v) {
+    public PointSymbol(TerminalSymbol exp, Symbol v) {
         this.exp = exp;
         this.v = v;
     }
@@ -18,22 +18,12 @@ public class PointSymbol extends Symbol {
     }
 
     @Override
-    public final boolean isConstant() {
-      return false;
-    }
-
-    @Override
      public String toString() {
 
         return ""+ exp.toString() + "." +v.toString();
     }
 
-    @Override
-    public boolean isTerminal() {
-      return false;
-    }
-
-    public Expression getExp() {
+    public TerminalSymbol getExp() {
     return exp;
   }
 

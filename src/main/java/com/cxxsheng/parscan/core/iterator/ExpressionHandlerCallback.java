@@ -3,7 +3,6 @@ package com.cxxsheng.parscan.core.iterator;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
-import java.util.List;
 
 public interface ExpressionHandlerCallback {
 
@@ -11,7 +10,9 @@ public interface ExpressionHandlerCallback {
 
     RuntimeValue handleExpression(Expression e, boolean isHit);
 
-    List<RuntimeValue> handleBinExpression(List<RuntimeValue> left, Operator op, List<RuntimeValue> right, boolean isHit);
+    RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit);
+
+    RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit);
 
     boolean broadcastHit(Symbol terminalSymbol);
 
