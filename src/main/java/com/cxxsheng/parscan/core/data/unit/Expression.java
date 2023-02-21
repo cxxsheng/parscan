@@ -49,4 +49,12 @@ public class Expression extends ExpressionOrBlock {
       ExpressionListWithPrevs list = new ExpressionListWithPrevs(this);
       return list;
     }
+
+    public TerminalSymbol getLeft() {
+      return left;
+    }
+
+    public TerminalSymbol getRight() {
+      return right;
+    }
 }

@@ -49,6 +49,9 @@ public class ExpressionHandler {
     if (e.isTerminal()){
       Symbol s = e.getSymbol();
 
+
+
+
       if (s instanceof PointSymbol){
         ExpressionHandlerCallback callback = getCallbackByName(TAG_POINT_SYMBOL);
         Expression exp = ((PointSymbol)s).getExp();

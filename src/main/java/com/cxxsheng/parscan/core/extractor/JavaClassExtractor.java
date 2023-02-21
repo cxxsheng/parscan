@@ -7,11 +7,11 @@ import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseVariableD
 
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
@@ -62,16 +62,14 @@ public class JavaClassExtractor {
             JavaType type = parseJavaType(ctx.fieldDeclaration().typeType());
             parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
 
-            ExpressionOrBlockList exps = parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
-            for (ExpressionOrBlock e: exps.getContent()){
-                Expression ee = (Expression)e;
+            List<ExpressionListWithPrevs> exps = parseVariableDeclarators(ctx.fieldDeclaration().variableDeclarators());
+            for (ExpressionListWithPrevs exp : exps){
+                Expression e = exp.getLastExpression();
                 VarDeclaration var;
-                if (ee.isTerminal()){
-                  IdentifierSymbol name = (IdentifierSymbol)ee.getSymbol();
-                  var = new VarDeclaration(name, type);
-                }else {
-                  IdentifierSymbol name = (IdentifierSymbol)ee.getL().getSymbol();
-                  var = new VarDeclaration(name, type, ee.getR());
+                if (e.isSymbol())
+                  var = new VarDeclaration((IdentifierSymbol)e.getSymbol(), type);
+                else {
+                  var = new VarDeclaration((IdentifierSymbol)e.getLeft(), type, exp);
                 }
                 javaClass.addClassVariable(var);
             }

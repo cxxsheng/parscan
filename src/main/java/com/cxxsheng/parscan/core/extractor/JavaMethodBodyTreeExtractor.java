@@ -58,7 +58,7 @@ public class JavaMethodBodyTreeExtractor {
        IT WILL IGNORE TYPE AND VAR WITH NO INITIALIZER (eg. int a;)
        *****************************************************************/
 
-      public ExpressionOrBlockList parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
+      public List<ExpressionListWithPrevs> parseLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext localVariableDeclaration){
             //this is useful? WE DO NOT DEED TO RECORD TYPE
             JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
 
@@ -223,7 +223,7 @@ public class JavaMethodBodyTreeExtractor {
           | localTypeDeclaration                                          √
         ;
        *****************************************************************/
-      public ExpressionOrBlockList parseBlockStatement( JavaParser.BlockStatementContext blockStatement){
+      public ExpressionOrBlockList parseBlockStatement(JavaParser.BlockStatementContext blockStatement){
           JavaParser.LocalTypeDeclarationContext localVariableDeclaration =  blockStatement.localTypeDeclaration();
           if (localVariableDeclaration != null){
 
@@ -233,7 +233,12 @@ public class JavaMethodBodyTreeExtractor {
           JavaParser.LocalVariableDeclarationContext localVariableDeclarationContext = blockStatement.localVariableDeclaration();
           if (localVariableDeclarationContext!=null)
           {
-            return parseLocalVariableDeclaration(localVariableDeclarationContext);
+            ExpressionOrBlockList retEBL = ExpressionOrBlockList.InitEmptyInstance();
+            List<ExpressionListWithPrevs> elps = parseLocalVariableDeclaration(localVariableDeclarationContext);
+            for (ExpressionListWithPrevs elp : elps){
+              retEBL.add(elp.toExpressionList());
+            }
+            return retEBL;
           }
 
           //it is son

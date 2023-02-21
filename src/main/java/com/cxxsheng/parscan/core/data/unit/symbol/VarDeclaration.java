@@ -1,6 +1,6 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 
@@ -11,9 +11,9 @@ public class VarDeclaration extends Symbol {
 
   private final IdentifierSymbol name;
   private final JavaType type;
-  private Expression value;
+  private ExpressionListWithPrevs value;
 
-  public VarDeclaration(IdentifierSymbol name, JavaType type, Expression value) {
+  public VarDeclaration(IdentifierSymbol name, JavaType type, ExpressionListWithPrevs value) {
     this.name = name;
     this.type = type;
     this.value = value;
@@ -29,7 +29,7 @@ public class VarDeclaration extends Symbol {
     return this.value != null;
   }
 
-  private void updateValue(Expression value){
+  private void updateValue(ExpressionListWithPrevs value){
     this.value = value;
   }
 
@@ -39,7 +39,7 @@ public class VarDeclaration extends Symbol {
     return name.toString();
   }
 
-  public Expression getValue() {
+  public ExpressionListWithPrevs getValue() {
     return value;
   }
 

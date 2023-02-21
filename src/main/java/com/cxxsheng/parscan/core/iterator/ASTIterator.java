@@ -260,7 +260,7 @@ public class ASTIterator {
         }
 
         @Override
-        public RuntimeValue handleExpression(Expression e, boolean isHit) {
+        public RuntimeValue handleExpression(RuntimeValue left, Operator op, RuntimeValue right, boolean isHit) {
           return null;
         }
 
