@@ -12,7 +12,7 @@ import com.cxxsheng.parscan.core.data.ForBlock;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
-import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -100,15 +100,15 @@ public class JavaMethodBodyTreeExtractor {
           if (statement.ASSERT()!=null){
                 //here may have some problem
                 LOG.info("Have an assert at " + Coordinate.createFromCtx(statement));
-                Expression e = parseExpression(statement.expression(0));
-
-                return e.wrapToList();
+                ExpressionListWithPrevs e = parseExpression(statement.expression(0));
+                Statement s = new Statement(x, Statement.ASSERT_STATEMENT ,e);
+                return s.wrapToList();
           }
 
           //If statement
           if (statement.IF()!=null){
-                Expression ce = parseExpression(statement.parExpression().expression());
-                ConditionalBlock b = new ConditionalBlock(x,ce ,parseStatement( statement.statement(0)));
+                ExpressionListWithPrevs el = parseExpression(statement.parExpression().expression());
+                ConditionalBlock b = new ConditionalBlock(x, el, parseStatement( statement.statement(0)));
 
                 if (statement.ELSE() != null){
                     b.initElseBlock(parseStatement(statement.statement(1)));
@@ -133,7 +133,7 @@ public class JavaMethodBodyTreeExtractor {
 
               forControl
               : enhancedForControl
-                | forInit? ';' expression? ';' forUpdate=expressionList?
+                | forInit? ';' expression? ';' forUpdate=ExpressionListWithPrevs?
               ;
               */
 
@@ -196,7 +196,12 @@ public class JavaMethodBodyTreeExtractor {
 
           //statementExpression
           if (statement.statementExpression!=null)
-            return parseExpression(statement.statementExpression).wrapToList();
+          {
+            ExpressionListWithPrevs elp = parseExpression(statement.statementExpression);
+            ExpressionOrBlockList ebl = ExpressionOrBlockList.InitEmptyInstance();
+            ebl.add(elp.toExpressionList());
+            return ebl;
+          }
 
           //SEMI empty body
           if (statement.SEMI()!=null){

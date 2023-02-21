@@ -1,16 +1,16 @@
 package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 
 public class ConditionalBlock extends Block {
 
-      private final Expression boolExp;
+      private final ExpressionListWithPrevs boolExp;
 
       private ExpressionOrBlockList elseBlock = ExpressionOrBlockList.InitEmptyInstance();
 
 
-      public ConditionalBlock(Coordinate x, Expression boolExp, ExpressionOrBlockList content) {
+      public ConditionalBlock(Coordinate x, ExpressionListWithPrevs boolExp, ExpressionOrBlockList content) {
         super(x, content);
         this.boolExp = boolExp;
 
@@ -28,7 +28,7 @@ public class ConditionalBlock extends Block {
        }
 
 
-      public Expression getBoolExp() {
+      public ExpressionListWithPrevs getBoolExp() {
         return boolExp;
       }
 

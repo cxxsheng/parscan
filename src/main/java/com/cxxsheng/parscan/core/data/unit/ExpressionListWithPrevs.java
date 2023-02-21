@@ -3,7 +3,7 @@ package com.cxxsheng.parscan.core.data.unit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpressionList {
+public class ExpressionListWithPrevs {
   private List<Expression> prevs = null;
   private Expression lastExpression;
 
@@ -13,7 +13,7 @@ public class ExpressionList {
     return prevs != null && prevs.size() > 0;
   }
 
-  public ExpressionList(Expression e){
+  public ExpressionListWithPrevs(Expression e){
     lastExpression = e;
   }
 
@@ -40,5 +40,16 @@ public class ExpressionList {
 
   public Expression getLastPrev() {
     return prevs.get(prevs.size() - 1);
+  }
+
+  public List<Expression> toExpressionList(){
+    if (prevs == null)
+      return lastExpression.wrapToRealList();
+    else
+    {
+      List<Expression> list = new ArrayList<>(prevs);
+      list.add(lastExpression);
+      return list;
+    }
   }
 }

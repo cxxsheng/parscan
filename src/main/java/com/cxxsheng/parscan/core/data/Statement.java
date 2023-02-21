@@ -1,7 +1,7 @@
 package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
-import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 
 public class Statement extends ExpressionOrBlock {
 
@@ -12,9 +12,9 @@ public class Statement extends ExpressionOrBlock {
     public final static int ASSERT_STATEMENT = 4;
 
     private final int type;
-    private final Expression exp;
+    private final ExpressionListWithPrevs exp;
     private final Coordinate x;
-    public Statement(Coordinate x, int type, Expression exp) {
+    public Statement(Coordinate x, int type, ExpressionListWithPrevs exp) {
       this.type = type;
       this.exp = exp;
       this.x = x;
@@ -24,7 +24,7 @@ public class Statement extends ExpressionOrBlock {
       return type;
     }
 
-    public Expression getExp() {
+    public ExpressionListWithPrevs getExp() {
       return exp;
     }
 

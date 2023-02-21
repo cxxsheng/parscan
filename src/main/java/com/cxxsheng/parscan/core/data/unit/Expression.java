@@ -1,10 +1,11 @@
 package com.cxxsheng.parscan.core.data.unit;
 
 
+import com.cxxsheng.parscan.core.data.ExpressionOrBlock;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Expression {
+public class Expression extends ExpressionOrBlock {
     private final Operator op;
     private final TerminalSymbol left;
     private final TerminalSymbol right;
@@ -44,8 +45,8 @@ public class Expression {
       return list;
     }
 
-    public ExpressionList wrapToList(){
-      ExpressionList list = new ExpressionList(this);
+    public ExpressionListWithPrevs wrapToPrevList(){
+      ExpressionListWithPrevs list = new ExpressionListWithPrevs(this);
       return list;
     }
 }

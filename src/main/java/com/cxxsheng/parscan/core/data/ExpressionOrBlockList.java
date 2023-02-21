@@ -25,12 +25,11 @@ public class ExpressionOrBlockList {
     content = null;
   }
 
-  private ExpressionOrBlockList(int type, List<ExpressionOrBlock> content) {
 
-      this.type = type;
-      this.content = content;
+  private ExpressionOrBlockList( int type, List<ExpressionOrBlock> content){
+    this.type = type;
+    this.content = content;
   }
-
 
   private ExpressionOrBlockList(ExpressionOrBlock unit){
 
@@ -55,6 +54,25 @@ public class ExpressionOrBlockList {
   }
 
 
+  public ExpressionOrBlockList add(List<Expression> units){
+    if (units == null || units.size() <= 0 )
+      return EmptyInstance;
+    final ExpressionOrBlockList pointer;
+    if (this == EmptyInstance)
+    {
+      pointer = new ExpressionOrBlockList(PURE_EXPRESSION, new ArrayList<>());
+    }else
+    {
+      pointer = this;
+    }
+
+    pointer.type |= type;
+    for (ExpressionOrBlock unit: units){
+      pointer.content.add(unit);
+      unit.setDomain(pointer);
+    }
+    return pointer;
+  }
 
   public ExpressionOrBlockList addOne(ExpressionOrBlock unit){
 
@@ -66,9 +84,6 @@ public class ExpressionOrBlockList {
       else if (unit instanceof Block)
         this.type |= PURE_BLOCK;
 
-
-      unit.setPreviousNode(getLast());
-      getLast().setNextNode(unit);
       content.add(unit);
       unit.setDomain(this);
       return this;
@@ -81,11 +96,7 @@ public class ExpressionOrBlockList {
 
     if (this.isEmpty())
       return t;
-
-    type = t.type | type;
-
-    t.getHead().setPreviousNode(getLast());
-    getLast().setNextNode(t.getHead());
+    type |= t.type;
     content.addAll(t.content);
     for (ExpressionOrBlock e : t.getContent()){
       e.setDomain(this);
@@ -128,44 +139,44 @@ public class ExpressionOrBlockList {
       return content.get(content.size() - 1);
     }
 
-  @Override
-  public String toString() {
+    @Override
+    public String toString() {
 
 
-    StringBuilder sb = new StringBuilder("");
-    for (ExpressionOrBlock ep:content){
-      sb.append(ep);
-      sb.append('\n');
+      StringBuilder sb = new StringBuilder("");
+      for (ExpressionOrBlock ep:content){
+        sb.append(ep);
+        sb.append('\n');
+      }
+      return sb.toString();
     }
-    return sb.toString();
-  }
 
-  public List<ExpressionOrBlock> getContent() {
-    return content;
-  }
-
-  public void setOwner(Block owner) {
-    this.owner = owner;
-  }
-
-  public ExpressionOrBlock getOwner() {
-    return owner;
-  }
-
-  public int size(){
-    if (isEmpty())
-      return 0;
-    else
-      return content.size();
-  }
-
-  public ExpressionOrBlock get(int i){
-
-    if (isEmpty())
-      return null;
-    if (i >= size() || i < 0){
-      return null;
+    public List<ExpressionOrBlock> getContent() {
+      return content;
     }
-    return content.get(i);
-  }
+
+    public void setOwner(Block owner) {
+      this.owner = owner;
+    }
+
+    public ExpressionOrBlock getOwner() {
+      return owner;
+    }
+
+    public int size(){
+      if (isEmpty())
+        return 0;
+      else
+        return content.size();
+    }
+
+    public ExpressionOrBlock get(int i){
+
+      if (isEmpty())
+        return null;
+      if (i >= size() || i < 0){
+        return null;
+      }
+      return content.get(i);
+    }
 }

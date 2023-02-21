@@ -1,11 +1,11 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import java.util.Objects;
 
 
 // like {1,2,3,4} while initializing array
-public class ArrayInitSymbol extends Symbol {
+public class ArrayInitSymbol extends TerminalSymbol {
     private final String value;
 
     public ArrayInitSymbol(String value) {

@@ -6,9 +6,15 @@ public class NullSymbol extends TerminalSymbol {
 
     private static NullSymbol INSTANCE = new NullSymbol();
 
+    public static NullSymbol INIT() {
+      return INSTANCE;
+    }
 
-  @Override
+
+
+    @Override
     public String toString() {
       return "null";
     }
+
 }
