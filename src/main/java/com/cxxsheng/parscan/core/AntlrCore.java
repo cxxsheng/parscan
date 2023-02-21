@@ -6,6 +6,7 @@ import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
@@ -55,10 +56,10 @@ public class AntlrCore {
   private static FunctionImp getReadFromParcel(JavaClass jClass){
       VarDeclaration v = jClass.getVarDeclarationByName("CREATOR");
       if (v != null){
-        Expression e =  v.getValue();
+        ExpressionListWithPrevs e =  v.getValue();
         if (e != null){
-
-          Symbol c = e.getSymbol();
+          Expression ee = e.getLastExpression();
+          Symbol c = ee.getSymbol();
           if (c instanceof  CallFunc)
           {
             JavaClass nullClass = ((CallFunc)c).extraClass();

@@ -57,4 +57,8 @@ public class Expression extends ExpressionOrBlock {
     public TerminalSymbol getRight() {
       return right;
     }
+
+    public Operator getOp() {
+        return op;
+    }
 }

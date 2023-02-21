@@ -34,16 +34,6 @@ public class Block extends ExpressionOrBlock {
         }
 
 
-        @Override
-        public ExpressionOrBlock previous() {
-          return previous;
-        }
-
-        @Override
-        public ExpressionOrBlock next() {
-          return next;
-        }
-
         public void setPrevious(ExpressionOrBlock previous) {
           this.previous = previous;
         }

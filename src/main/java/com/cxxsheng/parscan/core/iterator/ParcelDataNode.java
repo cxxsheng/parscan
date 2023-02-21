@@ -45,10 +45,10 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
 
     private int[] mark;
 
-    private int index = -1;
+    private intt index = -1;
 
     private ParcelDataNode(int[] mark){
-      func_type = 0;
+      func_typee = 0;
       jtype = JavaType.getVOID();
       attachedSymbolName = null;
       isPlaceHolder = true;
@@ -268,7 +268,6 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
       this.mark = mark;
     }
 
-  @Override
     public void chooseBranch(Z3Core core, ExprWithTypeVariable curCond) {
 
       for (Pair<ExprWithTypeVariable, Integer> childPair :  children){

@@ -10,6 +10,10 @@ public class TmpSymbol extends TerminalSymbol {
     this.e = e;
   }
 
+  public Expression getExpression() {
+    return e;
+  }
+
   public String getName(){
     return "$t"+tmpId;
   }

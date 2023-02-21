@@ -2,7 +2,6 @@ package com.cxxsheng.parscan.core.iterator;
 
 import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
 import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
-import static com.cxxsheng.parscan.core.iterator.ExpressionHandler.*;
 
 import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.common.Stack;
@@ -14,10 +13,8 @@ import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.Operator;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
@@ -45,12 +42,6 @@ public class ASTIterator {
   private final List<String> traceList;
 
   private final Graph dataGraph;
-
-  private final ExpressionHandler H;
-
-  private final ExpressionHandler condH;
-
-  private ExprWithTypeVariable current_condition = null;
 
   private final Z3Core core;
 
@@ -105,223 +96,6 @@ public class ASTIterator {
       indexStack = new Stack();
       indexStack.push(0);
 
-
-      H = new ExpressionHandler();
-      H.addCallback(new ExpressionHandlerCallback() {
-        @Override
-        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
-          if (isHit){
-            //prefix is tainted
-            if(!(s instanceof CallFunc)){
-              throw new ASTParsingException("Cannot handle such symbol " + s + "and expect CallFunc.");
-            }
-
-            if (mode == DEFAULT_MODE) {
-                ParcelDataNode node = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
-                dataGraph.addNewNode(constructCondition(false), node);
-                LOG.info("construct " + node.toString());
-            }else if (mode == EXECUTION_MODE){
-              List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
-              while (childrenPair.size() == 1 && dataGraph.getNodeById(childrenPair.get(0).getRight()).isPlaceholder()){
-                //only have one path and it is a placeholder
-                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
-                //broadcast the mark
-                nextNode.setMark(dataGraph.currentNode().mark());
-                dataGraph.updateNodeIndex(nextNode.getIndex(), true);
-              }
-
-              GraphNode cur = dataGraph.currentNode();
-
-              if (cur instanceof ParcelDataNode){
-
-                ExprWithTypeVariable variable =  constructCondition(false);
-              }
-
-
-              //if (node instanceof ParcelDataNode){
-              //      System.out.println("current conditoin " + variable);
-              //      ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, (CallFunc)s, indexStack.toIntArray());
-              //      System.out.println("comparing " + tmpNode.toString() +" /:/ "+node.toString());
-              //      if (!((ParcelDataNode)node).getJtype().equals(tmpNode.getJtype()))
-              //        throw new ParcelMismatchException("java type mismatch!");
-              //
-              //      node.setMark(indexStack.toIntArray());
-              //  }
-
-            }
-          }
-          return null;
-        }
-        @Override
-        public RuntimeValue handleExpression(Expression e, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleBinExpression(Expression left,
-                                                Operator op,
-                                                Expression right,
-                                                boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public boolean broadcastHit(Symbol terminalSymbol) {
-          if (!terminalSymbol.isTerminal())
-            throw new ASTParsingException("Cannot handle such symbol " + terminalSymbol + "and expect a terminal symbol.");
-          return checkTraceList(terminalSymbol.toString());
-        }
-
-        @Override
-        public String getTag() {
-          return TAG_POINT_SYMBOL;
-        }
-      });
-
-      H.addCallback(new ExpressionHandlerCallback() {
-        @Override
-        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleExpression(Expression e, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
-            return null;
-        }
-
-        @Override
-        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
-          if (isHit){
-              RuntimeVariable name = new RuntimeVariable(indexStack.toIntArray(), left);
-              vt.putVariable(name, v);
-            }
-
-          return v;
-
-        }
-
-        @Override
-        public boolean broadcastHit(Symbol terminalSymbol) {
-          return false;
-        }
-
-        @Override
-        public String getTag() {
-          return TAG_ASSIGN_EXP;
-        }
-      });
-
-      H.addCallback(new ExpressionHandlerCallback() {
-        @Override
-        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleExpression(Expression e, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public boolean broadcastHit(Symbol terminalSymbol) {
-          return false;
-        }
-
-        @Override
-        public String getTag() {
-          return null;
-        }
-      });
-
-      H.addCallback(new ExpressionHandlerCallback() {
-        @Override
-        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleExpression(RuntimeValue left, Operator op, RuntimeValue right, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleBinExpression(Expression left, Operator op, Expression right, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public boolean broadcastHit(Symbol terminalSymbol) {
-          return false;
-        }
-
-        @Override
-        public String getTag() {
-          return null;
-        }
-      });
-      condH = new ExpressionHandler();
-      condH.addCallback(new ExpressionHandlerCallback() {
-        @Override
-        public RuntimeValue handleSymbol(Symbol s, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleExpression(Expression e, boolean isHit) {
-              current_condition = core.mkExpression(e);
-              return null;
-        }
-
-        @Override
-        public RuntimeValue handleBinExpression(Expression left,
-                                                Operator op,
-                                                Expression right,
-                                                boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public RuntimeValue handleAssignExpression(String left, RuntimeValue v, boolean isHit) {
-          return null;
-        }
-
-        @Override
-        public boolean broadcastHit(Symbol terminalSymbol) {
-          return false;
-        }
-
-        @Override
-        public String getTag() {
-          return TAG_UNIVERSAL;
-        }
-      });
-
-
   }
 
 
@@ -340,13 +114,8 @@ public class ASTIterator {
     return false;
   }
 
-  private ExprWithTypeVariable constructConditionByExpression(Expression e){
-      condH.handleExpression(e);
-      if (current_condition == null )
-        throw new ASTParsingException("cannot access condition at " + e);
-      ExprWithTypeVariable tmp = current_condition;
-      current_condition = null; //Clear it is very important for checking constructCondition successful or not
-      return tmp;
+  private ExprWithTypeVariable constructConditionByExpression(ExpressionListWithPrevs e){
+        return core.mkExpressionListWithPrevs(e, (t) -> core.mkAnd(t, core.EXP_TRUE));
   }
 
   private ExpressionOrBlock getRecentBlock(){
@@ -403,7 +172,7 @@ public class ASTIterator {
         Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
         if (block.getLeft() instanceof ConditionalBlock){
 
-            Expression e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+            ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
             ExprWithTypeVariable exp = constructConditionByExpression(e);
 
 
@@ -550,7 +319,7 @@ public class ASTIterator {
         else if (cur instanceof Expression){
           LOG.info("handling expression "+ cur.toString());
 
-          H.handleExpression((Expression)cur);
+          //H.handleExpression((Expression)cur);
           selfAddIndex();
         }
 

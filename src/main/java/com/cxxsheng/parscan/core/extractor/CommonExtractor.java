@@ -112,12 +112,10 @@ public class CommonExtractor {
 
 
   public static List<ExpressionListWithPrevs> parseExpressionListWithPrevs(JavaParser.ExpressionListContext params){
-    List<ExpressionListWithPrevs> list = null;
+    List<ExpressionListWithPrevs> list = new ArrayList<>();
     if (params!=null){
       List<JavaParser.ExpressionContext> ps = params.expression();
       for (JavaParser.ExpressionContext p : ps){
-        if (list==null)
-          list = new ArrayList<>();
         list.add(parseExpression(p));
       }
     }

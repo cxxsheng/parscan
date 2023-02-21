@@ -2,10 +2,13 @@ package com.cxxsheng.parscan.core.z3;
 
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Primitive;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.FloatSymbol;
@@ -78,7 +81,6 @@ public class Z3Core {
     if (type.isPrimitive()){
       Primitive p = type.getPrimitive();
       switch (p){
-
         case BYTE:
         case SHORT:
         case INT:
@@ -108,79 +110,80 @@ public class Z3Core {
 
   }
 
+  public ExprWithTypeVariable handleSymbol(Symbol s){
+    if (s == null)
+      return null;
+
+    if (s instanceof FloatSymbol)
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.append(((FloatSymbol)s).getValue());
+      int i = sb.indexOf(".");
+      if (i>=0){
+        int denominator = 10^(sb.length()- 1 - i);
+        sb.replace(i, i+1, "");
+        sb.append("/");
+        sb.append(denominator);
+      }
+      return new ExprWithTypeVariable(ctx.mkReal(sb.toString()));
+    }else if (s instanceof IntSymbol){
+      return new ExprWithTypeVariable(ctx.mkInt(((IntSymbol)s).getValue()));
+    }else if(s instanceof BoolSymbol){
+      return new ExprWithTypeVariable(((BoolSymbol)s).getValue() ? ctx.mkTrue() : ctx.mkFalse());
+    }else if (s instanceof CharSymbol){
+      return new ExprWithTypeVariable(ctx.mkInt(((CharSymbol)s).getValue()));
+    }
+
+    else if (s instanceof StringSymbol){
+      return new ExprWithTypeVariable(ctx.mkString(((StringSymbol)s).getValue()));
+
+    }else if (s instanceof IdentifierSymbol){
+
+      String name = ((IdentifierSymbol)s).getValue();
+      int index = iterator.getNodeIndexByAttachedName(name);
+      //find index in dataTree first
+      if (index >= 0)
+      {
+        name = "$" + index;
+        //fixme type get may have some problem
+        GraphNode node = iterator.getDataGraph().getNodeById(index);
+        JavaType javaType = JavaType.parseJavaTypeString("int", false);
+        if (node instanceof ParcelDataNode)
+          javaType = ((ParcelDataNode)node).getJtype();
+        return mkConst(javaType, name);
+      }else {
+        //check it is a constant, if this var is constant, replace the symbol by the real value
+        VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
+        if (d != null && d.getValue()!=null) {
+          return mkExpressionListWithPrevs(d.getValue(), null);
+        }
+        else {
+          return mkConst(JavaType.INT, name);
+        }
+      }
+
+    }else if (s instanceof NullSymbol){
+      return new ExprWithTypeVariable(ctx.mkInt(0 ));
+    }else if (s instanceof TmpSymbol){
+      //fixme fixme
+      TmpSymbol tmpSymbol = (TmpSymbol)s;
+      tmpSymbol.
+    }
+    else {
+      throw new Z3ParsingException("cannot handle " + s );
+    }
+  }
+
   public ExprWithTypeVariable mkExpression(Expression e){
     if (e==null)
       return null;
-    ExprWithTypeVariable left = null;
-    ExprWithTypeVariable right = null;
-    if (e.isTerminalSymbol()){
-       Symbol s = e.getSymbol();
-        if (s instanceof FloatSymbol)
-        {
-          StringBuilder sb = new StringBuilder();
-          sb.append(((FloatSymbol)s).getValue());
-          int i = sb.indexOf(".");
-          if (i>=0){
-            int denominator = 10^(sb.length()- 1 - i);
-            sb.replace(i, i+1, "");
-            sb.append("/");
-            sb.append(denominator);
-          }
-          return new ExprWithTypeVariable(ctx.mkReal(sb.toString()));
-        }else if (s instanceof IntSymbol){
-          return new ExprWithTypeVariable(ctx.mkInt(((IntSymbol)s).getValue()));
-        }else if(s instanceof BoolSymbol){
-          return new ExprWithTypeVariable(((BoolSymbol)s).getValue() ? ctx.mkTrue() : ctx.mkFalse());
-        }else if (s instanceof CharSymbol){
-          return new ExprWithTypeVariable(ctx.mkInt(((CharSymbol)s).getValue()));
-        }
-
-        else if (s instanceof StringSymbol){
-          return new ExprWithTypeVariable(ctx.mkString(((StringSymbol)s).getValue()));
-
-        }else if (s instanceof IdentifierSymbol){
-
-          String name = ((IdentifierSymbol)s).getValue();
-          int index = iterator.getNodeIndexByAttachedName(name);
-          //find index in dataTree first
-          if (index >= 0)
-          {
-            name = "$" + index;
-            //fixme type get may have some problem
-            GraphNode node = iterator.getDataGraph().getNodeById(index);
-            JavaType javaType = JavaType.parseJavaTypeString("int", false);
-            if (node instanceof ParcelDataNode)
-              javaType = ((ParcelDataNode)node).getJtype();
-            return mkConst(javaType, name);
-          }else {
-            //check it is a constant, if this var is constant, replace the symbol by the real value
-            VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
-            if (d != null && d.getValue()!=null) {
-              return mkExpression(d.getValue());
-            }
-            else {
-              return mkConst(JavaType.INT, name);
-            }
-          }
-
-        }else if (s instanceof NullSymbol){
-          return new ExprWithTypeVariable(ctx.mkInt(0 ));
-        }
-        else {
-          throw new Z3ParsingException("cannot handle " + e );
-        }
-
-    }
-
-
-
+    Expr new_exp;
     Operator op = e.getOp();
     if (op == null)
       throw new Z3ParsingException("unreachable code");
 
-    left =  mkExpression(e.getL());
-    right = mkExpression(e.getR());
-    Expr new_exp;
+    ExprWithTypeVariable left = handleSymbol(e.getLeft());
+    ExprWithTypeVariable right = handleSymbol(e.getRight());
     switch (op){
       case EQ:
         new_exp = ctx.mkEq(left.getExpr(), right.getExpr());
@@ -213,6 +216,27 @@ public class Z3Core {
 
     return ExprWithTypeVariable.contact(left, right,new_exp);
   }
+
+  public ExprWithTypeVariable mkExpressionListWithPrevs(ExpressionListWithPrevs elp, LastExpressionCallback handle){
+    ExprWithTypeVariable ev = null;
+    if (elp.hasPreExpression()){
+        for (Expression e : elp.getPrevs()){
+          if (ev == null)
+            ev = mkExpression(e);
+          else
+            ev = mkAnd(ev, mkExpression(e));
+        }
+      }
+      ExprWithTypeVariable last = mkExpression(elp.getLastExpression());
+      if (handle != null)
+      {
+        last = handle.justify(last);
+      }
+
+      return ev == null ? last : mkAnd(ev, last);
+
+  }
+
 
   public ExprWithTypeVariable mkNot(ExprWithTypeVariable e){
     e.setExpr(ctx.mkNot(e.getExpr()));

@@ -1,11 +1,11 @@
 package com.cxxsheng.parscan.core.z3;
 
-import com.cxxsheng.parscan.core.iterator.RuntimeValue;
 import com.microsoft.z3.Expr;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExprWithTypeVariable extends RuntimeValue {
+//wrap the z3 expr so that use it
+public class ExprWithTypeVariable {
   private final List<Expr> vars = new ArrayList<>();
 
   private Expr expr;
@@ -27,8 +27,8 @@ public class ExprWithTypeVariable extends RuntimeValue {
     this.expr = expr;
   }
 
-  public void addVarsAll(List<Expr> var){
-    this.vars.addAll(var);
+  public void addVarsAll(List<Expr> vars){
+    this.vars.addAll(vars);
   }
 
 

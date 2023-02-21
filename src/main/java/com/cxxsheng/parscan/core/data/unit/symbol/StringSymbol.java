@@ -1,9 +1,9 @@
 package com.cxxsheng.parscan.core.data.unit.symbol;
 
-import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import java.util.Objects;
 
-public class StringSymbol extends Symbol {
+public class StringSymbol extends TerminalSymbol {
     private final String value;
 
     public StringSymbol(String value) {
