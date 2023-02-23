@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
+import com.cxxsheng.parscan.core.z3.Z3Core;
 import java.util.List;
 
 public interface GraphNode {
@@ -35,5 +36,5 @@ public interface GraphNode {
 
   void setMark(int[] mark);
 
-  //void chooseBranch(Z3Core core, ExprWithTypeVariable exp);
+  void chooseBranch(Z3Core core, ExprWithTypeVariable exp);
 }

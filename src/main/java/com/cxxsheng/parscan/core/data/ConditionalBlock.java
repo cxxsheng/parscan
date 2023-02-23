@@ -34,16 +34,16 @@ public class ConditionalBlock extends Block {
 
       public ExpressionOrBlockList getElseBlock() {
           return elseBlock;
-        }
+      }
 
-        @Override
-        public String toString() {
-              final StringBuffer sb = new StringBuffer("");
-              sb.append("if(").append(boolExp).append(")");
-              sb.append("{\n").append(getContent()).append("}\n");
-              if (hasElse()){
+      @Override
+      public String toString() {
+          final StringBuffer sb = new StringBuffer("");
+          sb.append("if(").append(boolExp).append(")");
+          sb.append("{\n").append(getContent()).append("}\n");
+          if (hasElse()){
                 sb.append("else\n {\n").append(elseBlock).append("\n}\n");
-              }
-              return sb.toString();
-        }
+          }
+          return sb.toString();
+      }
 }

@@ -5,10 +5,9 @@ import com.cxxsheng.parscan.antlr.parser.JavaLexer;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import com.cxxsheng.parscan.core.extractor.JavaClassExtractor;
@@ -56,15 +55,14 @@ public class AntlrCore {
   private static FunctionImp getReadFromParcel(JavaClass jClass){
       VarDeclaration v = jClass.getVarDeclarationByName("CREATOR");
       if (v != null){
-        ExpressionListWithPrevs e =  v.getValue();
-        if (e != null){
-          Expression ee = e.getLastExpression();
-          Symbol c = ee.getSymbol();
-          if (c instanceof  CallFunc)
-          {
-            JavaClass nullClass = ((CallFunc)c).extraClass();
+        Symbol e =  v.getLastExpValue();
+        if (e instanceof TmpSymbol){
+            e = ((TmpSymbol)e).getExpression().getSymbol();
+        }
+        if (e  instanceof  CallFunc)
+        {
+            JavaClass nullClass = ((CallFunc)e).extraClass();
             return nullClass.getFunctionImpByName("GateKeeperResponse createFromParcel(Parcel source)");
-          }
         }
       }
       return null;
@@ -80,10 +78,6 @@ public class AntlrCore {
       String name = p.getName();
       if (writeToParcel.getBody().isEmpty())
         return false;
-
-
-
-
       return false;
   }
   //Start parse given java file

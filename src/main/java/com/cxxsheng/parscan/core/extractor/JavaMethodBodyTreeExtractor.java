@@ -123,7 +123,6 @@ public class JavaMethodBodyTreeExtractor {
 
           //fixme unfinished
           */
-
           if (statement.FOR()!=null){
 
               JavaParser.ForControlContext forControl = statement.forControl();
@@ -199,8 +198,7 @@ public class JavaMethodBodyTreeExtractor {
           {
             ExpressionListWithPrevs elp = parseExpression(statement.statementExpression);
             ExpressionOrBlockList ebl = ExpressionOrBlockList.InitEmptyInstance();
-            ebl.add(elp.toExpressionList());
-            return ebl;
+            return ebl.add(elp.toExpressionList());
           }
 
           //SEMI empty body
@@ -226,7 +224,6 @@ public class JavaMethodBodyTreeExtractor {
       public ExpressionOrBlockList parseBlockStatement(JavaParser.BlockStatementContext blockStatement){
           JavaParser.LocalTypeDeclarationContext localVariableDeclaration =  blockStatement.localTypeDeclaration();
           if (localVariableDeclaration != null){
-
            return parseLocalTypeDeclaration(localVariableDeclaration);
           }
 
@@ -236,7 +233,7 @@ public class JavaMethodBodyTreeExtractor {
             ExpressionOrBlockList retEBL = ExpressionOrBlockList.InitEmptyInstance();
             List<ExpressionListWithPrevs> elps = parseLocalVariableDeclaration(localVariableDeclarationContext);
             for (ExpressionListWithPrevs elp : elps){
-              retEBL.add(elp.toExpressionList());
+              retEBL = retEBL.add(elp.toExpressionList());
             }
             return retEBL;
           }

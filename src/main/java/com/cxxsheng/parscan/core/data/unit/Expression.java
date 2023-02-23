@@ -61,4 +61,18 @@ public class Expression extends ExpressionOrBlock {
     public Operator getOp() {
         return op;
     }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    if (isSymbol())
+      sb.append(symbol);
+    else
+    {
+      sb.append(left == null ? "" : left.toString()).
+        append(op.getName()).
+        append(right == null ? "" : right.toString());
+    }
+    return sb.toString();
+  }
 }

@@ -52,4 +52,16 @@ public class ExpressionListWithPrevs {
       return list;
     }
   }
+
+  @Override
+  public String toString() {
+    final StringBuffer sb = new StringBuffer();
+    if (hasPreExpression()){
+      for (Expression prev : prevs){
+        sb.append(prev).append('\n');
+      }
+    }
+    sb.append(lastExpression).append('\n');
+    return sb.toString();
+  }
 }

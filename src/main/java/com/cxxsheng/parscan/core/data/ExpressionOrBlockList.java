@@ -143,11 +143,12 @@ public class ExpressionOrBlockList {
     public String toString() {
 
 
-      StringBuilder sb = new StringBuilder("");
-      for (ExpressionOrBlock ep:content){
-        sb.append(ep);
-        sb.append('\n');
-      }
+      StringBuilder sb = new StringBuilder();
+      if (content != null)
+        for (ExpressionOrBlock ep : content){
+          sb.append(ep);
+          sb.append('\n');
+        }
       return sb.toString();
     }
 
@@ -179,4 +180,6 @@ public class ExpressionOrBlockList {
       }
       return content.get(i);
     }
+
+
 }

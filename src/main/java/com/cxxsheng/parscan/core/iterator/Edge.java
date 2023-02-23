@@ -1,5 +1,6 @@
 package com.cxxsheng.parscan.core.iterator;
 
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import java.util.Objects;
 
 public class Edge {
@@ -7,9 +8,12 @@ public class Edge {
   private final int right;
   private boolean isPassed;
 
-  public Edge(int left, int right) {
+  private final ExprWithTypeVariable cond;
+
+  public Edge(ExprWithTypeVariable cond, int left, int right) {
       this.left = left;
       this.right = right;
+      this.cond = cond;
   }
 
   public int getLeft() {
@@ -48,5 +52,9 @@ public class Edge {
     sb.append(left);
     sb.append("->").append(right);
     return sb.toString();
+  }
+
+  public ExprWithTypeVariable getCond() {
+    return cond;
   }
 }

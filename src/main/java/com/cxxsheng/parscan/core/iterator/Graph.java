@@ -116,8 +116,8 @@ public class Graph {
       return index;
   }
 
-  public int addEdge(int src, int dst){
-      Edge edge = new Edge(src, dst);
+  public int addEdge(ExprWithTypeVariable cond, int src, int dst){
+      Edge edge = new Edge(cond, src, dst);
       int index = edges.indexOf(edge);
 
       if (index >= 0){
@@ -155,20 +155,23 @@ public class Graph {
 
   @Override
   public String toString() {
-    final StringBuffer sb = new StringBuffer("Tree{");
-    for (Edge edge :edges){
-      int src = edge.getLeft();
-      int dst = edge.getRight();
-
-      sb.append(getNodeById(src));
-      sb.append("->");
-      sb.append(getNodeById(dst));
-      sb.append('\n');
-    }
-    sb.append('}');
-    return sb.toString();
+    return toMermaidString();
   }
 
+
+  public String toMermaidString(){
+    final StringBuilder sb = new StringBuilder("graph TB;\n");
+    for (Edge edge: edges){
+      int src = edge.getLeft();
+      int dst = edge.getRight();
+      sb.append("node").append(src);
+      sb.append("--\"").append(edge.getCond());
+      sb.append("\"-->");
+      sb.append("node").append(dst);
+      sb.append(";\n");
+    }
+    return sb.toString();
+  }
 
   public static int getTwoNodeSamePrefixIndexAtMark(GraphNode node1, GraphNode node2){
     int ret = -1;

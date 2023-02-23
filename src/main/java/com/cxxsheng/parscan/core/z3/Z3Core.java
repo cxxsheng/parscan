@@ -7,7 +7,6 @@ import com.cxxsheng.parscan.core.data.unit.JavaType;
 import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Primitive;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
@@ -24,6 +23,7 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Sort;
+import java.util.List;
 
 public class Z3Core {
 
@@ -41,8 +41,6 @@ public class Z3Core {
   private final Expr VALUE_EXP = ctx.mkConst("$VALUE", ctx.getIntSort());
 
   public final ExprWithTypeVariable VALUE = new ExprWithTypeVariable(VALUE_EXP, VALUE_EXP);
-
-  private volatile Expr conditionExpression_left = null;
 
   public Z3Core(JavaClass javaClass, ASTIterator iterator) {
     this.javaClass = javaClass;
@@ -72,9 +70,6 @@ public class Z3Core {
 
   }
 
-
-
-
   public ExprWithTypeVariable mkConst(JavaType type, String name){
     com.microsoft.z3.Symbol symbol = ctx.mkSymbol(name);
     Sort sort;
@@ -100,7 +95,7 @@ public class Z3Core {
           throw new Z3ParsingException("Cannot handle unknown JavaType: " + type);
       }
 
-      Expr expr = ctx.mkConst(symbol, sort);
+      Expr<Sort> expr = ctx.mkConst(symbol, sort);
       return new ExprWithTypeVariable(expr, expr);
     }
     else {
@@ -154,8 +149,9 @@ public class Z3Core {
       }else {
         //check it is a constant, if this var is constant, replace the symbol by the real value
         VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
-        if (d != null && d.getValue()!=null) {
-          return mkExpressionListWithPrevs(d.getValue(), null);
+        if (d != null && d.getExpressions()!=null) {
+          Symbol v = d.getLastExpValue();
+          return handleSymbol(v);
         }
         else {
           return mkConst(JavaType.INT, name);
@@ -167,7 +163,22 @@ public class Z3Core {
     }else if (s instanceof TmpSymbol){
       //fixme fixme
       TmpSymbol tmpSymbol = (TmpSymbol)s;
-      tmpSymbol.
+
+      //Expression e = tmpSymbol.getExpression();
+      ExprWithTypeVariable e = mkExpression(((TmpSymbol)s).getExpression());
+      List<Expr> vars = e.getVars();
+      if (vars.size() > 0){
+        //inherit the value expression's first type (if exist)
+        Expr<Sort> v0 = vars.get(0);
+        Sort sort = v0.getSort();
+        Expr<Sort> v = ctx.mkConst(tmpSymbol.getName(), sort);
+        ExprWithTypeVariable name = new ExprWithTypeVariable(v, v);
+        //make tmp name equals tmp value
+        return mkEq(name, e);
+      }else {
+        //fixme may throw an exception
+        return null;
+      }
     }
     else {
       throw new Z3ParsingException("cannot handle " + s );
@@ -175,7 +186,7 @@ public class Z3Core {
   }
 
   public ExprWithTypeVariable mkExpression(Expression e){
-    if (e==null)
+    if (e == null)
       return null;
     Expr new_exp;
     Operator op = e.getOp();
@@ -232,7 +243,6 @@ public class Z3Core {
       {
         last = handle.justify(last);
       }
-
       return ev == null ? last : mkAnd(ev, last);
 
   }
@@ -292,8 +302,4 @@ public class Z3Core {
     return ctx.mkSolver();
   }
 
-
-  public void setConditionExpression_left(Expr conditionExpression_left) {
-    this.conditionExpression_left = conditionExpression_left;
-  }
 }

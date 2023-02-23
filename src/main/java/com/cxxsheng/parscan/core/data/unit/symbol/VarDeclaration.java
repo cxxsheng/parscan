@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.data.unit.symbol;
 
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
+import com.cxxsheng.parscan.core.data.unit.Operator;
 import com.cxxsheng.parscan.core.data.unit.Symbol;
 
 
@@ -11,26 +12,26 @@ public class VarDeclaration extends Symbol {
 
   private final IdentifierSymbol name;
   private final JavaType type;
-  private ExpressionListWithPrevs value;
+  private ExpressionListWithPrevs expressions;
 
-  public VarDeclaration(IdentifierSymbol name, JavaType type, ExpressionListWithPrevs value) {
+  public VarDeclaration(IdentifierSymbol name, JavaType type, ExpressionListWithPrevs expressions) {
     this.name = name;
     this.type = type;
-    this.value = value;
+    this.expressions = expressions;
   }
 
   public VarDeclaration(IdentifierSymbol name, JavaType type) {
     this.name = name;
     this.type = type;
-    this.value = null;
+    this.expressions = null;
   }
 
   public boolean hasValue(){
-    return this.value != null;
+    return this.expressions != null;
   }
 
-  private void updateValue(ExpressionListWithPrevs value){
-    this.value = value;
+  private void updateExpressions(ExpressionListWithPrevs expressions){
+    this.expressions = expressions;
   }
 
 
@@ -39,10 +40,14 @@ public class VarDeclaration extends Symbol {
     return name.toString();
   }
 
-  public ExpressionListWithPrevs getValue() {
-    return value;
+  public ExpressionListWithPrevs getExpressions() {
+    return expressions;
   }
 
+  public Symbol getLastExpValue(){
+    assert expressions.getLastExpression().getOp() == Operator.AS;
+    return expressions.getLastExpression().getRight();
+  }
 
   public JavaType getType() {
     return type;

@@ -1,13 +1,12 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.common.Pair;
-import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
 import com.cxxsheng.parscan.core.data.unit.JavaType;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
-import com.cxxsheng.parscan.core.data.unit.symbol.ConditionalExpression;
 import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
 import com.microsoft.z3.Expr;
@@ -16,6 +15,7 @@ import com.microsoft.z3.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class ParcelDataNode extends RuntimeValue implements GraphNode {
 
@@ -45,10 +45,10 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
 
     private int[] mark;
 
-    private intt index = -1;
+    private int index = -1;
 
     private ParcelDataNode(int[] mark){
-      func_typee = 0;
+      func_type = 0;
       jtype = JavaType.getVOID();
       attachedSymbolName = null;
       isPlaceHolder = true;
@@ -92,7 +92,7 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
 
           if (index < 0)
             throw new ASTParsingException("index must be more than -1");
-          graph.addEdge(index, dstIndex);
+          graph.addEdge(cond, index, dstIndex);
       }
 
 
@@ -162,48 +162,48 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
             //fixme we need to record the return value
             if (jType.isVoid() && d.hasParameter()){
               jType = d.getParameterByIndex(0).getType();
-              Expression e = func.getParams().get(0);
-              if (e.getSymbol() instanceof IdentifierSymbol){
-                attachedSymbolName = e.getSymbol().toString();
-              }else {
-                if (e.getSymbol() instanceof ConditionalExpression){
-                  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
-                  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
-
-                  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
-                  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
-                  value = core.mkOr(LL, RR);
-
-                }else if (e.getSymbol() instanceof PointSymbol){
-                  if (e.getSymbol().toString().endsWith(".length"))
-                    value = core.mkGe(core.VALUE, core.mkInt(1));
-                }
-                else
-                  value = core.mkEq(core.VALUE, core.mkExpression(e));
+              TerminalSymbol e = func.getParams().get(0);
+              if (e instanceof IdentifierSymbol){
+                attachedSymbolName = e.toString();
+              }else if (e instanceof TmpSymbol){
+                //if (e.getSymbol() instanceof ConditionalExpression){
+                //  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
+                //  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
+                //
+                //  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                //  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                //  value = core.mkOr(LL, RR);
+                //
+                //}else if (e.getSymbol() instanceof PointSymbol){
+                //  if (e.getSymbol().toString().endsWith(".length"))
+                //    value = core.mkGe(core.VALUE, core.mkInt(1));
+                //}
+                //else
+                //  value = core.mkEq(core.VALUE, core.mkExpression(e));
               }
             }
           }else if (funcName.startsWith("write")){
             type = FUNC_TYPE_WRITE;
             if (d.hasParameter()){
               jType  = d.getParameterByIndex(0).getType();
-              Expression e = func.getParams().get(0);
-              if (e.getSymbol() instanceof IdentifierSymbol){
-                attachedSymbolName = e.getSymbol().toString();
-              }else {
-                if (e.getSymbol() instanceof ConditionalExpression){
-                  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
-                  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
-
-                  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
-                  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
-                  value = core.mkOr(LL, RR);
-
-                }else if (e.getSymbol() instanceof PointSymbol){
-                  if (e.getSymbol().toString().endsWith(".length"))
-                    value = core.mkGe(core.VALUE, core.mkInt(1));
-                }
-                else
-                  value = core.mkEq(core.VALUE, core.mkExpression(e));
+              TerminalSymbol ts = func.getParams().get(0);
+              if (ts instanceof IdentifierSymbol){
+                attachedSymbolName = ts.toString();
+              }else if(ts instanceof TmpSymbol) {
+                //if (e instanceof ConditionalExpression){
+                //  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
+                //  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
+                //
+                //  ExprWithTypeVariable LL = core.mkEq(core.VALUE, core.mkExpression(L));
+                //  ExprWithTypeVariable RR = core.mkEq(core.VALUE, core.mkExpression(R));
+                //  value = core.mkOr(LL, RR);
+                //
+                //}else if (e.getSymbol() instanceof PointSymbol){
+                //  if (e.getSymbol().toString().endsWith(".length"))
+                //    value = core.mkGe(core.VALUE, core.mkInt(1));
+                //}
+                //else
+                //  value = core.mkEq(core.VALUE, core.mkExpression(e));
               }
             }
           }else if (funcName.startsWith("create")){
@@ -230,8 +230,7 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
     @Override
     public String toString() {
         if (isPlaceHolder)
-          return "PlaceHolderNode";
-
+          return "PlaceHolderNode" + new Random().nextInt();
         final StringBuffer sb = new StringBuffer("ParcelDataNode{");
         sb.append(Arrays.toString(mark));
         sb.append("func_type=").append(func_type);
@@ -268,8 +267,8 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
       this.mark = mark;
     }
 
+    @Override
     public void chooseBranch(Z3Core core, ExprWithTypeVariable curCond) {
-
       for (Pair<ExprWithTypeVariable, Integer> childPair :  children){
         Solver solver = core.mkSolver();
 

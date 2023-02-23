@@ -174,8 +174,6 @@ public class ASTIterator {
 
             ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
             ExprWithTypeVariable exp = constructConditionByExpression(e);
-
-
             //skip the last one is the block... when we construct a placeholder node
             //we are not in the expression area, so that there are some problems to be fixed
             // if last block is the block, we just skip it.

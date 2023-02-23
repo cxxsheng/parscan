@@ -69,6 +69,7 @@ public class JavaClassExtractor {
                 if (e.isSymbol())
                   var = new VarDeclaration((IdentifierSymbol)e.getSymbol(), type);
                 else {
+                  //fixme need to adjust
                   var = new VarDeclaration((IdentifierSymbol)e.getLeft(), type, exp);
                 }
                 javaClass.addClassVariable(var);
