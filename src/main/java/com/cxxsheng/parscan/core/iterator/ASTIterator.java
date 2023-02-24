@@ -15,6 +15,11 @@ import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
+import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
@@ -90,9 +95,7 @@ public class ASTIterator {
       this.dataGraph = graph;
       traceList = new ArrayList<>();
       initTraceList();
-
       core = new Z3Core(javaClass, this) ;
-
       indexStack = new Stack();
       indexStack.push(0);
 
@@ -297,6 +300,40 @@ public class ASTIterator {
     return allCurBlocks.get(allCurBlocks.size()-1);
   }
 
+  private void handleExpression(Expression e){
+    if (e.isSymbol()){
+      Symbol symbol = e.getSymbol();
+      if (symbol instanceof TmpSymbol){
+
+      }else if(symbol instanceof PointSymbol){
+         TerminalSymbol left = ((PointSymbol)symbol).getExp();
+         if (traceList.contains(left.toString())){
+           if (((PointSymbol)symbol).isFunc()){
+             CallFunc callFunc = (CallFunc)((PointSymbol)symbol).getV();
+
+             if (mode == DEFAULT_MODE) {
+               ParcelDataNode node = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+               dataGraph.addNewNode(constructCondition(false), node);
+               LOG.info("construct " + node.toString());
+             }else if (mode == EXECUTION_MODE){
+               List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
+               while (childrenPair.size() == 1 && dataGraph.getNodeById(childrenPair.get(0).getRight()).isPlaceholder()){
+                 //only have one path and it is a placeholder
+                 GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
+                 //broadcast the mark
+                 nextNode.setMark(dataGraph.currentNode().mark());
+                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+               }
+             }
+           }
+         }
+
+      }
+    }else {
+
+    }
+
+  }
 
   public void continueToTaint(){
 
@@ -316,8 +353,7 @@ public class ASTIterator {
 
         else if (cur instanceof Expression){
           LOG.info("handling expression "+ cur.toString());
-
-          //H.handleExpression((Expression)cur);
+          handleExpression((Expression)cur);
           selfAddIndex();
         }
 
@@ -362,10 +398,9 @@ public class ASTIterator {
             if (mode == DEFAULT_MODE){
               ExpressionOrBlock curBlock = getRecentBlock();
               if (curBlock instanceof ConditionalBlock){
-                ExprWithTypeVariable expr =  constructConditionByExpression(((ConditionalBlock)curBlock).getBoolExp());
-                System.out.println(expr);
                 if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
-                  dataGraph.addNewNode(constructCondition(true), ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+                  dataGraph.addNewNode(constructCondition(true),
+                                       ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
               }
             }else if (mode == EXECUTION_MODE){
 

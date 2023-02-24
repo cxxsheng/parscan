@@ -13,7 +13,7 @@ class ASTIteratorTest {
 
     @Test
     void continueToTaint() {
-      //FunctionReaderTest.openWithAntlr();
+      FunctionReaderTest.openWithAntlr();
 
       try {
         FunctionPattern.initFromFile("./src/test/resources/input/rule.json");

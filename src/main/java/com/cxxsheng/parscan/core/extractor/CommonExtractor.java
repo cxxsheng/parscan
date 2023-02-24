@@ -379,14 +379,21 @@ public class CommonExtractor {
         ExpressionListWithPrevs expression = parseExpression(e);
         if (expressionContext.methodCall()!=null){
           ExpressionListWithPrevs methodCall = parseMethodCall(expressionContext.methodCall());
-          ExpressionListWithPrevs retEL = createExpressionListWithPrevsUnary(expression,
-                                                           (t-> methodCall.getLastExpression()));
+          ExpressionListWithPrevs retEL = createExpressionListWithPrevsUnary(expression, t -> new PointSymbol(t, methodCall.getLastExpression().getSymbol()).toExp());
           if (methodCall.hasPreExpression())
             retEL.addPrevs(methodCall.getPrevs());
           return retEL;
         }
-        if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null){
-          return createExpressionListWithPrevsUnary(expression, t -> new PointSymbol(t, parseIDENTIFIER(expressionContext.IDENTIFIER().getText())).toExp());
+        if (expressionContext.IDENTIFIER()!=null || expressionContext.THIS()!=null || expressionContext.SUPER()!=null){
+          String id;
+          if (expressionContext.IDENTIFIER()!= null)
+             id = expressionContext.IDENTIFIER().getText();
+          else if (expressionContext.THIS() != null )
+            id = "this";
+          else
+            id = "super";
+          String finalId = id;
+          return createExpressionListWithPrevsUnary(expression, t -> new PointSymbol(t, parseIDENTIFIER(finalId)).toExp());
         }
       }
 
