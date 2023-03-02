@@ -75,4 +75,8 @@ public class Expression extends ExpressionOrBlock {
     }
     return sb.toString();
   }
+
+  public boolean isAssign() {
+      return op!=null && op.isAssign();
+  }
 }

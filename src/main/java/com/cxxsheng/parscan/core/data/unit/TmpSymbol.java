@@ -17,4 +17,13 @@ public class TmpSymbol extends TerminalSymbol {
   public String getName(){
     return "$t"+tmpId;
   }
+
+  @Override
+  public String toString() {
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append("@T").append(tmpId).append('{');
+    sb.append(e.toString()).append('}');
+    return sb.toString();
+  }
 }

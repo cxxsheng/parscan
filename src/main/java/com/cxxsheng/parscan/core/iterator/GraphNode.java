@@ -38,3 +38,4 @@ public interface GraphNode {
 
   void chooseBranch(Z3Core core, ExprWithTypeVariable exp);
 }
+

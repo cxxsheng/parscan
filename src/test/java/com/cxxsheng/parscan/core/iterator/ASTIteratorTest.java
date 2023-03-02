@@ -33,12 +33,8 @@ class ASTIteratorTest {
         ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc(), graph);
 
         while (iterator1.hasNextStage()){
-          System.out.println("nextStage");
           iterator1.continueToTaint();
         }
-
-
-
 
       }
       catch (IOException e) {

@@ -24,9 +24,9 @@ public class ExpressionListWithPrevs {
   }
 
   public void addPrevs(List<Expression> prevs){
-    if (prevs == null)
-      prevs = new ArrayList<>();
-    prevs.addAll(prevs);
+    if (this.prevs == null)
+      this.prevs = new ArrayList<>();
+    this.prevs.addAll(prevs);
   }
 
   public List<Expression> getPrevs() {

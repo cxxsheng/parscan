@@ -254,8 +254,8 @@ public class Z3Core {
   }
 
   public ExprWithTypeVariable mkAnd(ExprWithTypeVariable left, ExprWithTypeVariable right){
-    Expr new_exp = ctx.mkAnd(left.getExpr(), right.getExpr());
-    return ExprWithTypeVariable.contact(left, right,new_exp);
+    Expr new_exp = ctx.mkAnd(left.getExpr(), right.getExpr()).simplify();
+    return ExprWithTypeVariable.contact(left, right, new_exp);
   }
 
   public ExprWithTypeVariable mkOr(ExprWithTypeVariable left, ExprWithTypeVariable right){
@@ -297,6 +297,7 @@ public class Z3Core {
     e.getVars().toArray(vars);
     return ctx.mkForall(vars, e.getExpr(),1, null, null, null, null);
   }
+
 
   public Solver mkSolver(){
     return ctx.mkSolver();

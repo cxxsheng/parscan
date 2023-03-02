@@ -87,7 +87,7 @@ public class ASTIterator {
       givenGraph.recovery();
   }
 
-  public ASTIterator(JavaClass javaClass, FunctionImp functionImp, int mode, Graph graph) {
+  private ASTIterator(JavaClass javaClass, FunctionImp functionImp, int mode, Graph graph) {
       this.imp = functionImp;
       this.methodBody = functionImp.getBody();
       this.javaClass = javaClass;
@@ -300,40 +300,89 @@ public class ASTIterator {
     return allCurBlocks.get(allCurBlocks.size()-1);
   }
 
-  private void handleExpression(Expression e){
-    if (e.isSymbol()){
-      Symbol symbol = e.getSymbol();
-      if (symbol instanceof TmpSymbol){
 
-      }else if(symbol instanceof PointSymbol){
-         TerminalSymbol left = ((PointSymbol)symbol).getExp();
-         if (traceList.contains(left.toString())){
-           if (((PointSymbol)symbol).isFunc()){
-             CallFunc callFunc = (CallFunc)((PointSymbol)symbol).getV();
+  private RuntimeValue handleUnterminalSymbol(Symbol symbol){
+    if (symbol instanceof TmpSymbol){
+      Expression value = ((TmpSymbol)symbol).getExpression();
+      return handleExpression(value);
+    }else if(symbol instanceof PointSymbol){
+      TerminalSymbol left = ((PointSymbol)symbol).getExp();
+      if (traceList.contains(left.toString())){
+        if (((PointSymbol)symbol).isFunc()){
+          CallFunc callFunc = (CallFunc)((PointSymbol)symbol).getV();
+          if (mode == DEFAULT_MODE) {
+            ParcelDataNode node = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+            dataGraph.addNewNode(constructCondition(false), node);
+            LOG.info("construct " + node.toString());
+          }else if (mode == EXECUTION_MODE){
 
-             if (mode == DEFAULT_MODE) {
-               ParcelDataNode node = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
-               dataGraph.addNewNode(constructCondition(false), node);
-               LOG.info("construct " + node.toString());
-             }else if (mode == EXECUTION_MODE){
-               List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
-               while (childrenPair.size() == 1 && dataGraph.getNodeById(childrenPair.get(0).getRight()).isPlaceholder()){
-                 //only have one path and it is a placeholder
-                 GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
-                 //broadcast the mark
-                 nextNode.setMark(dataGraph.currentNode().mark());
-                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
-               }
-             }
-           }
-         }
+            if (dataGraph.needToChooseBranch()){
+              ExprWithTypeVariable cond = constructCondition(false);
+              dataGraph.currentNode().chooseBranch(core, cond);
+              ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+              GraphNode currentNode = dataGraph.currentNode();
+              if (!(currentNode instanceof ParcelDataNode))
+                throw new ParcelMismatchException("currentNode is not ParcelDataNode");
+              if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
+                throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
+              dataGraph.setChooseFlag(false);
+              return (ParcelDataNode)currentNode;
+            }else{
+              List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
+              while (childrenPair.size() == 1 &&
+                     dataGraph.currentNode().isPlaceholder()) {
+                //only have one path and it is a placeholder
+                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
+                //broadcast the mark
+                nextNode.setMark(dataGraph.currentNode().mark());
+                dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+              }
 
+              ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+              GraphNode currentNode = dataGraph.currentNode();
+              if (!(currentNode instanceof ParcelDataNode))
+                throw new ParcelMismatchException("currentNode is not ParcelDataNode");
+              if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
+                throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
+
+              if (childrenPair.size() == 1) {
+                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
+                nextNode.setMark(dataGraph.currentNode().mark());
+                dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+              }else {
+                //wait to next callfunc to compare condition expression
+                dataGraph.setChooseFlag(true);
+              }
+
+              return (ParcelDataNode)currentNode;
+            }
+          }
+        }
       }
-    }else {
+    }
+    return null;
+  }
 
+
+  private RuntimeValue handleExpression(Expression e){
+    if (e.isSymbol()){
+      return handleUnterminalSymbol(e.getSymbol());
+    }else{
+      if (e.isAssign()){
+          TerminalSymbol left = e.getLeft();
+          TerminalSymbol right = e.getRight();
+          RuntimeValue v;
+          if (right instanceof TmpSymbol){
+            v = handleUnterminalSymbol(right);
+          }`  wertyuhikl;'
+
+      '
+      }
     }
 
+    return null;
   }
+
 
   public void continueToTaint(){
 
@@ -352,7 +401,7 @@ public class ASTIterator {
         }
 
         else if (cur instanceof Expression){
-          LOG.info("handling expression "+ cur.toString());
+          LOG.info("Handling expression "+ cur.toString());
           handleExpression((Expression)cur);
           selfAddIndex();
         }
@@ -374,7 +423,6 @@ public class ASTIterator {
         else {
           throw new ASTParsingException("unhandled type");
         }
-
 
         //get out of current block
         if (indexStack.peek() >= curList.size()){
@@ -478,10 +526,5 @@ public class ASTIterator {
     return dataGraph;
   }
 
-
-  public void putRuntimeValue(String name , RuntimeValue value){
-    RuntimeVariable var = new RuntimeVariable(indexStack.toIntArray(), name);
-    vt.putVariable(var, value);
-  }
 
 }

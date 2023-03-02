@@ -1,4 +1,6 @@
 package com.cxxsheng.parscan.core.data.unit;
 
-public class TerminalSymbol extends Symbol {
+import com.cxxsheng.parscan.core.iterator.RuntimeValue;
+
+public class TerminalSymbol extends Symbol implements RuntimeValue {
 }

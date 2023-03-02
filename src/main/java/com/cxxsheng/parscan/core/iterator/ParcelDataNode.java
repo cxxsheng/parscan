@@ -15,9 +15,8 @@ import com.microsoft.z3.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-public class ParcelDataNode extends RuntimeValue implements GraphNode {
+public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
     private Graph graph;
 
@@ -230,7 +229,7 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
     @Override
     public String toString() {
         if (isPlaceHolder)
-          return "PlaceHolderNode" + new Random().nextInt();
+          return "PlaceHolderNode";
         final StringBuffer sb = new StringBuffer("ParcelDataNode{");
         sb.append(Arrays.toString(mark));
         sb.append("func_type=").append(func_type);
@@ -290,5 +289,18 @@ public class ParcelDataNode extends RuntimeValue implements GraphNode {
           break;
         }
       }
+    }
+
+
+  public static boolean compareTwoNode(ParcelDataNode node, ParcelDataNode currentNode){
+
+      if(node.isPlaceHolder ^ currentNode.isPlaceHolder)
+        return false;
+
+       if (!node.getJtype().equals(currentNode.getJtype()))
+        return false;
+       //maybe check value
+       return true;
+
     }
 }
