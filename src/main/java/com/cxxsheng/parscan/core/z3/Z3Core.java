@@ -19,6 +19,7 @@ import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 import com.cxxsheng.parscan.core.iterator.ASTIterator;
 import com.cxxsheng.parscan.core.iterator.GraphNode;
 import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
+import com.cxxsheng.parscan.core.iterator.RuntimeValue;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
@@ -31,7 +32,8 @@ public class Z3Core {
   public final ASTIterator iterator;
 
 
-  private Context ctx = new Context();
+  // all z3core must have the same context
+  private static final Context ctx = new Context();
 
   //private Solver solver = ctx.mkSolver();
 
@@ -99,7 +101,9 @@ public class Z3Core {
       return new ExprWithTypeVariable(expr, expr);
     }
     else {
-      throw new Z3ParsingException("Cannot handle object: "+ type);
+      Expr<Sort> expr = ctx.mkConst(symbol, ctx.getIntSort());
+      return new ExprWithTypeVariable(expr, expr);
+//      throw new Z3ParsingException("Cannot handle object: "+ type);
     }
 
 
@@ -154,6 +158,13 @@ public class Z3Core {
           return handleSymbol(v);
         }
         else {
+          RuntimeValue v = iterator.getRuntimeValueByName(name);
+          if (v instanceof ParcelDataNode)
+          {
+            int ii = ((ParcelDataNode) v).getIndex();
+            JavaType javaType = ((ParcelDataNode) v).getJtype();
+            return mkConst(javaType, "$" + ii);
+          }
           return mkConst(JavaType.INT, name);
         }
       }

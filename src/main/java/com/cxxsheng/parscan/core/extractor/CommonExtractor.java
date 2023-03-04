@@ -459,13 +459,17 @@ public class CommonExtractor {
     //  : annotation* (classOrInterfaceType | primitiveType) (annotation* '[' ']')*
     //;
     public static JavaType parseJavaType(JavaParser.TypeTypeContext ctx){
+          boolean isArray = false;
+          if (ctx.LBRACK() != null && ctx.LBRACK().size() > 0
+                  && ctx.RBRACK()!=null && ctx.RBRACK().size() > 0)
+            isArray = true;
           //ignore annotations
           if (ctx.classOrInterfaceType()!=null)
-                return new JavaType( ctx.classOrInterfaceType().getText(),false);
+                return new JavaType( ctx.classOrInterfaceType().getText(),isArray);
           else
           {
                 Primitive p = Primitive.nameOf(ctx.primitiveType().getText());
-                return new JavaType(p, false);
+                return new JavaType(p, isArray);
           }
     }
 

@@ -168,7 +168,10 @@ public class Graph {
         if(left.isPlaceholder())
           sb.append("placeholder");
         else
-          sb.append(((ParcelDataNode)left).getJtype().toString());
+        {
+          sb.append(((ParcelDataNode)left).getJtype().getPrimitive().getName());
+          sb.append(((ParcelDataNode) left).isArray() ? "Array" : "");
+        }
       }
       sb.append("--\"").append(edge.getCond());
       sb.append("\"-->");
@@ -178,7 +181,10 @@ public class Graph {
         if (right.isPlaceholder())
           sb.append("placeholder");
         else
-          sb.append(((ParcelDataNode)right).getJtype().toString());
+        {
+          sb.append(((ParcelDataNode)right).getJtype().getPrimitive().getName());
+          sb.append(((ParcelDataNode)right).isArray() ? "Array" : "");
+        }
       }
       sb.append(";\n");
     }

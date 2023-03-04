@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ASTIterator {
+public class                                      ASTIterator {
 
 
   private final JavaClass javaClass;
@@ -50,8 +50,6 @@ public class ASTIterator {
 
   private final Z3Core core;
 
-  private final VariableTable vt = new VariableTable();
-
   //Default mode means ASTIterator construct a data node graph
   //while iterating the ast.
   public final static int DEFAULT_MODE = 0;
@@ -61,6 +59,8 @@ public class ASTIterator {
   public final static int EXECUTION_MODE = 1;
 
   private final int mode;
+
+  private VariableTable variableTable = new VariableTable();
 
   private void initTraceList(){
     List<FunctionPattern> ps = FunctionPattern.getPatterns();
@@ -152,7 +152,7 @@ public class ASTIterator {
       // when i < len-1 means they are not in the same domain
       // last node need to pop up until current node and last node
       // are in the same domain
-      while (same_size < last_len-1) {
+      while (same_size < last_len - 1) {
         // last node = last node's father node
         dataGraph.popCurrent();
         last_mark = dataGraph.currentNode().mark();
@@ -175,19 +175,20 @@ public class ASTIterator {
         Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
         if (block.getLeft() instanceof ConditionalBlock){
 
-            ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
-            ExprWithTypeVariable exp = constructConditionByExpression(e);
+            ExprWithTypeVariable exp;
             //skip the last one is the block... when we construct a placeholder node
             //we are not in the expression area, so that there are some problems to be fixed
             // if last block is the block, we just skip it.
             if (isPlaceHolder && same_index >= indexStack.size() && j==allCurrentBlocks.size()-1)
               break;
-
             int cond_flag = indexStack.get(same_index);
-            if (cond_flag == COND_INDEX_IF)
-              ;
+            if (cond_flag == COND_INDEX_IF){
+                ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+                exp = constructConditionByExpression(e);
+                ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
+            }
             else if (cond_flag == COND_INDEX_ELSE)
-              exp = core.mkNot(exp);
+              exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
             else
             {
               throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
@@ -326,6 +327,7 @@ public class ASTIterator {
               if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
                 throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
               dataGraph.setChooseFlag(false);
+              currentNode.setMark(tmpNode.mark());
               return (ParcelDataNode)currentNode;
             }else{
               List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
@@ -334,7 +336,7 @@ public class ASTIterator {
                 //only have one path and it is a placeholder
                 GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
                 //broadcast the mark
-                nextNode.setMark(dataGraph.currentNode().mark());
+                nextNode.setMark(indexStack.toIntArray());
                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
               }
 
@@ -347,7 +349,7 @@ public class ASTIterator {
 
               if (childrenPair.size() == 1) {
                 GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
-                nextNode.setMark(dataGraph.currentNode().mark());
+                nextNode.setMark(indexStack.toIntArray());
                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
               }else {
                 //wait to next callfunc to compare condition expression
@@ -371,15 +373,15 @@ public class ASTIterator {
       if (e.isAssign()){
           TerminalSymbol left = e.getLeft();
           TerminalSymbol right = e.getRight();
-          RuntimeValue v;
+          RuntimeValue v = null;
           if (right instanceof TmpSymbol){
             v = handleUnterminalSymbol(right);
-          }`  wertyuhikl;'
-
-      '
+          }
+          if (v != null){
+            variableTable.addVariable(left.toString(), v);
+          }
       }
     }
-
     return null;
   }
 
@@ -397,7 +399,6 @@ public class ASTIterator {
 
         if (cur == null){
           //empty block handle
-
         }
 
         else if (cur instanceof Expression){
@@ -436,7 +437,6 @@ public class ASTIterator {
 
             if (indexStack.empty())
               break;
-
           }else if (top == COND_INDEX_IF){
 
             //go to else statement
@@ -463,7 +463,7 @@ public class ASTIterator {
   }
 
 
-  private final void indexStackPop(){
+  private void indexStackPop(){
 
     if (mode == DEFAULT_MODE){
       if (indexStack.size() > 1){
@@ -518,7 +518,7 @@ public class ASTIterator {
   }
 
 
-  public final int getNodeIndexByAttachedName(String name){
+  public int getNodeIndexByAttachedName(String name){
     return dataGraph.getIndexByAttachedName(name);
   }
 
@@ -527,4 +527,7 @@ public class ASTIterator {
   }
 
 
+  public RuntimeValue getRuntimeValueByName(String name){
+      return variableTable.getVariableByName(name);
+  }
 }

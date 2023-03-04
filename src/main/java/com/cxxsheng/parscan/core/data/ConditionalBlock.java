@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.data;
 
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
+import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 
 public class ConditionalBlock extends Block {
 
@@ -45,5 +46,17 @@ public class ConditionalBlock extends Block {
                 sb.append("else\n {\n").append(elseBlock).append("\n}\n");
           }
           return sb.toString();
+      }
+
+      private ExprWithTypeVariable condSaver;
+
+
+      public ExprWithTypeVariable getCondSaver() {
+          return condSaver;
+      }
+
+
+      public void setCondSaver(ExprWithTypeVariable condSaver) {
+          this.condSaver = condSaver;
       }
 }

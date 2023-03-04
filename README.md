@@ -10,3 +10,5 @@ e.g.libz3java.dylib
 put none-JNI dynamic link libraries in: /usr/local/lib
 e.g. libz3.dylib
 
+### windows
+put libz3.dll and libz3java.dill in $java.library.path 

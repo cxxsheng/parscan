@@ -35,7 +35,6 @@ class ASTIteratorTest {
         while (iterator1.hasNextStage()){
           iterator1.continueToTaint();
         }
-
       }
       catch (IOException e) {
 
