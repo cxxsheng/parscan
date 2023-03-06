@@ -1,11 +1,15 @@
 package com.cxxsheng.parscan.core.iterator;
 
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
 
+  private final static Logger LOG = LoggerFactory.getLogger(ASTIterator.class);
   private GraphNode root;
 
   private GraphNode terminal;
@@ -50,10 +54,12 @@ public class Graph {
   }
 
   public void updateNodeIndex(int index, boolean isExecutedMode) {
-    currentNodeIndex = index;
     preCurrentNodeIndex = currentNodeIndex;
+    currentNodeIndex = index;
+
     //if isExecutedMode
     if (isExecutedMode) {
+      LOG.info("we are at node $" + index );
       for (Edge edge : edges) {
         if (edge.getLeft() == preCurrentNodeIndex && edge.getRight() == currentNodeIndex) {
           edge.setPassed(true);
@@ -68,15 +74,35 @@ public class Graph {
     updateNodeIndex(index, false);
   }
 
-  public void popCurrent() {
+  public void popCurrent(boolean isExecMode) {
     List<GraphNode> fathers = currentNode().getFathers();
     if (fathers.size() < 1) {
       throw new ASTParsingException("List fathers length cannot less than 0");
     }
-    GraphNode father = currentNode().getFathers().get(0);
+    // go to the current father here
+    GraphNode father = null;
+    if (isExecMode) {
+        for (int i = fathers.size() - 1; i >= 0 ; i --){
+          GraphNode f = fathers.get(i);
+          Edge edge = findEdgeByIndex(f.getIndex(), currentNodeIndex);
+          if (edge.isPassed()){
+            father = f;
+            break;
+          }
+
+        }
+        if (father == null)
+          throw new ASTParsingException("cannot find any father node");
+    }else {
+       father = currentNode().getFathers().get(fathers.size() - 1);
+    }
     int father_index = father.getIndex();
     if (father_index < 0)
       throw new ASTParsingException("father index cannot less than 0");
+
+    if (isExecMode){
+      LOG.info("we are now at node $" + father_index);
+    }
     currentNodeIndex = father_index;
   }
 
@@ -112,10 +138,8 @@ public class Graph {
     return index;
   }
 
-  public int addEdge(ExprWithTypeVariable cond, int src, int dst) {
-    Edge edge = new Edge(cond, src, dst);
+  public int addEdge(Edge edge) {
     int index = edges.indexOf(edge);
-
     if (index >= 0) {
       throw new ASTParsingException("edge [" + edge + "] already existed!");
     }
@@ -270,10 +294,12 @@ public class Graph {
   private boolean chooseFlag = false;
 
   public void setChooseFlag(boolean flag){
-    chooseFlag = true;
+    chooseFlag = flag;
   }
 
   public boolean needToChooseBranch(){
     return chooseFlag;
   }
+
+
 }

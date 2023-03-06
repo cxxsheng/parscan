@@ -20,7 +20,7 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
     private Graph graph;
 
-    private List<Pair<ExprWithTypeVariable, Integer>> children = null;
+    private List<Edge> children = null;
 
     private List<GraphNode> fathers = new ArrayList<>();
 
@@ -69,12 +69,12 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
     }
 
     @Override
-    public List<Pair<ExprWithTypeVariable, Integer>> getChildren() {
+    public List<Edge> getChildren() {
       return children;
     }
 
     @Override
-    public Pair<ExprWithTypeVariable, Integer> getChildIndex(int i) {
+    public Edge getChildByIndex(int i) {
       return children.get(i);
     }
 
@@ -83,7 +83,8 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
           if (children == null)
               children = new ArrayList<>();
 
-          children.add(new Pair<>(cond, dstIndex));
+          Edge edge = new Edge(cond, index, dstIndex);
+          children.add(edge);
 
           //set father
           GraphNode node = graph.getNodeById(dstIndex);
@@ -91,7 +92,7 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
           if (index < 0)
             throw new ASTParsingException("index must be more than -1");
-          graph.addEdge(cond, index, dstIndex);
+          graph.addEdge(edge);
       }
 
 
@@ -268,27 +269,32 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
     @Override
     public void chooseBranch(Z3Core core, ExprWithTypeVariable curCond) {
-      for (Pair<ExprWithTypeVariable, Integer> childPair :  children){
+      for (Edge childEdge :  children){
         Solver solver = core.mkSolver();
 
-        ExprWithTypeVariable childCond = childPair.getLeft();
-        Status status = solver.check();
+        ExprWithTypeVariable childCond = childEdge.getCond();
         ExprWithTypeVariable eq = core.mkEq(curCond, childCond);
-        Expr all_eq = core.mkAll(eq);
-        solver.add(all_eq);
-        solver.check();
-        if (status == Status.SATISFIABLE)
+//        if (eq.getVars()!=null && eq.getVars().size() > 0){
+//            Expr all_eq = core.mkAll(eq);
+//            solver.add(core.getCtx().mkNot(all_eq));
+//        }
+//        else {
+        solver.add(core.getCtx().mkNot(eq.getExpr()));
+//        }
+        Status status = solver.check();
+        if (status == Status.UNSATISFIABLE)
         {
           Graph graph = getGraph();
-          graph.updateNodeIndex(childPair.getRight());
+          graph.updateNodeIndex(childEdge.getRight(), true);
 
-          Edge edge = graph.findEdgeByIndex(index, childPair.getRight());
+          Edge edge = graph.findEdgeByIndex(index, childEdge.getRight());
           if (edge == null)
-            throw new ParcelMismatchException("cannot find edge ["+index +"->" + childPair.getRight() + "]");
+            throw new ParcelMismatchException("cannot find edge ["+index +"->" + childEdge.getRight() + "]");
           edge.setPassed(true);
-          break;
+          return;
         }
       }
+      throw new ParcelMismatchException("cannot find any node");
     }
 
 

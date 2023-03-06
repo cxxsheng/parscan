@@ -8,13 +8,13 @@ import java.util.List;
 public interface GraphNode {
 
 
-  Pair<ExprWithTypeVariable, Integer> getChildIndex(int i);
+  Edge getChildByIndex(int i);
 
   List<GraphNode> getFathers();
 
   void addChild(ExprWithTypeVariable cond, int nodeIndex);
 
-  List<Pair<ExprWithTypeVariable, Integer>> getChildren();
+  List<Edge> getChildren();
 
   void addFather(GraphNode node);
 

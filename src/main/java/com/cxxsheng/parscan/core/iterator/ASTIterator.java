@@ -62,6 +62,8 @@ public class                                      ASTIterator {
 
   private VariableTable variableTable = new VariableTable();
 
+  private VariableTable tmpTable = new VariableTable();
+
   private void initTraceList(){
     List<FunctionPattern> ps = FunctionPattern.getPatterns();
     for (FunctionPattern p : ps){
@@ -140,6 +142,7 @@ public class                                      ASTIterator {
     return i;
   }
 
+
   private ExprWithTypeVariable constructCondition(boolean isPlaceHolder){
       GraphNode last = dataGraph.currentNode();
       int[] last_mark = last.mark();
@@ -154,7 +157,7 @@ public class                                      ASTIterator {
       // are in the same domain
       while (same_size < last_len - 1) {
         // last node = last node's father node
-        dataGraph.popCurrent();
+        dataGraph.popCurrent(false);
         last_mark = dataGraph.currentNode().mark();
         last_len = last_mark.length;
       }
@@ -166,10 +169,10 @@ public class                                      ASTIterator {
       int same_index =  sizeInSameDomain(last_mark, current_mark);
       same_index |= 1; // odd num not change, even num self-add
 
-
-      System.out.println("last_mark " + Arrays.toString(last_mark));
-      System.out.println("current_mark " + Arrays.toString(current_mark));
-
+//
+//      System.out.println("last_mark " + Arrays.toString(last_mark));
+//      System.out.println("current_mark " + Arrays.toString(current_mark));
+//
       List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
       for (int j = 0; j < allCurrentBlocks.size(); j++){
         Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
@@ -201,6 +204,62 @@ public class                                      ASTIterator {
       }
       return cond;
   }
+
+  private List<Pair<ExprWithTypeVariable, int[]>> constructConditionsByExecutionMode(){
+        List<Pair<ExprWithTypeVariable, int[]>> ret = new ArrayList<>();
+        GraphNode last = dataGraph.preCurrentNode();
+        int[] last_mark = last.mark();
+        int[] current_mark = indexStack.toIntArray();
+        int last_len = last_mark.length;
+        int same_size =  sizeInSameDomain(last_mark, current_mark);
+
+        //last node need to pop current
+        // until they have the same prefix until the last index(exclude the last element)
+        // when i < len-1 means they are not in the same domain
+        // last node need to pop up until current node and last node
+        // are in the same domain
+        while (same_size < last_len - 1) {
+            // last node = last node's father node
+            dataGraph.popCurrent(false);
+            last_mark = dataGraph.currentNode().mark();
+            last_len = last_mark.length;
+        }
+
+        //from same_index to current_node mark index to construct condition
+        //reflesh same_index
+        int same_index =  sizeInSameDomain(last_mark, current_mark);
+        same_index |= 1; // odd num not change, even num self-add
+
+//
+//      System.out.println("last_mark " + Arrays.toString(last_mark));
+//      System.out.println("current_mark " + Arrays.toString(current_mark));
+//
+        List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
+        for (int j = 0; j < allCurrentBlocks.size(); j++){
+            Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
+            if (block.getLeft() instanceof ConditionalBlock){
+
+                ExprWithTypeVariable exp;
+                int cond_flag = indexStack.get(same_index);
+                if (cond_flag == COND_INDEX_IF){
+                    ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+                    exp = constructConditionByExpression(e);
+                    ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
+                }
+                else if (cond_flag == COND_INDEX_ELSE)
+                    exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+                else
+                {
+                    throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
+                }
+
+                ret.add(new Pair<>(exp, last_mark));
+                same_index +=2; //depth of one block in index stack
+
+            }
+        }
+        return ret;
+    }
 
   private void handleStatement(Statement e){
 
@@ -305,8 +364,11 @@ public class                                      ASTIterator {
   private RuntimeValue handleUnterminalSymbol(Symbol symbol){
     if (symbol instanceof TmpSymbol){
       Expression value = ((TmpSymbol)symbol).getExpression();
-      return handleExpression(value);
+      RuntimeValue ret = handleExpression(value);
+      tmpTable.addVariable(((TmpSymbol) symbol).getName(), ret);
+      return ret;
     }else if(symbol instanceof PointSymbol){
+      RuntimeValue ret = null;
       TerminalSymbol left = ((PointSymbol)symbol).getExp();
       if (traceList.contains(left.toString())){
         if (((PointSymbol)symbol).isFunc()){
@@ -316,53 +378,97 @@ public class                                      ASTIterator {
             dataGraph.addNewNode(constructCondition(false), node);
             LOG.info("construct " + node.toString());
           }else if (mode == EXECUTION_MODE){
+            //need to rebase?
+            int[] last_mark = dataGraph.currentNode().mark();
+            int[] current_mark = indexStack.toIntArray();
+            int last_len = last_mark.length;
+            int same_size =  sizeInSameDomain(last_mark, current_mark);
+
+            //last node need to pop current
+            // until they have the same prefix until the last index(exclude the last element)
+            // when i < len-1 means they are not in the same domain
+            // last node need to pop up until current node and last node
+            // are in the same domain
+            boolean isPop = false;
+            while (same_size < last_len - 1) {
+              // last node = last node's father node
+              dataGraph.popCurrent(true);
+              last_mark = dataGraph.currentNode().mark();
+              last_len = last_mark.length;
+              isPop = true;
+            }
+
+            if (isPop)
+            {
+                List<Edge> childrenEdge = dataGraph.currentNode().getChildren();
+                if (childrenEdge.size() > 1){
+                    dataGraph.setChooseFlag(true);
+                }else {
+                    throw new ASTParsingException("go to anther passed edge");
+                }
+            }
 
             if (dataGraph.needToChooseBranch()){
-              ExprWithTypeVariable cond = constructCondition(false);
-              dataGraph.currentNode().chooseBranch(core, cond);
-              ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
-              GraphNode currentNode = dataGraph.currentNode();
-              if (!(currentNode instanceof ParcelDataNode))
-                throw new ParcelMismatchException("currentNode is not ParcelDataNode");
-              if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
-                throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
+              List<Pair<ExprWithTypeVariable, int[]>> conds = constructConditionsByExecutionMode();
+              for (int i = 0; i < conds.size(); i++){
+                  boolean islast = i == conds.size() - 1;
+                  ExprWithTypeVariable cond = conds.get(i).getLeft();
+                  if (islast){
+                      dataGraph.currentNode().chooseBranch(core, cond);
+                      ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+                      GraphNode currentNode = dataGraph.currentNode();
+                      if (!(currentNode instanceof ParcelDataNode))
+                        throw new ParcelMismatchException("currentNode is not ParcelDataNode");
+                      if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
+                        throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
+                      currentNode.setMark(tmpNode.mark());
+                  }else {
+                      dataGraph.currentNode().chooseBranch(core, cond);
+                      if (!dataGraph.currentNode().isPlaceholder())
+                      {
+                          throw new ParcelMismatchException("expected a placeholder but got a " + dataGraph.currentNode());
+                      }
+                      dataGraph.currentNode().setMark(conds.get(i).getRight());
+                  }
+              }
               dataGraph.setChooseFlag(false);
-              currentNode.setMark(tmpNode.mark());
-              return (ParcelDataNode)currentNode;
-            }else{
-              List<Pair<ExprWithTypeVariable, Integer>> childrenPair  = dataGraph.currentNode().getChildren();
-              while (childrenPair.size() == 1 &&
-                     dataGraph.currentNode().isPlaceholder()) {
-                //only have one path and it is a placeholder
-                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
-                //broadcast the mark
-                nextNode.setMark(indexStack.toIntArray());
-                dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+               ret = (ParcelDataNode)dataGraph.currentNode();
+            }else {
+              List<Edge> childrenEdge = dataGraph.currentNode().getChildren();
+              while (childrenEdge.size() == 1 &&
+                        dataGraph.currentNode().isPlaceholder()) {
+                    //only have one path and the node is a placeholder, so that we just go to the next node
+                    Edge childEdge = childrenEdge.get(0);
+                    GraphNode nextNode = dataGraph.getNodeById(childEdge.getRight());
+                    nextNode.setMark(indexStack.toIntArray());
+                    dataGraph.updateNodeIndex(nextNode.getIndex(), true);
               }
 
               ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
               GraphNode currentNode = dataGraph.currentNode();
               if (!(currentNode instanceof ParcelDataNode))
-                throw new ParcelMismatchException("currentNode is not ParcelDataNode");
-              if (!ParcelDataNode.compareTwoNode((ParcelDataNode)currentNode, tmpNode))
-                throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
-
-              if (childrenPair.size() == 1) {
-                GraphNode nextNode = dataGraph.getNodeById(childrenPair.get(0).getRight());
+                    throw new ParcelMismatchException("currentNode is not ParcelDataNode");
+              if (!ParcelDataNode.compareTwoNode((ParcelDataNode) currentNode, tmpNode))
+                    throw new ParcelMismatchException("Expected  " + (currentNode) + " but got " + tmpNode);
+              ret = (ParcelDataNode)currentNode;
+              }
+             //set next
+              List<Edge> childrenEdge = dataGraph.currentNode().getChildren();
+              if (childrenEdge.size() == 1) {
+                Edge childEdge = childrenEdge.get(0);
+                GraphNode nextNode = dataGraph.getNodeById(childEdge.getRight());
                 nextNode.setMark(indexStack.toIntArray());
                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
               }else {
                 //wait to next callfunc to compare condition expression
                 dataGraph.setChooseFlag(true);
               }
-
-              return (ParcelDataNode)currentNode;
-            }
+              return ret;
           }
         }
       }
     }
-    return null;
+    return new DefaultRuntimeValue();
   }
 
 
@@ -375,14 +481,17 @@ public class                                      ASTIterator {
           TerminalSymbol right = e.getRight();
           RuntimeValue v = null;
           if (right instanceof TmpSymbol){
-            v = handleUnterminalSymbol(right);
+            v = tmpTable.getVariableByName(((TmpSymbol) right).getName());
+            if (v == null){
+                throw new ASTParsingException("tmp variable cannot found in tmp table");
+            }
           }
           if (v != null){
             variableTable.addVariable(left.toString(), v);
           }
       }
     }
-    return null;
+    return new DefaultRuntimeValue();
   }
 
 
@@ -482,7 +591,7 @@ public class                                      ASTIterator {
           if (node == null)
             throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
           while (node.getChildren()!=null && node.getChildren().size() > 0){
-            Pair<ExprWithTypeVariable, Integer> childIndexEdge =  node.getChildren().get(0);
+            Edge childIndexEdge =  node.getChildren().get(0);
             int index = childIndexEdge.getRight();
             node = dataGraph.getNodeById(index);
           }

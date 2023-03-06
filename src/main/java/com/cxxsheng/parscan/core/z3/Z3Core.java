@@ -314,4 +314,7 @@ public class Z3Core {
     return ctx.mkSolver();
   }
 
+  public Context getCtx() {
+    return ctx;
+  }
 }
