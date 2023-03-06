@@ -49,7 +49,7 @@ public class AntlrCore {
   }
 
   private static FunctionImp getWriteToParcel(JavaClass jClass){
-    return  jClass.getFunctionImpByName("void writeToParcel(Parcel dest, int flags)");
+    return  jClass.getFunctionImpByFullName("void writeToParcel(Parcel dest, int flags)");
   }
 
   private static FunctionImp getReadFromParcel(JavaClass jClass){
@@ -62,7 +62,7 @@ public class AntlrCore {
         if (e  instanceof  CallFunc)
         {
             JavaClass nullClass = ((CallFunc)e).extraClass();
-            return nullClass.getFunctionImpByName("GateKeeperResponse createFromParcel(Parcel source)");
+            return nullClass.getFunctionImpByName("createFromParcel");
         }
       }
       return null;

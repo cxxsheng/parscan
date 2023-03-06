@@ -1,5 +1,5 @@
 /*
- * CVE-2017-0806
+ * CVE-2017-0806 and CVE-2022-20135
  * Copy from AOSP
  * https://android.googlesource.com/platform/frameworks/base/+/c574568aaede7f652432deb7707f20ae54bbdf9a/core/java/android/service/gatekeeper/GateKeeperResponse.java
  */

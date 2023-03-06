@@ -50,6 +50,14 @@ public class JavaClass {
   }
 
   public FunctionImp getFunctionImpByName(String name){
+    for (FunctionImp imp : methods){
+      if (imp.getFunDec().getName().equals(name))
+        return imp;
+    }
+    return null;
+  }
+
+  public FunctionImp getFunctionImpByFullName(String name){
       for (FunctionImp imp : methods){
         if (imp.toString().equals(name))
           return imp;

@@ -204,62 +204,62 @@ public class                                      ASTIterator {
       }
       return cond;
   }
-
-  private List<Pair<ExprWithTypeVariable, int[]>> constructConditionsByExecutionMode(){
-        List<Pair<ExprWithTypeVariable, int[]>> ret = new ArrayList<>();
-        GraphNode last = dataGraph.preCurrentNode();
-        int[] last_mark = last.mark();
-        int[] current_mark = indexStack.toIntArray();
-        int last_len = last_mark.length;
-        int same_size =  sizeInSameDomain(last_mark, current_mark);
-
-        //last node need to pop current
-        // until they have the same prefix until the last index(exclude the last element)
-        // when i < len-1 means they are not in the same domain
-        // last node need to pop up until current node and last node
-        // are in the same domain
-        while (same_size < last_len - 1) {
-            // last node = last node's father node
-            dataGraph.popCurrent(false);
-            last_mark = dataGraph.currentNode().mark();
-            last_len = last_mark.length;
-        }
-
-        //from same_index to current_node mark index to construct condition
-        //reflesh same_index
-        int same_index =  sizeInSameDomain(last_mark, current_mark);
-        same_index |= 1; // odd num not change, even num self-add
-
 //
-//      System.out.println("last_mark " + Arrays.toString(last_mark));
-//      System.out.println("current_mark " + Arrays.toString(current_mark));
+//  private List<Pair<ExprWithTypeVariable, int[]>> constructConditionsByExecutionMode(){
+//        List<Pair<ExprWithTypeVariable, int[]>> ret = new ArrayList<>();
+//        GraphNode last = dataGraph.preCurrentNode();
+//        int[] last_mark = last.mark();
+//        int[] current_mark = indexStack.toIntArray();
+//        int last_len = last_mark.length;
+//        int same_size =  sizeInSameDomain(last_mark, current_mark);
 //
-        List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
-        for (int j = 0; j < allCurrentBlocks.size(); j++){
-            Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
-            if (block.getLeft() instanceof ConditionalBlock){
-
-                ExprWithTypeVariable exp;
-                int cond_flag = indexStack.get(same_index);
-                if (cond_flag == COND_INDEX_IF){
-                    ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
-                    exp = constructConditionByExpression(e);
-                    ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
-                }
-                else if (cond_flag == COND_INDEX_ELSE)
-                    exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
-                else
-                {
-                    throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
-                }
-
-                ret.add(new Pair<>(exp, last_mark));
-                same_index +=2; //depth of one block in index stack
-
-            }
-        }
-        return ret;
-    }
+//        //last node need to pop current
+//        // until they have the same prefix until the last index(exclude the last element)
+//        // when i < len-1 means they are not in the same domain
+//        // last node need to pop up until current node and last node
+//        // are in the same domain
+//        while (same_size < last_len - 1) {
+//            // last node = last node's father node
+//            dataGraph.popCurrent(false);
+//            last_mark = dataGraph.currentNode().mark();
+//            last_len = last_mark.length;
+//        }
+//
+//        //from same_index to current_node mark index to construct condition
+//        //reflesh same_index
+//        int same_index =  sizeInSameDomain(last_mark, current_mark);
+//        same_index |= 1; // odd num not change, even num self-add
+//
+////
+////      System.out.println("last_mark " + Arrays.toString(last_mark));
+////      System.out.println("current_mark " + Arrays.toString(current_mark));
+////
+//        List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
+//        for (int j = 0; j < allCurrentBlocks.size(); j++){
+//            Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
+//            if (block.getLeft() instanceof ConditionalBlock){
+//
+//                ExprWithTypeVariable exp;
+//                int cond_flag = indexStack.get(same_index);
+//                if (cond_flag == COND_INDEX_IF){
+//                    ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+//                    exp = constructConditionByExpression(e);
+//                    ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
+//                }
+//                else if (cond_flag == COND_INDEX_ELSE)
+//                    exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+//                else
+//                {
+//                    throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
+//                }
+//
+//                ret.add(new Pair<>(exp, last_mark));
+//                same_index +=2; //depth of one block in index stack
+//
+//            }
+//        }
+//        return ret;
+//    }
 
   private void handleStatement(Statement e){
 
@@ -401,6 +401,9 @@ public class                                      ASTIterator {
             if (isPop)
             {
                 List<Edge> childrenEdge = dataGraph.currentNode().getChildren();
+                //we need to set choose flag if we have more than one successor
+                //If we pop to one node, which means this node must have more than one
+                //successor, so that we can explore new state
                 if (childrenEdge.size() > 1){
                     dataGraph.setChooseFlag(true);
                 }else {
@@ -409,7 +412,40 @@ public class                                      ASTIterator {
             }
 
             if (dataGraph.needToChooseBranch()){
-              List<Pair<ExprWithTypeVariable, int[]>> conds = constructConditionsByExecutionMode();
+              List<Pair<ExprWithTypeVariable, int[]>> conds = new ArrayList<>();
+              //last_mark may have changed after node pop
+              last_mark = dataGraph.currentNode().mark();
+              int same_index = sizeInSameDomain(last_mark, current_mark);
+              same_index |= 1; // odd num not change, even num self-add
+              List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> allCurrentBlocks = allCurrentBlocks(same_index);
+              for (int j = 0; j < allCurrentBlocks.size(); j++){
+                Pair<ExpressionOrBlock, ExpressionOrBlockList> block = allCurrentBlocks.get(j);
+                if (block.getLeft() instanceof ConditionalBlock){
+
+                  ExprWithTypeVariable exp;
+                  int cond_flag = indexStack.get(same_index);
+                  if (cond_flag == COND_INDEX_IF){
+                    ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
+                    exp = constructConditionByExpression(e);
+                    ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
+                  }
+                  else if (cond_flag == COND_INDEX_ELSE)
+                    exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+                  else
+                  {
+                    throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
+                  }
+
+                  conds.add(new Pair<>(exp, last_mark));
+                  same_index +=2; //depth of one block in index stack
+
+                }
+              }
+
+              if (conds.size() == 0){
+                throw new ParcelMismatchException("expected an one branch node, but got more than one branch" );
+              }
+              //List<Pair<ExprWithTypeVariable, int[]>> conds = constructConditionsByExecutionMode();
               for (int i = 0; i < conds.size(); i++){
                   boolean islast = i == conds.size() - 1;
                   ExprWithTypeVariable cond = conds.get(i).getLeft();
