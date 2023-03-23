@@ -22,22 +22,14 @@ class ASTIteratorTest {
         AntlrCore core = new AntlrCore(cp);
         core.parse();
         ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
-
-        while (iterator.hasNextStage()){
-          System.out.println("nextStage");
-          iterator.continueToTaint();
-          System.out.println(iterator.getDataGraph());
-        }
+        iterator.start();
         Graph graph = iterator.getDataGraph();
-
         ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc(), graph);
-
-        while (iterator1.hasNextStage()){
-          iterator1.continueToTaint();
-        }
+        if (iterator1.start())
+            System.out.println("okokokokokokok");
       }
       catch (IOException e) {
-
+            e.printStackTrace();
       }
     }
 

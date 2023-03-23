@@ -675,4 +675,18 @@ public class                                      ASTIterator {
   public RuntimeValue getRuntimeValueByName(String name){
       return variableTable.getVariableByName(name);
   }
+
+  public boolean start(){
+      while (hasNextStage()){
+          System.out.println("nextStage");
+          continueToTaint();
+      }
+
+      if (mode == EXECUTION_MODE){
+         return dataGraph.allEdgePassed();
+      }
+
+      //ignore the result
+      return false;
+  }
 }

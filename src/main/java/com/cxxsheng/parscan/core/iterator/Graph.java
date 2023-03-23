@@ -301,5 +301,13 @@ public class Graph {
     return chooseFlag;
   }
 
+  public boolean allEdgePassed(){
+    for (Edge edge : edges)
+    {
+      if (!edge.isPassed())
+        return false;
+    }
+    return true;
+  }
 
 }
