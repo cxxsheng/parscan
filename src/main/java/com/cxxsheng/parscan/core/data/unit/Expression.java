@@ -11,6 +11,7 @@ public class Expression extends ExpressionOrBlock {
     private final TerminalSymbol right;
     private final Symbol symbol;
     private final boolean isUnary;
+
     public Expression(Operator op, TerminalSymbol left, TerminalSymbol right, boolean isUnary) {
       this.op = op;
       this.left = left;
@@ -79,4 +80,5 @@ public class Expression extends ExpressionOrBlock {
   public boolean isAssign() {
       return op!=null && op.isAssign();
   }
+
 }

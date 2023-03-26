@@ -175,10 +175,10 @@ public class CommonExtractor {
     ExpressionListWithPrevs el = new ExpressionListWithPrevs(last);
     if (e1.hasPreExpression())
       el.addPrevs(e1.getPrevs());
-    if (e2.hasPreExpression())
-      el.addPrevs(e2.getPrevs());
     if (t1 instanceof TmpSymbol)
       el.addPrev(t1.toExp());
+    if (e2.hasPreExpression())
+      el.addPrevs(e2.getPrevs());
     if (t2 instanceof TmpSymbol)
       el.addPrev(t2.toExp());
     return el;
@@ -193,14 +193,15 @@ public class CommonExtractor {
     ExpressionListWithPrevs el = new ExpressionListWithPrevs(last);
     if (e1.hasPreExpression())
       el.addPrevs(e1.getPrevs());
-    if (e2.hasPreExpression())
-      el.addPrevs(e2.getPrevs());
-    if (e3.hasPreExpression())
-      el.addPrevs(e3.getPrevs());
     if (t1 instanceof TmpSymbol)
       el.addPrev(t1.toExp());
+    if (e2.hasPreExpression())
+      el.addPrevs(e2.getPrevs());
     if (t2 instanceof TmpSymbol)
       el.addPrev(t2.toExp());
+    if (e3.hasPreExpression())
+      el.addPrevs(e3.getPrevs());
+
     if (t3 instanceof TmpSymbol)
       el.addPrev(t3.toExp());
     return el;

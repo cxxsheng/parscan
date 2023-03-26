@@ -82,7 +82,7 @@ public final class VerifyCredentialResponse implements Parcelable {
     if (mResponseCode == RESPONSE_RETRY) {
       dest.writeInt(mTimeout);
     } else if (mResponseCode == RESPONSE_OK) {
-      if (mPayload != null) {
+      if (mPayload != null && mPayload.length > 0) {
         dest.writeInt(mPayload.length);
         dest.writeByteArray(mPayload);
       } else {

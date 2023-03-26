@@ -185,13 +185,17 @@ public class                                      ASTIterator {
             if (isPlaceHolder && same_index >= indexStack.size() && j==allCurrentBlocks.size()-1)
               break;
             int cond_flag = indexStack.get(same_index);
+
             if (cond_flag == COND_INDEX_IF){
                 ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
                 exp = constructConditionByExpression(e);
                 ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
+
             }
             else if (cond_flag == COND_INDEX_ELSE)
-              exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+            {
+                exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+            }
             else
             {
               throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
@@ -430,7 +434,9 @@ public class                                      ASTIterator {
                     ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
                   }
                   else if (cond_flag == COND_INDEX_ELSE)
-                    exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+                  {
+                      exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+                  }
                   else
                   {
                     throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
@@ -540,18 +546,14 @@ public class                                      ASTIterator {
         Pair<ExpressionOrBlock, ExpressionOrBlockList> pair = indexStackAtCurrentPoint();
         ExpressionOrBlock cur = pair.getLeft();
         ExpressionOrBlockList curList = pair.getRight();
-
-
         if (cur == null){
           //empty block handle
         }
-
         else if (cur instanceof Expression){
           LOG.info("Handling expression "+ cur.toString());
           handleExpression((Expression)cur);
           selfAddIndex();
         }
-
         else if (cur instanceof Block){
           //start a new block
           if (cur instanceof ConditionalBlock){
@@ -560,7 +562,6 @@ public class                                      ASTIterator {
           //other just change the stack
           indexStack.push(0);
         }
-
         else if (cur instanceof Statement){
             LOG.info("handling statement "+ cur.toString());
             handleStatement((Statement)cur);
@@ -569,7 +570,6 @@ public class                                      ASTIterator {
         else {
           throw new ASTParsingException("unhandled type");
         }
-
         //get out of current block
         if (indexStack.peek() >= curList.size()){
           indexStackPop();
@@ -579,15 +579,12 @@ public class                                      ASTIterator {
           int top = indexStack.peek();
           if (top == COND_INDEX_ELSE){
             indexStackPop();// clear cond index because else executed finished
-
             if (indexStack.empty())
               break;
           }else if (top == COND_INDEX_IF){
-
             //go to else statement
             modifyStackByIndex(indexStack.size()-1 , COND_INDEX_ELSE);
             indexStack.push(0);
-
             if (mode == DEFAULT_MODE){
               ExpressionOrBlock curBlock = getRecentBlock();
               if (curBlock instanceof ConditionalBlock){

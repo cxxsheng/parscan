@@ -59,4 +59,9 @@ public class ConditionalBlock extends Block {
       public void setCondSaver(ExprWithTypeVariable condSaver) {
           this.condSaver = condSaver;
       }
+
+      public boolean needCombineCondition(){
+          return false;
+      }
+
 }

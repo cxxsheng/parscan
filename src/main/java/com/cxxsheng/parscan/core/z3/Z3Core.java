@@ -1,30 +1,18 @@
 package com.cxxsheng.parscan.core.z3;
 
 import com.cxxsheng.parscan.core.data.JavaClass;
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
-import com.cxxsheng.parscan.core.data.unit.JavaType;
-import com.cxxsheng.parscan.core.data.unit.Operator;
-import com.cxxsheng.parscan.core.data.unit.Primitive;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.FloatSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.IntSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.NullSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.StringSymbol;
-import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
-import com.cxxsheng.parscan.core.iterator.ASTIterator;
-import com.cxxsheng.parscan.core.iterator.GraphNode;
-import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
-import com.cxxsheng.parscan.core.iterator.RuntimeValue;
+import com.cxxsheng.parscan.core.data.unit.*;
+import com.cxxsheng.parscan.core.data.unit.symbol.*;
+import com.cxxsheng.parscan.core.iterator.*;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Sort;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Z3Core {
 
@@ -83,7 +71,6 @@ public class Z3Core {
         case INT:
         case LONG:
         case CHAR:
-
           sort = ctx.getIntSort();
           break;
         case FLOAT:
@@ -108,10 +95,37 @@ public class Z3Core {
 
 
   }
+  private Map<String, ExprWithTypeVariable> tmpTables = new HashMap<>();
+  //only init from first tmpSymbol
+  private ExprWithTypeVariable mkTmpSymbol(TmpSymbol tmpSymbol){
+    ExprWithTypeVariable exp = mkExpression(tmpSymbol.getExpression());
+    Sort sort = exp.getExpr().getSort();
+    String name = tmpSymbol.getName();
+    Expr<Sort> left = ctx.mkConst(name, sort);
+    ExprWithTypeVariable name_exp = new ExprWithTypeVariable(left, left);
+    if (tmpTables.get(name) == null)
+      tmpTables.put(name, name_exp);
+    else
+      throw new ASTParsingException("tmp value already existed in table");
+    return mkEq(name_exp, exp);
+  }
 
   public ExprWithTypeVariable handleSymbol(Symbol s){
     if (s == null)
       return null;
+
+    if (s instanceof PointSymbol){
+      if (((PointSymbol) s).isFunc()){
+        throw new ASTParsingException("cannot handle function");
+      }else {
+
+        String iden = ((PointSymbol) s).toString();
+        if (iden.endsWith(".length"))
+          return mkConst(JavaType.INT, iden);
+        throw new ASTParsingException("");
+      }
+    }
+
 
     if (s instanceof FloatSymbol)
     {
@@ -172,24 +186,20 @@ public class Z3Core {
     }else if (s instanceof NullSymbol){
       return new ExprWithTypeVariable(ctx.mkInt(0 ));
     }else if (s instanceof TmpSymbol){
-      //fixme fixme
       TmpSymbol tmpSymbol = (TmpSymbol)s;
-
-      //Expression e = tmpSymbol.getExpression();
-      ExprWithTypeVariable e = mkExpression(((TmpSymbol)s).getExpression());
-      List<Expr> vars = e.getVars();
-      if (vars.size() > 0){
-        //inherit the value expression's first type (if exist)
-        Expr<Sort> v0 = vars.get(0);
-        Sort sort = v0.getSort();
-        Expr<Sort> v = ctx.mkConst(tmpSymbol.getName(), sort);
-        ExprWithTypeVariable name = new ExprWithTypeVariable(v, v);
-        //make tmp name equals tmp value
-        return mkEq(name, e);
-      }else {
-        //fixme may throw an exception
-        return null;
-      }
+      return tmpTables.get(tmpSymbol.getName());
+//      if (vars.size() > 0){
+//        //inherit the value expression's first type (if exist)
+//        Expr<Sort> v0 = vars.get(0);
+//        Sort sort = v0.getSort();
+//        Expr<Sort> v = ctx.mkConst(tmpSymbol.getName(), sort);
+//        ExprWithTypeVariable name = new ExprWithTypeVariable(v, v);
+//        //make tmp name equals tmp value
+//        return mkEq(name, e);
+//      }else {
+//        //fixme may throw an exception
+//        return null;
+//      }
     }
     else {
       throw new Z3ParsingException("cannot handle " + s );
@@ -200,6 +210,13 @@ public class Z3Core {
     if (e == null)
       return null;
     Expr new_exp;
+    if (e.getSymbol() instanceof TmpSymbol)
+      return mkTmpSymbol((TmpSymbol) e.getSymbol());
+
+    if (e.isSymbol()){
+      return handleSymbol(e.getSymbol());
+    }
+
     Operator op = e.getOp();
     if (op == null)
       throw new Z3ParsingException("unreachable code");
@@ -234,8 +251,6 @@ public class Z3Core {
       default:
         throw new Z3ParsingException("cannot handle such type " + op.getName() + " in exp:" + e.toString());
     }
-
-
     return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
@@ -255,7 +270,6 @@ public class Z3Core {
         last = handle.justify(last);
       }
       return ev == null ? last : mkAnd(ev, last);
-
   }
 
 

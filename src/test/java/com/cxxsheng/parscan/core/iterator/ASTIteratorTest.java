@@ -18,12 +18,13 @@ class ASTIteratorTest {
       try {
         FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
         assertTrue(FunctionPattern.isInit());
-        Path cp = Paths.get("src", "test", "resources", "JavaDemo", "GateKeeperResponse.java");
+        Path cp = Paths.get("src", "test", "resources", "JavaDemo","patched", "GateKeeperResponse.java");
         AntlrCore core = new AntlrCore(cp);
         core.parse();
         ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
         iterator.start();
         Graph graph = iterator.getDataGraph();
+        System.out.println(graph);
         ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc(), graph);
         if (iterator1.start())
             System.out.println("okokokokokokok");
