@@ -1,17 +1,32 @@
 package com.cxxsheng.parscan.core.z3;
 
 import com.cxxsheng.parscan.core.data.JavaClass;
-import com.cxxsheng.parscan.core.data.unit.*;
-import com.cxxsheng.parscan.core.data.unit.symbol.*;
-import com.cxxsheng.parscan.core.iterator.*;
+import com.cxxsheng.parscan.core.data.unit.Expression;
+import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
+import com.cxxsheng.parscan.core.data.unit.JavaType;
+import com.cxxsheng.parscan.core.data.unit.Operator;
+import com.cxxsheng.parscan.core.data.unit.Primitive;
+import com.cxxsheng.parscan.core.data.unit.Symbol;
+import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.FloatSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.IntSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.NullSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.StringSymbol;
+import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
+import com.cxxsheng.parscan.core.iterator.ASTIterator;
+import com.cxxsheng.parscan.core.iterator.ASTParsingException;
+import com.cxxsheng.parscan.core.iterator.GraphNode;
+import com.cxxsheng.parscan.core.iterator.ParcelDataNode;
+import com.cxxsheng.parscan.core.iterator.RuntimeValue;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Sort;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Z3Core {
@@ -31,6 +46,7 @@ public class Z3Core {
   private final Expr VALUE_EXP = ctx.mkConst("$VALUE", ctx.getIntSort());
 
   public final ExprWithTypeVariable VALUE = new ExprWithTypeVariable(VALUE_EXP, VALUE_EXP);
+
 
   public Z3Core(JavaClass javaClass, ASTIterator iterator) {
     this.javaClass = javaClass;
@@ -104,7 +120,7 @@ public class Z3Core {
     Expr<Sort> left = ctx.mkConst(name, sort);
     ExprWithTypeVariable name_exp = new ExprWithTypeVariable(left, left);
     if (tmpTables.get(name) == null)
-      tmpTables.put(name, name_exp);
+      tmpTables.put(name, exp);
     else
       throw new ASTParsingException("tmp value already existed in table");
     return mkEq(name_exp, exp);
@@ -119,7 +135,7 @@ public class Z3Core {
         throw new ASTParsingException("cannot handle function");
       }else {
 
-        String iden = ((PointSymbol) s).toString();
+        String iden = s.toString();
         if (iden.endsWith(".length"))
           return mkConst(JavaType.INT, iden);
         throw new ASTParsingException("");
@@ -167,9 +183,17 @@ public class Z3Core {
       }else {
         //check it is a constant, if this var is constant, replace the symbol by the real value
         VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
-        if (d != null && d.getExpressions()!=null) {
-          Symbol v = d.getLastExpValue();
-          return handleSymbol(v);
+        if (d != null) {
+          if (d.getExpressions() != null) {
+            Symbol v = d.getLastExpValue();
+            return handleSymbol(v);
+          }else {
+            JavaType type = d.getType();
+            if (!type.isPrimitive()){
+              throw new ASTParsingException("");
+            }
+              throw new ASTParsingException("");
+          }
         }
         else {
           RuntimeValue v = iterator.getRuntimeValueByName(name);
@@ -182,7 +206,6 @@ public class Z3Core {
           return mkConst(JavaType.INT, name);
         }
       }
-
     }else if (s instanceof NullSymbol){
       return new ExprWithTypeVariable(ctx.mkInt(0 ));
     }else if (s instanceof TmpSymbol){
@@ -197,7 +220,6 @@ public class Z3Core {
 //        //make tmp name equals tmp value
 //        return mkEq(name, e);
 //      }else {
-//        //fixme may throw an exception
 //        return null;
 //      }
     }
@@ -209,6 +231,7 @@ public class Z3Core {
   public ExprWithTypeVariable mkExpression(Expression e){
     if (e == null)
       return null;
+
     Expr new_exp;
     if (e.getSymbol() instanceof TmpSymbol)
       return mkTmpSymbol((TmpSymbol) e.getSymbol());
@@ -223,6 +246,7 @@ public class Z3Core {
 
     ExprWithTypeVariable left = handleSymbol(e.getLeft());
     ExprWithTypeVariable right = handleSymbol(e.getRight());
+
     switch (op){
       case EQ:
         new_exp = ctx.mkEq(left.getExpr(), right.getExpr());
@@ -231,7 +255,7 @@ public class Z3Core {
         new_exp = ctx.mkNot(ctx.mkEq(left.getExpr(), right.getExpr()));
         break;
       case AND2:
-        new_exp = ctx.mkAnd(left.getExpr(), right.getExpr());
+        new_exp = ctx.mkAnd(left.getExpr(), right.getExpr()).simplify();
         break;
       case OR2:
         new_exp = ctx.mkOr(left.getExpr(), right.getExpr());
@@ -254,6 +278,15 @@ public class Z3Core {
     return ExprWithTypeVariable.contact(left, right,new_exp);
   }
 
+
+  private volatile boolean needReConstruct = false;
+
+  public boolean needReConstruct() {
+    boolean tmp = needReConstruct;
+    needReConstruct = false;
+    return tmp;
+  }
+
   public ExprWithTypeVariable mkExpressionListWithPrevs(ExpressionListWithPrevs elp, LastExpressionCallback handle){
     ExprWithTypeVariable ev = null;
     if (elp.hasPreExpression()){
@@ -264,12 +297,13 @@ public class Z3Core {
             ev = mkAnd(ev, mkExpression(e));
         }
       }
+
       ExprWithTypeVariable last = mkExpression(elp.getLastExpression());
       if (handle != null)
       {
         last = handle.justify(last);
       }
-      return ev == null ? last : mkAnd(ev, last);
+      return last;
   }
 
 

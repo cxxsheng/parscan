@@ -10,6 +10,8 @@ public class ExprWithTypeVariable {
 
   private Expr expr;
 
+  public static ExprWithTypeVariable Occupied = new ExprWithTypeVariable(null, null);
+
   public ExprWithTypeVariable(Expr expr, Expr var){
     this.expr = expr;
     vars.add(var);

@@ -29,7 +29,7 @@ public class DcParamObject implements Parcelable {
     return 0;
   }
   public void writeToParcel(Parcel dest, int flags) {
-    dest.writeLong(mSubId);
+    dest.writeInt(mSubId);
   }
   private void readFromParcel(Parcel in) {
     mSubId = in.readInt();
