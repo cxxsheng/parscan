@@ -43,8 +43,7 @@ public class FunctionReader {
   public static void openWithAntlr(String path){
     AntlrCore core = new AntlrCore(path);
     try {
-      core.parse();
-      JavaClass clazz = core.getJavaClass();
+      JavaClass clazz = core.parse(null);
       for (FunctionImp imp : clazz.getMethods()){
           FunctionDeclaration d = imp.getFunDec();
           functionMaps.put(d.getName(), d);

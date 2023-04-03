@@ -12,3 +12,12 @@ e.g. libz3.dylib
 
 ### windows
 put libz3.dll and libz3java.dill in $java.library.path 
+
+### ubuntu
+
+```shell
+git clone https://github.com/Z3Prover/z3.git -b z3-4.8.17
+cd z3/; python scripts/mk_make.py --java
+cd build; make
+sudo make install
+```

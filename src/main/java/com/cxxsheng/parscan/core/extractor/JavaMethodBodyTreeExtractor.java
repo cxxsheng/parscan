@@ -1,8 +1,5 @@
 package com.cxxsheng.parscan.core.extractor;
 
-import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseExpression;
-import static com.cxxsheng.parscan.core.extractor.CommonExtractor.parseVariableDeclarators;
-
 import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
 import com.cxxsheng.parscan.core.Coordinate;
@@ -13,6 +10,8 @@ import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
+
+import java.nio.file.Path;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -26,10 +25,14 @@ public class JavaMethodBodyTreeExtractor {
       //private final FunctionImp imp ;
 
       //public Stack<ExpressionOrBlockList> domainStack = new Stack<>();
+      private final Path fileName;
 
-      public JavaMethodBodyTreeExtractor() {
+      private final CommonExtractor extractor;
+      public JavaMethodBodyTreeExtractor(Path fileName, CommonExtractor extractor) {
           //this.traceParamName = params;
           //this.imp = imp;
+          this.fileName = fileName;
+          this.extractor = extractor;
       }
 
 
@@ -62,7 +65,7 @@ public class JavaMethodBodyTreeExtractor {
             //this is useful? WE DO NOT DEED TO RECORD TYPE
             JavaParser.TypeTypeContext typeTypeContext = localVariableDeclaration.typeType();
 
-            return  parseVariableDeclarators(localVariableDeclaration.variableDeclarators());
+            return  extractor.parseVariableDeclarators(localVariableDeclaration.variableDeclarators());
         }
 
 
@@ -100,14 +103,14 @@ public class JavaMethodBodyTreeExtractor {
           if (statement.ASSERT()!=null){
                 //here may have some problem
                 LOG.info("Have an assert at " + Coordinate.createFromCtx(statement));
-                ExpressionListWithPrevs e = parseExpression(statement.expression(0));
+                ExpressionListWithPrevs e = extractor.parseExpression(statement.expression(0));
                 Statement s = new Statement(x, Statement.ASSERT_STATEMENT ,e);
                 return s.wrapToList();
           }
 
           //If statement
           if (statement.IF()!=null){
-                ExpressionListWithPrevs el = parseExpression(statement.parExpression().expression());
+                ExpressionListWithPrevs el = extractor.parseExpression(statement.parExpression().expression());
                 ConditionalBlock b = new ConditionalBlock(x, el, parseStatement( statement.statement(0)));
 
                 if (statement.ELSE() != null){
@@ -144,20 +147,19 @@ public class JavaMethodBodyTreeExtractor {
               else {
 
               }
-
-              ForBlock forBlock = new ForBlock(x, parseBlock(statement.block()));
+              ForBlock forBlock = new ForBlock(x, parseBlock(statement.statement().get(0).block()));
               return forBlock.wrapToList();
           }
 
           //do-while statement
           if (statement.DO() !=null ){
-            WhileBlock whileBlock = new WhileBlock(x, parseExpression(statement.expression(0)), true, parseBlock(statement.block()));
+            WhileBlock whileBlock = new WhileBlock(x, extractor.parseExpression(statement.expression(0)), true, parseBlock(statement.block()));
             return whileBlock.wrapToList();
           }
 
           //while statement
           if (statement.WHILE()!=null){
-              WhileBlock whileBlock = new WhileBlock(x, parseExpression(statement.expression(0)), false, parseBlock(statement.block()));
+              WhileBlock whileBlock = new WhileBlock(x, extractor.parseExpression(statement.expression(0)), false, parseBlock(statement.block()));
               return whileBlock.wrapToList();
           }
 
@@ -165,18 +167,18 @@ public class JavaMethodBodyTreeExtractor {
           //synchronized statement
           if (statement.SYNCHRONIZED()!=null){
 
-              SynchronizedBlock b = new SynchronizedBlock(x, parseExpression(statement.expression(0)), parseBlock(statement.block()));
+              SynchronizedBlock b = new SynchronizedBlock(x, extractor.parseExpression(statement.expression(0)), parseBlock(statement.block()));
               return b.wrapToList();
           }
           //return statement
           if (statement.RETURN()!=null){
-            Statement rt = new Statement(x, Statement.RETURN_STATEMENT, parseExpression(statement.expression(0)));
+            Statement rt = new Statement(x, Statement.RETURN_STATEMENT, extractor.parseExpression(statement.expression(0)));
             return rt.wrapToList();
           }
 
           //Throw statement
           if (statement.THROW()!=null){
-            Statement rt = new Statement(x, Statement.THROW_STATEMENT, parseExpression(statement.expression(0)));
+            Statement rt = new Statement(x, Statement.THROW_STATEMENT, extractor.parseExpression(statement.expression(0)));
             return rt.wrapToList();
           }
 
@@ -196,7 +198,7 @@ public class JavaMethodBodyTreeExtractor {
           //statementExpression
           if (statement.statementExpression!=null)
           {
-            ExpressionListWithPrevs elp = parseExpression(statement.statementExpression);
+            ExpressionListWithPrevs elp = extractor.parseExpression(statement.statementExpression);
             ExpressionOrBlockList ebl = ExpressionOrBlockList.InitEmptyInstance();
             return ebl.add(elp.toExpressionList());
           }
@@ -256,7 +258,9 @@ public class JavaMethodBodyTreeExtractor {
       public ExpressionOrBlockList parseBlock(JavaParser.BlockContext block){
 
           ExpressionOrBlockList blockDomain = ExpressionOrBlockList.InitEmptyInstance();
-
+            if (block == null){
+                throw  new RuntimeException();
+            }
           List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
           for (JavaParser.BlockStatementContext blockStatement: blockStatements){
              blockDomain = blockDomain.combine(parseBlockStatement(blockStatement));

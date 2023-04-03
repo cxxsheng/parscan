@@ -193,7 +193,7 @@ public class Graph {
           sb.append("placeholder");
         else
         {
-          sb.append(((ParcelDataNode)left).getJtype().getPrimitive().getName());
+          sb.append(((ParcelDataNode)left).getJtype().getName());
           sb.append(((ParcelDataNode) left).isArray() ? "Array" : "");
         }
       }
@@ -206,7 +206,7 @@ public class Graph {
           sb.append("placeholder");
         else
         {
-          sb.append(((ParcelDataNode)right).getJtype().getPrimitive().getName());
+          sb.append(((ParcelDataNode)right).getJtype().getName());
           sb.append(((ParcelDataNode)right).isArray() ? "Array" : "");
         }
       }

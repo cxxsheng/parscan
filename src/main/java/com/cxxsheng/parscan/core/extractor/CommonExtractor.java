@@ -31,11 +31,18 @@ import com.cxxsheng.parscan.core.extractor.callback.BinaryCreator;
 import com.cxxsheng.parscan.core.extractor.callback.ListCreator;
 import com.cxxsheng.parscan.core.extractor.callback.TernaryCreator;
 import com.cxxsheng.parscan.core.extractor.callback.UnaryCreator;
+
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommonExtractor {
 
+  private final Path path;
+
+  public CommonExtractor(Path path) {
+    this.path = path;
+  }
 
   /*****************************************************************
 
@@ -49,7 +56,7 @@ public class CommonExtractor {
    ;
    *****************************************************************/
 
-  public static Symbol parseLiteral(JavaParser.LiteralContext literalContext){
+  public Symbol parseLiteral(JavaParser.LiteralContext literalContext){
     if(literalContext.integerLiteral() != null){
       int mode = 10;
       if (literalContext.integerLiteral().DECIMAL_LITERAL()!=null){
@@ -64,7 +71,7 @@ public class CommonExtractor {
       return new IntSymbol(Utils.parseIntString(literalContext.integerLiteral().getText(), mode));
     }
     if (literalContext.floatLiteral() != null){
-      return new FloatSymbol((literalContext.integerLiteral().getText()));
+      return new FloatSymbol((literalContext.floatLiteral().getText()));
     }
     if (literalContext.BOOL_LITERAL() != null){
       if ("true".equals(literalContext.BOOL_LITERAL().getText()))
@@ -96,7 +103,7 @@ public class CommonExtractor {
   //    | typeTypeOrVoid '.' CLASS
   //    | nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
   //
-  public static ExpressionListWithPrevs parsePrimary(JavaParser.PrimaryContext primaryContext){
+  public ExpressionListWithPrevs parsePrimary(JavaParser.PrimaryContext primaryContext){
     //cannot handle explicitGenericInvocationSuffix
     if (primaryContext.nonWildcardTypeArguments() != null)
       throw new JavaASTExtractorException("Cannot handle nonWildcardTypeArguments during primary's parsing ", primaryContext);
@@ -111,7 +118,7 @@ public class CommonExtractor {
 
 
 
-  public static List<ExpressionListWithPrevs> parseExpressionListWithPrevs(JavaParser.ExpressionListContext params){
+  public List<ExpressionListWithPrevs> parseExpressionListWithPrevs(JavaParser.ExpressionListContext params){
     List<ExpressionListWithPrevs> list = new ArrayList<>();
     if (params!=null){
       List<JavaParser.ExpressionContext> ps = params.expression();
@@ -123,7 +130,7 @@ public class CommonExtractor {
   }
 
 
-  public static ExpressionListWithPrevs parseMethodCall(JavaParser.MethodCallContext methodCallContext){
+  public ExpressionListWithPrevs parseMethodCall(JavaParser.MethodCallContext methodCallContext){
       String funcName="";
       if (methodCallContext.SUPER()!=null)
         funcName = methodCallContext.SUPER().getText();
@@ -145,7 +152,7 @@ public class CommonExtractor {
   }
 
 
-  private static TerminalSymbol createTmpSymbolIfNeed(ExpressionListWithPrevs e){
+  private TerminalSymbol createTmpSymbolIfNeed(ExpressionListWithPrevs e){
      Expression last = e.getLastExpression();
      if (last.isSymbol()){
        Symbol s = last.getSymbol();
@@ -157,7 +164,7 @@ public class CommonExtractor {
      return TmpSymbolManager.createNewTmpSymbol(last);
   }
 
-  public static ExpressionListWithPrevs createExpressionListWithPrevsUnary(ExpressionListWithPrevs e, UnaryCreator callback){
+  public ExpressionListWithPrevs createExpressionListWithPrevsUnary(ExpressionListWithPrevs e, UnaryCreator callback){
     TerminalSymbol t = createTmpSymbolIfNeed(e);
     Expression last = callback.create(t);
     ExpressionListWithPrevs el = new ExpressionListWithPrevs(last);
@@ -168,7 +175,7 @@ public class CommonExtractor {
     return el;
   }
 
-  public static ExpressionListWithPrevs createExpressionListWithPrevsBinary(ExpressionListWithPrevs e1, ExpressionListWithPrevs e2, BinaryCreator callback){
+  public ExpressionListWithPrevs createExpressionListWithPrevsBinary(ExpressionListWithPrevs e1, ExpressionListWithPrevs e2, BinaryCreator callback){
     TerminalSymbol t1 = createTmpSymbolIfNeed(e1);
     TerminalSymbol t2 = createTmpSymbolIfNeed(e2);
     Expression last = callback.create(t1, t2);
@@ -184,7 +191,7 @@ public class CommonExtractor {
     return el;
   }
 
-  public static ExpressionListWithPrevs createExpressionListWithPrevsTernary(ExpressionListWithPrevs e1, ExpressionListWithPrevs e2, ExpressionListWithPrevs e3, TernaryCreator callback){
+  public ExpressionListWithPrevs createExpressionListWithPrevsTernary(ExpressionListWithPrevs e1, ExpressionListWithPrevs e2, ExpressionListWithPrevs e3, TernaryCreator callback){
     TerminalSymbol t1 = createTmpSymbolIfNeed(e1);
     TerminalSymbol t2 = createTmpSymbolIfNeed(e2);
     TerminalSymbol t3 = createTmpSymbolIfNeed(e3);
@@ -207,7 +214,7 @@ public class CommonExtractor {
     return el;
   }
 
-  public static ExpressionListWithPrevs createExpressionListWithPrevsList(List<ExpressionListWithPrevs> ell, ListCreator callback){
+  public ExpressionListWithPrevs createExpressionListWithPrevsList(List<ExpressionListWithPrevs> ell, ListCreator callback){
     List<TerminalSymbol> terminalList = new ArrayList<>();
     for (ExpressionListWithPrevs el : ell){
       TerminalSymbol t = createTmpSymbolIfNeed(el);
@@ -268,7 +275,7 @@ public class CommonExtractor {
    | classType '::' typeArguments? NEW                                                                     X fixme unhandled
    ;
    *****************************************************************/
-  public static ExpressionListWithPrevs parseExpression(JavaParser.ExpressionContext expressionContext){
+  public ExpressionListWithPrevs parseExpression(JavaParser.ExpressionContext expressionContext){
 
     Coordinate x = Coordinate.createFromCtx(expressionContext);
     if (expressionContext.primary() != null){  //primary
@@ -284,7 +291,7 @@ public class CommonExtractor {
     }
 
     // expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-    if (expressionContext.LT().size() != 0){
+    if (expressionContext.LT().size() >= 2){
 
       int i = expressionContext.LT().size();
       if (i == 2){
@@ -352,7 +359,7 @@ public class CommonExtractor {
            CallFunc callFunc = new CallFunc(x, name, tle, true);
 
            if (ccr.classBody()!=null){
-             JavaClassExtractor ext = new JavaClassExtractor();
+             JavaClassExtractor ext = new JavaClassExtractor(path);
              JavaClass javaClass = ext.parseAnonymousClass(ccr.classBody());
              callFunc.setExtraClass(javaClass);
            }
@@ -459,7 +466,7 @@ public class CommonExtractor {
   //typeType
     //  : annotation* (classOrInterfaceType | primitiveType) (annotation* '[' ']')*
     //;
-    public static JavaType parseJavaType(JavaParser.TypeTypeContext ctx){
+    public JavaType parseJavaType(JavaParser.TypeTypeContext ctx){
           boolean isArray = false;
           if (ctx.LBRACK() != null && ctx.LBRACK().size() > 0
                   && ctx.RBRACK()!=null && ctx.RBRACK().size() > 0)
@@ -475,7 +482,7 @@ public class CommonExtractor {
     }
 
 
-    public static JavaType parseJavaTypeOrVoid(JavaParser.TypeTypeOrVoidContext ctx){
+    public JavaType parseJavaTypeOrVoid(JavaParser.TypeTypeOrVoidContext ctx){
         if (ctx.VOID()!=null)
           return JavaType.getVOID();
         else
@@ -483,7 +490,7 @@ public class CommonExtractor {
     }
 
 
-    public static List<Parameter> parseParamListFromFormalParameterList(JavaParser.FormalParameterListContext c){
+    public List<Parameter> parseParamListFromFormalParameterList(JavaParser.FormalParameterListContext c){
       List<Parameter> params = null;
       if (c == null)
         return params;
@@ -502,7 +509,7 @@ public class CommonExtractor {
     //variableDeclarators
     //    : variableDeclarator (',' variableDeclarator)*
     //    ;
-    public static List<ExpressionListWithPrevs> parseVariableDeclarators(JavaParser.VariableDeclaratorsContext ctx) {
+    public List<ExpressionListWithPrevs> parseVariableDeclarators(JavaParser.VariableDeclaratorsContext ctx) {
 
 
         //multi variables init like

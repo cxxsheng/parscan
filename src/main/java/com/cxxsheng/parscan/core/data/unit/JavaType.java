@@ -103,13 +103,15 @@ public class JavaType {
 
   @Override
   public String toString() {
-    String isArrayFix = isArray ? "[]":"";
-    if (hasObjectName())
-      return this.ObjectName+isArrayFix;
-    else
-      return primitive.getName()+isArrayFix;
+    return getName() + (isArray ? "[]":"");
   }
 
+  public String getName(){
+    if (hasObjectName())
+      return this.ObjectName;
+    else
+      return primitive.getName();
+  }
   static public JavaType getVOID() {
     return VOID;
   }

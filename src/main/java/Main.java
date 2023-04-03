@@ -30,20 +30,20 @@ public class Main {
   private static void handleOneFile(Path cp){
     AntlrCore core = new AntlrCore(cp);
     try {
-      core.parse();
+      core.parse(null);
     }
     catch (IOException e) {
       e.printStackTrace();
       return;
     }
-    ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
+    ASTIterator iterator = new ASTIterator(core, core.getWriteToParcelFunc());
     while (iterator.hasNextStage()){
       System.out.println("nextStage");
       iterator.continueToTaint();
       System.out.println(iterator.getDataGraph());
     }
     Graph graph = iterator.getDataGraph();
-    ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc(), graph);
+    ASTIterator iterator1 = new ASTIterator(core, core.getReadFromParcelFunc(), graph);
 
     while (iterator1.hasNextStage()){
       iterator1.continueToTaint();

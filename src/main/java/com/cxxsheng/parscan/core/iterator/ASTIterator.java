@@ -3,6 +3,7 @@ package com.cxxsheng.parscan.core.iterator;
 import static com.cxxsheng.parscan.core.data.Statement.RETURN_STATEMENT;
 import static com.cxxsheng.parscan.core.data.Statement.THROW_STATEMENT;
 
+import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.common.Pair;
 import com.cxxsheng.parscan.core.common.Stack;
 import com.cxxsheng.parscan.core.data.Block;
@@ -31,10 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class                                      ASTIterator {
+public class ASTIterator {
 
 
-  private final JavaClass javaClass;
+  private List<ASTIterator> fathers = new ArrayList<>();
+
+  private final AntlrCore antlrCore;
+
+  private final JavaClass jclass;
 
   public final FunctionImp imp;
 
@@ -80,24 +85,27 @@ public class                                      ASTIterator {
     }
   }
 
-  public ASTIterator(JavaClass javaClass, FunctionImp imp){
-      this(javaClass, imp, DEFAULT_MODE, new Graph());
+  public ASTIterator(AntlrCore antlrCore, FunctionImp imp){
+      this(antlrCore, imp, DEFAULT_MODE, new Graph(), false);
   }
 
-  public ASTIterator(JavaClass javaClass, FunctionImp imp, Graph givenGraph){
-      this(javaClass, imp, EXECUTION_MODE, givenGraph);
+  public ASTIterator(AntlrCore antlrCore, FunctionImp imp, Graph givenGraph){
+      this(antlrCore, imp, EXECUTION_MODE, givenGraph, false);
       givenGraph.recovery();
   }
 
-  private ASTIterator(JavaClass javaClass, FunctionImp functionImp, int mode, Graph graph) {
+  private ASTIterator(AntlrCore antlrCore, FunctionImp functionImp, int mode, Graph graph, boolean inlined) {
       this.imp = functionImp;
       this.methodBody = functionImp.getBody();
-      this.javaClass = javaClass;
+      this.antlrCore = antlrCore;
+      // first currentClass
+      this.jclass = functionImp.getJavaClass();
       this.mode = mode;
       this.dataGraph = graph;
       traceList = new ArrayList<>();
-      initTraceList();
-      core = new Z3Core(javaClass, this) ;
+      if (!inlined)
+        initTraceList();
+      core = new Z3Core(this) ;
       indexStack = new Stack();
       indexStack.push(0);
 
@@ -275,7 +283,11 @@ public class                                      ASTIterator {
       default:
         break;
     }
-
+    ExpressionListWithPrevs exp = e.getExp();
+    List<Expression> exps = exp.toExpressionList();
+    for (Expression ee : exps){
+        handleExpression(ee);
+    }
   }
 
   //stack handle functions
@@ -509,6 +521,27 @@ public class                                      ASTIterator {
           }
         }
       }
+    }else if (symbol instanceof CallFunc){
+        CallFunc callFunc = (CallFunc) symbol;
+        List<TerminalSymbol> pms = callFunc.getParams();
+        for (int i = 0; i < pms.size(); i++){
+            TerminalSymbol pm = pms.get(i);
+            if(traceList.contains(pm.toString())){
+                //need to go to the function!
+                FunctionImp imp;
+                if (callFunc.isConstructFunc()){
+                    JavaClass javaClass = antlrCore.findClassByName(callFunc.getFuncName());
+                    imp = javaClass.getFunctionImpByName(callFunc.getFuncName());
+                }else {
+                    imp = jclass.getFunctionImpByName(callFunc.getFuncName());
+                }
+                //first need to find defination
+                ASTIterator inlineIterator = new ASTIterator(antlrCore, imp, mode, dataGraph, true);
+                inlineIterator.traceList.add(imp.getFunDec().getParams().get(i).getName());
+                inlineIterator.fathers.add(this);
+                inlineIterator.start();
+            }
+        }
     }
     return new DefaultRuntimeValue();
   }
@@ -686,4 +719,8 @@ public class                                      ASTIterator {
       //ignore the result
       return false;
   }
+
+    public JavaClass getJavaclass() {
+        return jclass;
+    }
 }

@@ -1,0 +1,12 @@
+{
+  "trace":[
+    {
+      "type": "methodParam",
+      "index": 0
+    }
+  ],
+  "pauseAt": [
+    "callFunc"
+  ]
+
+}

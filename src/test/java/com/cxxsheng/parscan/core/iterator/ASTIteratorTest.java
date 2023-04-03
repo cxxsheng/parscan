@@ -18,16 +18,20 @@ class ASTIteratorTest {
       try {
         FunctionPattern.initFromFile("./src/test/resources/input/rule.json");
         assertTrue(FunctionPattern.isInit());
+
         Path cp = Paths.get("src", "test", "resources", "JavaDemo","patched", "GateKeeperResponse.java");
+        cp = Paths.get("/home/cs/Downloads/newoutput/2ndLine - Second Phone Number_23.9.0.0_Apkpure.apk/sources/com/google/ads/interactivemedia/v3/internal/ke.java");
         AntlrCore core = new AntlrCore(cp);
-        core.parse();
-        ASTIterator iterator = new ASTIterator(core.getJavaClass(), core.getWriteToParcelFunc());
+        core.parse(null);
+        ASTIterator iterator = new ASTIterator(core, core.getWriteToParcelFunc());
         iterator.start();
         Graph graph = iterator.getDataGraph();
         System.out.println(graph);
-        ASTIterator iterator1 = new ASTIterator(core.getJavaClass(), core.getReadFromParcelFunc(), graph);
+        ASTIterator iterator1 = new ASTIterator(core, core.getReadFromParcelFunc(), graph);
         if (iterator1.start())
             System.out.println("okokokokokokok");
+        else
+            throw new ParcelMismatchException("failed!");
       }
       catch (IOException e) {
             e.printStackTrace();

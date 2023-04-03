@@ -1,5 +1,6 @@
 package com.cxxsheng.parscan.core.z3;
 
+import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
@@ -31,7 +32,6 @@ import java.util.Map;
 
 public class Z3Core {
 
-  public final JavaClass javaClass;
   public final ASTIterator iterator;
 
 
@@ -48,8 +48,8 @@ public class Z3Core {
   public final ExprWithTypeVariable VALUE = new ExprWithTypeVariable(VALUE_EXP, VALUE_EXP);
 
 
-  public Z3Core(JavaClass javaClass, ASTIterator iterator) {
-    this.javaClass = javaClass;
+
+  public Z3Core(ASTIterator iterator) {
     this.iterator = iterator;
   }
 
@@ -181,6 +181,7 @@ public class Z3Core {
           javaType = ((ParcelDataNode)node).getJtype();
         return mkConst(javaType, name);
       }else {
+        JavaClass javaClass = iterator.getJavaclass();
         //check it is a constant, if this var is constant, replace the symbol by the real value
         VarDeclaration d = javaClass.getVarDeclarationByName(((IdentifierSymbol)s).getValue());
         if (d != null) {

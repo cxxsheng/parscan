@@ -10,6 +10,7 @@ public class FunctionImp {
 
     private FunctionDeclaration functionDec;
 
+    private JavaClass javaClass ;
     private ExpressionOrBlockList body = null;
 
 
@@ -53,4 +54,11 @@ public class FunctionImp {
     }
 
 
+    public JavaClass getJavaClass() {
+        return javaClass;
+    }
+
+    public void setJavaClass(JavaClass javaClass) {
+        this.javaClass = javaClass;
+    }
 }

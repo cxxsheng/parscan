@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class JavaASTExtractorException extends RuntimeException {
 
     public JavaASTExtractorException(String msg, ParserRuleContext c){
-        super(msg + " at " + Coordinate.createFromCtx(c));
+        super(msg + " at " + Coordinate.createFromCtx(c) + ": " + c.getText());
     }
 
    public JavaASTExtractorException(String msg){

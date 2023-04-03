@@ -1,11 +1,15 @@
 package com.cxxsheng.parscan.core.data;
 
+import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
+
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JavaClass {
 
+  private final Path filePath;
   private final String name;
   private final List<String> interfaceName;
   private final String superClassName;
@@ -14,21 +18,24 @@ public class JavaClass {
   private ExpressionOrBlockList staticDomain;
 
 
-  public JavaClass(String name, List<String> interfaceName, String superClassName) {
+  public JavaClass(String name, List<String> interfaceName, String superClassName, Path filePath) {
       this.name = name;
       this.interfaceName = interfaceName;
       this.superClassName = superClassName;
+      this.filePath = filePath;
   }
 
   //for anonymous class
-  public JavaClass(){
+  public JavaClass(Path filePath){
       this.name = null;
       interfaceName = null;
       superClassName = null;
+      this.filePath = filePath;
   }
 
   public void addMethod(FunctionImp imp){
-      methods.add(imp);
+    imp.setJavaClass(this);
+    methods.add(imp);
   }
 
   public void addClassVariable(VarDeclaration var){
@@ -57,11 +64,21 @@ public class JavaClass {
     return null;
   }
 
-  public FunctionImp getFunctionImpByFullName(String name){
+  public FunctionImp getFunctionImpByFullName(String name, String [] typeList){
       for (FunctionImp imp : methods){
-        if (imp.toString().equals(name))
-          return imp;
-      }
+        if (imp.getFunDec().getName().equals(name)) {
+          List<Parameter> ps = imp.getFunDec().getParams();
+          if (ps.size() == typeList.length)
+          {
+            for (int i = 0; i < typeList.length; i++){
+              Parameter p = ps.get(0);
+              if(!p.getType().toString().equals(typeList[i]))
+                return null;
+            }
+            return imp;
+          }
+         }
+        }
       return null;
   }
 
@@ -76,5 +93,9 @@ public class JavaClass {
 
   public List<FunctionImp> getMethods() {
     return methods;
+  }
+
+  public String getName() {
+    return name;
   }
 }
