@@ -66,8 +66,6 @@ public class FunctionPattern {
         JSONObject obj = ja.getJSONObject(i);
         String type = obj.getString("type");
         if (type != null){
-
-
           FunctionPattern p = new FunctionPattern(type, obj);
           addPattern(p);
         }

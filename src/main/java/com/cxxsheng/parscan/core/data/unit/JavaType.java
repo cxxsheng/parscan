@@ -5,7 +5,7 @@ import java.util.Objects;
 public class JavaType {
 
   private final Primitive primitive;
-  private final String ObjectName;
+  private String ObjectName;
   private final boolean isArray;
 
   private static final JavaType VOID = new JavaType();
@@ -124,5 +124,11 @@ public class JavaType {
     return isArray;
   }
 
+  public String getObjectName() {
+    return ObjectName;
+  }
 
+  public void setName(String s) {
+    ObjectName = s;
+  }
 }

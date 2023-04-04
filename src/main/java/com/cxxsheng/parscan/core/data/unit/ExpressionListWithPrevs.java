@@ -1,5 +1,7 @@
 package com.cxxsheng.parscan.core.data.unit;
 
+import com.cxxsheng.parscan.core.data.ConditionalBlock;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ public class ExpressionListWithPrevs {
   private List<Expression> prevs = null;
   private Expression lastExpression;
 
-
+  private ConditionalBlock block = null;
 
   public boolean hasPreExpression(){
     return prevs != null && prevs.size() > 0;
@@ -63,5 +65,13 @@ public class ExpressionListWithPrevs {
     }
     sb.append(lastExpression).append('\n');
     return sb.toString();
+  }
+
+  public ConditionalBlock getBlock() {
+    return block;
+  }
+
+  public void setBlock(ConditionalBlock block) {
+    this.block = block;
   }
 }

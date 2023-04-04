@@ -9,10 +9,13 @@ import com.cxxsheng.parscan.core.data.ForBlock;
 import com.cxxsheng.parscan.core.data.Statement;
 import com.cxxsheng.parscan.core.data.SynchronizedBlock;
 import com.cxxsheng.parscan.core.data.WhileBlock;
+import com.cxxsheng.parscan.core.data.unit.Expression;
 import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
 
 import java.nio.file.Path;
 import java.util.List;
+
+import com.cxxsheng.parscan.core.iterator.ASTParsingException;
 import org.apache.log4j.Logger;
 
 public class JavaMethodBodyTreeExtractor {
@@ -140,15 +143,25 @@ public class JavaMethodBodyTreeExtractor {
               */
 
               //for each like for (element:iterator)
-
+              List<ExpressionListWithPrevs> equals = null;
               if (forControl.enhancedForControl()!=null){
-
+                    //throw new ASTParsingException("enhancedForControl unsupported");
+                    return ExpressionOrBlockList.InitEmptyInstance();
               }
               else {
-
+                 equals = parseLocalVariableDeclaration(forControl.forInit().localVariableDeclaration());
+                 JavaParser.ExpressionListContext exp = (forControl.forInit().expressionList());
+                 if (exp!=null){
+                     for (JavaParser.ExpressionContext c :exp.expression()){
+                         equals.add(extractor.parseExpression(c));
+                     }
+                 }
               }
-              ForBlock forBlock = new ForBlock(x, parseBlock(statement.statement().get(0).block()));
-              return forBlock.wrapToList();
+
+              //ForBlock forBlock = new ForBlock(x, parseBlock(statement.statement().get(0).block()));
+              //covert for block to if block
+              ConditionalBlock block = new ConditionalBlock(x, extractor.parseExpression(forControl.expression()), parseBlock(statement.statement().get(0).block()),equals);
+              return block.wrapToList();
           }
 
           //do-while statement
@@ -259,7 +272,7 @@ public class JavaMethodBodyTreeExtractor {
 
           ExpressionOrBlockList blockDomain = ExpressionOrBlockList.InitEmptyInstance();
             if (block == null){
-                throw  new RuntimeException();
+                return ExpressionOrBlockList.InitEmptyInstance();
             }
           List<JavaParser.BlockStatementContext> blockStatements = block.blockStatement();
           for (JavaParser.BlockStatementContext blockStatement: blockStatements){
@@ -282,7 +295,7 @@ public class JavaMethodBodyTreeExtractor {
           JavaParser.BlockContext block = methodBodyContext.block();
           if (block!=null)
             return parseBlock(block);
-          return null;
+          return ExpressionOrBlockList.InitEmptyInstance();
       }
 
 

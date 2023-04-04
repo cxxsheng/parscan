@@ -17,6 +17,7 @@ public class JavaClass {
   private final List<VarDeclaration> varList = new ArrayList<>();
   private ExpressionOrBlockList staticDomain;
 
+  private List<JavaClass> innerClasses = new ArrayList<>();
 
   public JavaClass(String name, List<String> interfaceName, String superClassName, Path filePath) {
       this.name = name;
@@ -71,7 +72,10 @@ public class JavaClass {
           if (ps.size() == typeList.length)
           {
             for (int i = 0; i < typeList.length; i++){
-              Parameter p = ps.get(0);
+              Parameter p = ps.get(i);
+              //ignore * type
+              if (typeList[i].equals("*"))
+                continue;
               if(!p.getType().toString().equals(typeList[i]))
                 return null;
             }
@@ -97,5 +101,21 @@ public class JavaClass {
 
   public String getName() {
     return name;
+  }
+
+  public void addInnerClass(JavaClass innerClass){
+    innerClasses.add(innerClass);
+  }
+
+  public List<JavaClass> getInnerClasses() {
+    return innerClasses;
+  }
+
+  public JavaClass findInnerClassByName(String name){
+    for (JavaClass innerClass : innerClasses){
+      if(innerClass.getName().equals(name))
+        return innerClass;
+    }
+    return null;
   }
 }

@@ -277,6 +277,8 @@ public class CommonExtractor {
    *****************************************************************/
   public ExpressionListWithPrevs parseExpression(JavaParser.ExpressionContext expressionContext){
 
+    if (expressionContext == null)
+      return null;
     Coordinate x = Coordinate.createFromCtx(expressionContext);
     if (expressionContext.primary() != null){  //primary
       return parsePrimary(expressionContext.primary());

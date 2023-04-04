@@ -50,7 +50,8 @@ public class AntlrCore {
 
   public FunctionImp getWriteToParcelFunc(){
     JavaClass jClass = jClasses.get(0);
-    return  jClass.getFunctionImpByName("writeToParcel");
+    return  jClass.getFunctionImpByFullName("writeToParcel",
+                                            new String[]{"Parcel","int"});
   }
 
   public FunctionImp getReadFromParcelFunc(){
@@ -64,10 +65,12 @@ public class AntlrCore {
         }
         if (e  instanceof  CallFunc)
         {
-            JavaClass nullClass = ((CallFunc)e).extraClass();
+            String funcName  = ((CallFunc) e).getFuncName();
+            JavaClass nullClass = jClass.findInnerClassByName(funcName);
+
             if (nullClass == null){
                 //fixme need to look up another calss
-                String funcName  = ((CallFunc) e).getFuncName();
+
                 //to replace funcname
                 Path absPath =  this.filePath.toAbsolutePath();
                 String newFileName = funcName.replace('.','/');
@@ -81,7 +84,8 @@ public class AntlrCore {
                 }
 
             }
-            return nullClass.getFunctionImpByName("createFromParcel");
+            return nullClass.getFunctionImpByFullName("createFromParcel",
+                                                     new String[]{"Parcel"});
         }
       }
       return null;
@@ -138,7 +142,7 @@ public class AntlrCore {
         return null;
   }
 
-    public List<JavaClass> getjClasses() {
+    public List<JavaClass> getJavaClasses() {
         return jClasses;
     }
 

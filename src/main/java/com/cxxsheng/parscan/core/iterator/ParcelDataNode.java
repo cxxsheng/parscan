@@ -160,6 +160,11 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
             type = FUNC_TYPE_READ;
             jType = d.getReturnType();
             //fixme we need to record the return value
+            if ("T".equals(jType.getObjectName())){
+                String newFuncName = funcName.substring(4);
+                if (newFuncName.equals("Parcelable"))
+                    jType.setName(newFuncName);
+            }
             if (jType.isVoid() && d.hasParameter()){
               jType = d.getParameterByIndex(0).getType();
               TerminalSymbol e = func.getParams().get(0);

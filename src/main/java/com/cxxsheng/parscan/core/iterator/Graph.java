@@ -261,11 +261,16 @@ public class Graph {
       if (len > mark.length)
         continue;
 
+      boolean isDiffer = true;
       for (int i = 0; i < len; i++) {
         if (node_mark[i] != mark[i])
-          return null;
+        {
+          isDiffer = false;
+          break;
+        }
       }
-      return node;
+      if (isDiffer)
+        return node;
     }
     return null;
   }
@@ -274,6 +279,7 @@ public class Graph {
   //and clear all node_mark
   public void recovery() {
     int rootIndex = allNodes.indexOf(getRoot());
+    preCurrentNodeIndex = rootIndex;
     currentNodeIndex = rootIndex;
     for (GraphNode node : allNodes) {
       if (root != node)

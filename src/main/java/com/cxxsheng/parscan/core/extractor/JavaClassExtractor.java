@@ -105,6 +105,12 @@ public class JavaClassExtractor {
               javaClass.addMethod(imp);
         }
 
+        if (ctx.classDeclaration()!=null)
+        {
+            JavaClassExtractor innerExtractor = new JavaClassExtractor(path);
+            JavaClass innerClass = innerExtractor.parseClass(ctx.classDeclaration());
+            javaClass.addInnerClass(innerClass);
+        }
 
     }
 

@@ -2,13 +2,7 @@ package com.cxxsheng.parscan.core.z3;
 
 import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.data.JavaClass;
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
-import com.cxxsheng.parscan.core.data.unit.JavaType;
-import com.cxxsheng.parscan.core.data.unit.Operator;
-import com.cxxsheng.parscan.core.data.unit.Primitive;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
+import com.cxxsheng.parscan.core.data.unit.*;
 import com.cxxsheng.parscan.core.data.unit.symbol.BoolSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CharSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.FloatSymbol;
@@ -28,7 +22,9 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Sort;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Z3Core {
 
@@ -113,8 +109,8 @@ public class Z3Core {
   }
   private Map<String, ExprWithTypeVariable> tmpTables = new HashMap<>();
   //only init from first tmpSymbol
-  private ExprWithTypeVariable mkTmpSymbol(TmpSymbol tmpSymbol){
-    ExprWithTypeVariable exp = mkExpression(tmpSymbol.getExpression());
+  private ExprWithTypeVariable mkTmpSymbol(TmpSymbol tmpSymbol, ExpressionListWithPrevs elp){
+    ExprWithTypeVariable exp = mkExpression(tmpSymbol.getExpression(), elp);
     Sort sort = exp.getExpr().getSort();
     String name = tmpSymbol.getName();
     Expr<Sort> left = ctx.mkConst(name, sort);
@@ -126,7 +122,7 @@ public class Z3Core {
     return mkEq(name_exp, exp);
   }
 
-  public ExprWithTypeVariable handleSymbol(Symbol s){
+  public ExprWithTypeVariable handleSymbol(Symbol s, ExpressionListWithPrevs elp){
     if (s == null)
       return null;
 
@@ -187,7 +183,7 @@ public class Z3Core {
         if (d != null) {
           if (d.getExpressions() != null) {
             Symbol v = d.getLastExpValue();
-            return handleSymbol(v);
+            return handleSymbol(v, elp);
           }else {
             JavaType type = d.getType();
             if (!type.isPrimitive()){
@@ -203,6 +199,15 @@ public class Z3Core {
             int ii = ((ParcelDataNode) v).getIndex();
             JavaType javaType = ((ParcelDataNode) v).getJtype();
             return mkConst(javaType, "$" + ii);
+          }
+          List<ExpressionListWithPrevs> localEquals = elp.getBlock().getSomeLocalEquals();
+          if (localEquals != null) {
+            for (ExpressionListWithPrevs localEqual : localEquals){
+              Expression last = localEqual.getLastExpression();
+              if (last.isAssign() && last.getLeft().toString().equals(name)){
+                return handleSymbol(last.getRight(), localEqual);
+              }
+            }
           }
           return mkConst(JavaType.INT, name);
         }
@@ -229,24 +234,24 @@ public class Z3Core {
     }
   }
 
-  public ExprWithTypeVariable mkExpression(Expression e){
+  public ExprWithTypeVariable mkExpression(Expression e, ExpressionListWithPrevs elp){
     if (e == null)
       return null;
 
     Expr new_exp;
     if (e.getSymbol() instanceof TmpSymbol)
-      return mkTmpSymbol((TmpSymbol) e.getSymbol());
+      return mkTmpSymbol((TmpSymbol) e.getSymbol(), elp);
 
     if (e.isSymbol()){
-      return handleSymbol(e.getSymbol());
+      return handleSymbol(e.getSymbol(), elp);
     }
 
     Operator op = e.getOp();
     if (op == null)
       throw new Z3ParsingException("unreachable code");
 
-    ExprWithTypeVariable left = handleSymbol(e.getLeft());
-    ExprWithTypeVariable right = handleSymbol(e.getRight());
+    ExprWithTypeVariable left = handleSymbol(e.getLeft(), elp);
+    ExprWithTypeVariable right = handleSymbol(e.getRight(), elp);
 
     switch (op){
       case EQ:
@@ -289,17 +294,22 @@ public class Z3Core {
   }
 
   public ExprWithTypeVariable mkExpressionListWithPrevs(ExpressionListWithPrevs elp, LastExpressionCallback handle){
+
+    //fixme need to ajust preview Expression
     ExprWithTypeVariable ev = null;
     if (elp.hasPreExpression()){
         for (Expression e : elp.getPrevs()){
           if (ev == null)
-            ev = mkExpression(e);
+            ev = mkExpression(e,elp);
           else
-            ev = mkAnd(ev, mkExpression(e));
+            ev = mkAnd(ev, mkExpression(e, elp));
         }
       }
 
-      ExprWithTypeVariable last = mkExpression(elp.getLastExpression());
+      ExprWithTypeVariable last = mkExpression(elp.getLastExpression(), elp);
+      if (ev!=null)
+        last = mkAnd(ev, last);
+
       if (handle != null)
       {
         last = handle.justify(last);
@@ -309,6 +319,9 @@ public class Z3Core {
 
 
   public ExprWithTypeVariable mkNot(ExprWithTypeVariable e){
+    if (e ==null){
+      System.out.println();
+    }
     e.setExpr(ctx.mkNot(e.getExpr()));
     return e;
   }

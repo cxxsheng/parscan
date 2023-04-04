@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.List;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -508,6 +510,9 @@ public class ASTIterator {
               }
              //set next
               List<Edge> childrenEdge = dataGraph.currentNode().getChildren();
+              if (childrenEdge == null)
+                  return ret;
+
               if (childrenEdge.size() == 1) {
                 Edge childEdge = childrenEdge.get(0);
                 GraphNode nextNode = dataGraph.getNodeById(childEdge.getRight());
@@ -524,18 +529,24 @@ public class ASTIterator {
     }else if (symbol instanceof CallFunc){
         CallFunc callFunc = (CallFunc) symbol;
         List<TerminalSymbol> pms = callFunc.getParams();
+        String[] types = new String[pms.size()];
+        Arrays.fill(types, "*");
         for (int i = 0; i < pms.size(); i++){
             TerminalSymbol pm = pms.get(i);
             if(traceList.contains(pm.toString())){
                 //need to go to the function!
                 FunctionImp imp;
+                // need to adjust? fixme
+                types[i] = "Parcel";
+
                 if (callFunc.isConstructFunc()){
                     JavaClass javaClass = antlrCore.findClassByName(callFunc.getFuncName());
-                    imp = javaClass.getFunctionImpByName(callFunc.getFuncName());
+                    imp = javaClass.getFunctionImpByFullName(callFunc.getFuncName(),types);
                 }else {
-                    imp = jclass.getFunctionImpByName(callFunc.getFuncName());
+                    imp = jclass.getFunctionImpByFullName(callFunc.getFuncName(),types);
                 }
                 //first need to find defination
+                LOG.info("Found a new function and enter it" + imp.toString());
                 ASTIterator inlineIterator = new ASTIterator(antlrCore, imp, mode, dataGraph, true);
                 inlineIterator.traceList.add(imp.getFunDec().getParams().get(i).getName());
                 inlineIterator.fathers.add(this);
@@ -589,7 +600,14 @@ public class ASTIterator {
         }
         else if (cur instanceof Block){
           //start a new block
+          //try to execute bool exp first
+
           if (cur instanceof ConditionalBlock){
+                for (Expression prev: ((ConditionalBlock) cur).getBoolExp().getPrevs())
+                {
+                    handleExpression(prev);
+                }
+
                 indexStack.push(COND_INDEX_IF); // mark it is a statement
           }
           //other just change the stack
@@ -664,6 +682,10 @@ public class ASTIterator {
           if (!node.isPlaceholder())
             throw new ASTParsingException("Expect a placeholder but a "+ node.toString());
           dataGraph.addNewNode(core.EXP_TRUE, node);
+          int[] array = new int[indexStack.size() - 2];
+          System.arraycopy(indexStack.toIntArray(), 0, array,0, array.length);
+       //   array[array.length-1] ++;
+          node.setMark(array);
         }
       }else {
         //exit
