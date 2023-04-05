@@ -20,7 +20,7 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
     private Graph graph;
 
-    private List<Edge> children = null;
+    private List<Edge> children = new ArrayList<>();
 
     private List<GraphNode> fathers = new ArrayList<>();
 
@@ -80,9 +80,15 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
     @Override
     public void addChild(ExprWithTypeVariable cond, int dstIndex) {
-          if (children == null)
-              children = new ArrayList<>();
 
+          if (dstIndex == index){
+              return;
+          }
+
+          if (dstIndex < index)
+          {
+              throw new ASTParsingException("cannot support loop state");
+          }
           Edge edge = new Edge(cond, index, dstIndex);
           children.add(edge);
 

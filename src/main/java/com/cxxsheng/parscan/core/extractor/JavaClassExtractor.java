@@ -144,9 +144,8 @@ public class JavaClassExtractor {
               superName = context.typeType().getText();
           }
 
-          List<String> interfaceList = null;
+          List<String> interfaceList = new ArrayList<>();
           if (context.typeList()!=null){
-            interfaceList = new ArrayList<>();
             for (JavaParser.TypeTypeContext t : context.typeList().typeType()){
                 interfaceList.add(t.getText());
             }

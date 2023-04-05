@@ -21,6 +21,7 @@ import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
 import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
+import com.cxxsheng.parscan.core.extractor.TmpSymbolManager;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.List;
 
+import com.microsoft.z3.Expr;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,6 +201,8 @@ public class ASTIterator {
             if (cond_flag == COND_INDEX_IF){
                 ExpressionListWithPrevs e = ((ConditionalBlock)block.getLeft()).getBoolExp();
                 exp = constructConditionByExpression(e);
+                if (exp == null)
+                    System.out.println();
                 ((ConditionalBlock) block.getLeft()).setCondSaver(exp);
 
             }
@@ -449,7 +453,9 @@ public class ASTIterator {
                   }
                   else if (cond_flag == COND_INDEX_ELSE)
                   {
-                      exp = core.mkNot(((ConditionalBlock) block.getLeft()).getCondSaver());
+                      ConditionalBlock conditionalBlock = (ConditionalBlock) block.getLeft();
+
+                      exp = core.mkNot(conditionalBlock.getCondSaver());
                   }
                   else
                   {
@@ -498,6 +504,7 @@ public class ASTIterator {
                     GraphNode nextNode = dataGraph.getNodeById(childEdge.getRight());
                     nextNode.setMark(indexStack.toIntArray());
                     dataGraph.updateNodeIndex(nextNode.getIndex(), true);
+                    childrenEdge = dataGraph.currentNode().getChildren();
               }
 
               ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
@@ -541,9 +548,22 @@ public class ASTIterator {
 
                 if (callFunc.isConstructFunc()){
                     JavaClass javaClass = antlrCore.findClassByName(callFunc.getFuncName());
-                    imp = javaClass.getFunctionImpByFullName(callFunc.getFuncName(),types);
+                    imp = javaClass.getFunctionImpByFullName(callFunc.getFuncName(),types, this.imp);
                 }else {
-                    imp = jclass.getFunctionImpByFullName(callFunc.getFuncName(),types);
+                    if (callFunc.getFuncName().equals("this"))
+                        imp = jclass.getFunctionImpByFullName(jclass.getName(),types, this.imp);
+                    else if (callFunc.getFuncName().equals("super"))
+                        return new DefaultRuntimeValue();
+                    else
+                        imp = jclass.getFunctionImpByFullName(callFunc.getFuncName(),types, this.imp);
+                }
+
+                if (imp == null){
+                    throw new ASTParsingException("cannot find funcion definition " + callFunc);
+                }
+
+                if (imp == this.imp){
+                    throw new ASTParsingException("ops get a self-piointer");
                 }
                 //first need to find defination
                 LOG.info("Found a new function and enter it" + imp.toString());
@@ -605,13 +625,21 @@ public class ASTIterator {
           if (cur instanceof ConditionalBlock){
                 for (Expression prev: ((ConditionalBlock) cur).getBoolExp().getPrevs())
                 {
-                    handleExpression(prev);
+                    RuntimeValue ret = handleExpression(prev);
+                    if (!(ret instanceof DefaultRuntimeValue)){
+                        if (prev.getSymbol() instanceof TmpSymbol){
+                            tmpTable.addVariable(((TmpSymbol) prev.getSymbol()).getName(), ret);
+                        }
+                    }
                 }
 
                 indexStack.push(COND_INDEX_IF); // mark it is a statement
+
           }
           //other just change the stack
           indexStack.push(0);
+          //to save the condition fixme
+          // constructCondition(true);
         }
         else if (cur instanceof Statement){
             LOG.info("handling statement "+ cur.toString());
@@ -639,9 +667,13 @@ public class ASTIterator {
             if (mode == DEFAULT_MODE){
               ExpressionOrBlock curBlock = getRecentBlock();
               if (curBlock instanceof ConditionalBlock){
-                if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE)
-                  dataGraph.addNewNode(constructCondition(true),
-                                       ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+                if (indexStack.get(indexStack.size()-2) == COND_INDEX_ELSE) {
+                    boolean NotNeedPlaceholder = ((ConditionalBlock) curBlock).getCondSaver() == null &&
+                                                        !((ConditionalBlock) curBlock).hasElse();
+                    if (!NotNeedPlaceholder)
+                        dataGraph.addNewNode(constructCondition(true),
+                                ParcelDataNode.initEmptyInstance(indexStack.toIntArray()));
+                }
               }
             }else if (mode == EXECUTION_MODE){
 

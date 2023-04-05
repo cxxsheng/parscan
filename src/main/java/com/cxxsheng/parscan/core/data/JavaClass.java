@@ -66,20 +66,34 @@ public class JavaClass {
   }
 
   public FunctionImp getFunctionImpByFullName(String name, String [] typeList){
+    return getFunctionImpByFullName(name, typeList, null);
+  }
+
+  public FunctionImp getFunctionImpByFullName(String name, String [] typeList, FunctionImp curImp){
       for (FunctionImp imp : methods){
         if (imp.getFunDec().getName().equals(name)) {
           List<Parameter> ps = imp.getFunDec().getParams();
+          if (ps == null){
+            System.out.println();
+          }
           if (ps.size() == typeList.length)
           {
+            //check type is matched
+            boolean typedMismatch = false;
             for (int i = 0; i < typeList.length; i++){
               Parameter p = ps.get(i);
               //ignore * type
               if (typeList[i].equals("*"))
                 continue;
               if(!p.getType().toString().equals(typeList[i]))
-                return null;
+              {
+                typedMismatch=true;
+                break;
+              }
             }
-            return imp;
+            if (!typedMismatch && (imp != curImp))
+              return imp;
+            //goto next function
           }
          }
         }
@@ -117,5 +131,17 @@ public class JavaClass {
         return innerClass;
     }
     return null;
+  }
+
+  public String getSuperClassName() {
+    return superClassName;
+  }
+
+  public List<String> getInterfaceName() {
+    return interfaceName;
+  }
+
+  public boolean containsInterfaceName(String name){
+    return interfaceName.contains(name);
   }
 }

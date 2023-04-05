@@ -65,24 +65,26 @@ public class AntlrCore {
         }
         if (e  instanceof  CallFunc)
         {
-            String funcName  = ((CallFunc) e).getFuncName();
-            JavaClass nullClass = jClass.findInnerClassByName(funcName);
-
+            JavaClass nullClass = ((CallFunc) e).extraClass();
             if (nullClass == null){
-                //fixme need to look up another calss
+                String funcName  = ((CallFunc) e).getFuncName();
+                nullClass = jClass.findInnerClassByName(funcName);
+                if (nullClass == null){
+                    //fixme need to look up another calss
 
-                //to replace funcname
-                Path absPath =  this.filePath.toAbsolutePath();
-                String newFileName = funcName.replace('.','/');
-                newFileName += ".java";
-                Path newRelativePath = Paths.get(newFileName);
-                Path newPath = absPath.resolveSibling(newRelativePath);
-                try {
-                    nullClass = parse(newPath);
-                }catch (IOException ex){
-                    ex.printStackTrace();
+                    //to replace funcname
+                    Path absPath =  this.filePath.toAbsolutePath();
+                    String newFileName = funcName.replace('.','/');
+                    newFileName += ".java";
+                    Path newRelativePath = Paths.get(newFileName);
+                    Path newPath = absPath.resolveSibling(newRelativePath);
+                    try {
+                        nullClass = parse(newPath);
+                    }catch (IOException ex){
+                        ex.printStackTrace();
+                    }
+
                 }
-
             }
             return nullClass.getFunctionImpByFullName("createFromParcel",
                                                      new String[]{"Parcel"});

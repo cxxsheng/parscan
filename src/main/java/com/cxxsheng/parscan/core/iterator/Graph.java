@@ -132,7 +132,6 @@ public class Graph {
       node.setIndexAtTree(index);
       allNodes.add(node);
     }
-
     currentNode().addChild(condition, index);
     updateNodeIndex(index);
     return index;

@@ -2,24 +2,28 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cxxsheng.parscan.core.AntlrCore;
-import com.cxxsheng.parscan.core.iterator.ASTIterator;
-import com.cxxsheng.parscan.core.iterator.FunctionReader;
-import com.cxxsheng.parscan.core.iterator.Graph;
-import com.cxxsheng.parscan.core.iterator.ParcelMismatchException;
+import com.cxxsheng.parscan.core.data.JavaClass;
+import com.cxxsheng.parscan.core.iterator.*;
 import com.cxxsheng.parscan.core.pattern.FunctionPattern;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
   private final static Logger LOG = LoggerFactory.getLogger(Main.class);
 
-  private static void init(){
+  public static void init(){
     FunctionReader.openWithAntlr("src/main/resources/Parcel_.java");
     FunctionReader.readFunctionList();
     try {
@@ -31,7 +35,7 @@ public class Main {
   }
 
 
-  private static boolean handleOneFile(Path cp){
+  public static boolean handleOneFile(Path cp){
     AntlrCore core = new AntlrCore(cp);
     try {
       core.parse(null);
@@ -40,7 +44,10 @@ public class Main {
       e.printStackTrace();
       return false;
     }
-
+    JavaClass jclass = core.getJavaClasses().get(0);
+    if (!jclass.containsInterfaceName("Parcelable")){
+      throw new ASTParsingException("expected an parcelable but got nothing");
+    }
     ASTIterator iterator1 = new ASTIterator(core, core.getWriteToParcelFunc());
     iterator1.start();
     Graph graph = iterator1.getDataGraph();
@@ -71,33 +78,81 @@ public class Main {
 
   }
 
+  private static boolean checkIfInDebugMode(){
+    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+    for (String arg : runtimeMXBean.getInputArguments()){
+      if (arg.startsWith("-agentlib:jdwp"))
+        return true;
+    }
+    return false;
+  }
+
+  private static final List<String> blackList = Arrays.asList(
+          //"_1.1.6_Apkpure.apk"
+  );
   public static void main(String[] args) {
     init();
    // handleTest();
-    if (args.length <=0 ){
+    if (args.length <=1 ){
       LOG.error("please give an input file");
     }
 
     String giveJsonFile = args[0];
-    String json = "";
+    String outputFile = args[1];
+    OutputStream fos = null;
     try {
-      json = FileUtils.readFileToString(new File(giveJsonFile));
+      fos = Files.newOutputStream(Paths.get(outputFile));
+      String json = FileUtils.readFileToString(new File(giveJsonFile));
+      JSONObject obj = JSON.parseObject(json);
+      for(String key :obj.keySet()){
+        LOG.info("handing " + key + " ...");
+        fos.write(("handing " + key + " ...\n").getBytes());
+        if (blackList.contains(key)){
+          fos.write("skip blaklist \n".getBytes());
+          continue;
+        }
+        JSONArray path_array = obj.getJSONArray(key);
+        for (int i = 0; i < path_array.size(); i ++){
+          //coveint for debug
+          if (checkIfInDebugMode()){
+            int passedIndex = 1;
+            if (i < passedIndex)
+              continue;
+          }
+          String path = path_array.getString(i);
+          StringBuilder sb = new StringBuilder("parsing " + path + " ...");
+          LOG.info(sb.toString());
+          fos.write((sb.toString()+"\n").getBytes());
+          try {
+            boolean result =  handleOneFile(Paths.get(path));
+            sb = new StringBuilder("finished "+path + " result is " + result);
+            fos.write((sb.toString()+"\n").getBytes());
+            LOG.info(sb.toString());
+          }catch (Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            fos.write((sw.toString()+"\n").getBytes());
+          }
+
+        }
+      }
+
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
-
-    JSONObject obj = JSON.parseObject(json);
-
-    for(String key :obj.keySet()){
-      LOG.info("handing " + key + " ...");
-      JSONArray path_array = obj.getJSONArray(key);
-      for (Object path : path_array){
-        LOG.info("parsing " + path + " ...");
-        boolean result =  handleOneFile(Paths.get((String) path));
-        LOG.info("finished "+path + " result is " + result);
-
+    }finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
+
+
+
+
+
 
   }
 

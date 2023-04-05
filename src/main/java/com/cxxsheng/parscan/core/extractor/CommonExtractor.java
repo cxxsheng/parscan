@@ -426,8 +426,12 @@ public class CommonExtractor {
         ExpressionListWithPrevs e3 = parseExpression(right);
         return createExpressionListWithPrevsTernary(e1, e2, e3, ((t1, t2, t3) -> new ConditionalExpression(t1, t2, t3).toExp()));
 
-      }else {
-        throw  new JavaASTExtractorException("unreachable syntax during paring op", expressionContext);
+      }else if (expressionContext.bop.getText().equals("instanceof")){
+        return new BoolSymbol(false).toExp().wrapToPrevList();
+      }
+      else
+      {
+        throw new JavaASTExtractorException("unreachable syntax during paring op", expressionContext);
       }
     }
 
@@ -493,13 +497,11 @@ public class CommonExtractor {
 
 
     public List<Parameter> parseParamListFromFormalParameterList(JavaParser.FormalParameterListContext c){
-      List<Parameter> params = null;
+      List<Parameter> params = new ArrayList<>();
       if (c == null)
         return params;
 
       for (JavaParser.FormalParameterContext p : c.formalParameter()){
-        if(params==null)
-          params = new ArrayList<>();
         JavaType type  = parseJavaType(p.typeType());
         Parameter param = new Parameter(type, p.variableDeclaratorId().getText());
         params.add(param);
