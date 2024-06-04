@@ -1,6 +1,8 @@
 package com.cxxsheng.parscan.antlr;
 
 import com.cxxsheng.parscan.core.AntlrCore;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +24,7 @@ class AntlrCoreTest {
       AntlrCore core = new AntlrCore(a);
       try {
             core.parse(null);
-      } catch (IOException e) {
+      } catch (Exception e) {
             assertInstanceOf(IOException.class, e);
        }
     }
@@ -35,11 +37,12 @@ class AntlrCoreTest {
       try {
         core.parse(null);
       }
-      catch (IOException e) {
+      catch (Exception e) {
         assertTrue(true, e.getMessage());
       }
 
     }
+
 
 
 }

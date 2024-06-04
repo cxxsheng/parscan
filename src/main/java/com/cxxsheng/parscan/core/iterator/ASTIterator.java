@@ -13,12 +13,7 @@ import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.FunctionImp;
 import com.cxxsheng.parscan.core.data.JavaClass;
 import com.cxxsheng.parscan.core.data.Statement;
-import com.cxxsheng.parscan.core.data.unit.Expression;
-import com.cxxsheng.parscan.core.data.unit.ExpressionListWithPrevs;
-import com.cxxsheng.parscan.core.data.unit.Parameter;
-import com.cxxsheng.parscan.core.data.unit.Symbol;
-import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
-import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
+import com.cxxsheng.parscan.core.data.unit.*;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
 import com.cxxsheng.parscan.core.data.unit.symbol.PointSymbol;
 import com.cxxsheng.parscan.core.extractor.TmpSymbolManager;
@@ -215,6 +210,9 @@ public class ASTIterator {
               throw new ASTParsingException("expected condition flag -1 or -2 but got " + cond_flag);
             }
 
+            if (exp == null){
+                System.out.println();
+            }
             cond = core.mkAnd(cond, exp);
             same_index +=2; //depth of one block in index stack
 
@@ -290,9 +288,11 @@ public class ASTIterator {
         break;
     }
     ExpressionListWithPrevs exp = e.getExp();
-    List<Expression> exps = exp.toExpressionList();
-    for (Expression ee : exps){
-        handleExpression(ee);
+    if (exp!=null) {
+        List<Expression> exps = exp.toExpressionList();
+        for (Expression ee : exps) {
+            handleExpression(ee);
+        }
     }
   }
 
@@ -396,7 +396,26 @@ public class ASTIterator {
         if (((PointSymbol)symbol).isFunc()){
           CallFunc callFunc = (CallFunc)((PointSymbol)symbol).getV();
           if (mode == DEFAULT_MODE) {
-            ParcelDataNode node = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+            ParcelDataNode node = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray(), mode);
+            if (node == null)
+                return null;
+            JavaType javaType = node.getJtype();
+            if (javaType.isArray() || javaType.toString().endsWith("Array")){
+                List<Pair<ExpressionOrBlock, ExpressionOrBlockList>> blocks= allCurrentBlocks(0);
+                if (blocks.size()>0){
+                    ExpressionOrBlockList curBlockContent = blocks.get(blocks.size()-1).getRight();
+                    ExpressionOrBlock bb = curBlockContent.getOwner();
+                    if (bb instanceof ConditionalBlock){
+                        if(((ConditionalBlock) bb).isWarning())
+                        {
+
+                            if (((ConditionalBlock) bb).hasElse()){
+                                throw new ParcelMismatchException("ddw");
+                            }
+                        }
+                    }
+                }
+            }
             dataGraph.addNewNode(constructCondition(false), node);
             LOG.info("construct " + node.toString());
           }else if (mode == EXECUTION_MODE){
@@ -469,7 +488,8 @@ public class ASTIterator {
               }
 
               if (conds.size() == 0){
-                throw new ParcelMismatchException("expected an one branch node, but got more than one branch" );
+                  //fixme need to comibe some branch
+                throw new ParcelMismatchException("Warning!, need to combine branch" );
               }
               //List<Pair<ExprWithTypeVariable, int[]>> conds = constructConditionsByExecutionMode();
               for (int i = 0; i < conds.size(); i++){
@@ -477,7 +497,10 @@ public class ASTIterator {
                   ExprWithTypeVariable cond = conds.get(i).getLeft();
                   if (islast){
                       dataGraph.currentNode().chooseBranch(core, cond);
-                      ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+                      ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray(),mode);
+                      if (callFunc == null){
+
+                      }
                       GraphNode currentNode = dataGraph.currentNode();
                       if (!(currentNode instanceof ParcelDataNode))
                         throw new ParcelMismatchException("currentNode is not ParcelDataNode");
@@ -507,7 +530,9 @@ public class ASTIterator {
                     childrenEdge = dataGraph.currentNode().getChildren();
               }
 
-              ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray());
+              ParcelDataNode tmpNode = ParcelDataNode.parseCallFunc(core, callFunc, indexStack.toIntArray(),mode);
+              if (tmpNode == null)
+                  return null;
               GraphNode currentNode = dataGraph.currentNode();
               if (!(currentNode instanceof ParcelDataNode))
                     throw new ParcelMismatchException("currentNode is not ParcelDataNode");
@@ -525,19 +550,24 @@ public class ASTIterator {
                 GraphNode nextNode = dataGraph.getNodeById(childEdge.getRight());
                 nextNode.setMark(indexStack.toIntArray());
                 dataGraph.updateNodeIndex(nextNode.getIndex(), true);
-              }else {
+              }else if (childrenEdge.size() > 1){
                 //wait to next callfunc to compare condition expression
                 dataGraph.setChooseFlag(true);
+              }else {
+
               }
               return ret;
           }
         }
+      }else {
+          handleUnterminalSymbol(((PointSymbol) symbol).getV());
       }
     }else if (symbol instanceof CallFunc){
         CallFunc callFunc = (CallFunc) symbol;
         List<TerminalSymbol> pms = callFunc.getParams();
         String[] types = new String[pms.size()];
         Arrays.fill(types, "*");
+
         for (int i = 0; i < pms.size(); i++){
             TerminalSymbol pm = pms.get(i);
             if(traceList.contains(pm.toString())){
@@ -553,13 +583,23 @@ public class ASTIterator {
                     if (callFunc.getFuncName().equals("this"))
                         imp = jclass.getFunctionImpByFullName(jclass.getName(),types, this.imp);
                     else if (callFunc.getFuncName().equals("super"))
-                        return new DefaultRuntimeValue();
+                        throw new ASTParsingException("not supported super");
                     else
+                    {
                         imp = jclass.getFunctionImpByFullName(callFunc.getFuncName(),types, this.imp);
+                    }
                 }
 
                 if (imp == null){
-                    throw new ASTParsingException("cannot find funcion definition " + callFunc);
+                    // try to find all method in this class maybe have mistakes
+                    imp = tryToFindMethodInAllClasses(callFunc.getFuncName(), types, this.imp);
+
+                    // throw new ASTParsingException("cannot find funcion definition " + callFunc);
+                    if (imp == null)
+                    {
+//                        throw new ASTParsingException("cannot find funcion definition " + callFunc);
+                        return new DefaultRuntimeValue();
+                    }
                 }
 
                 if (imp == this.imp){
@@ -569,15 +609,40 @@ public class ASTIterator {
                 LOG.info("Found a new function and enter it" + imp.toString());
                 ASTIterator inlineIterator = new ASTIterator(antlrCore, imp, mode, dataGraph, true);
                 inlineIterator.traceList.add(imp.getFunDec().getParams().get(i).getName());
+                inlineIterator.fathers.addAll(fathers);
                 inlineIterator.fathers.add(this);
+                //make sure do not get in to an infinite loop
+                if (fathersContainsThisFunction(imp)){
+                    return new DefaultRuntimeValue();
+                }
                 inlineIterator.start();
             }
         }
     }
+
     return new DefaultRuntimeValue();
   }
 
-
+  private FunctionImp tryToFindMethodInAllClasses(String name, String[] typeList, FunctionImp curImp){
+      for (JavaClass clazz : antlrCore.getJavaClasses()){
+          FunctionImp imp = clazz.getFunctionImpByFullName(name, typeList, curImp);
+          if (imp!=null)
+              return imp;
+          for (JavaClass innerClass : clazz.getInnerClasses()) {
+              imp = innerClass.getFunctionImpByFullName(name, typeList, curImp);
+              if (imp!=null)
+                  return imp;
+          }
+      }
+      return null;
+  }
+   private boolean fathersContainsThisFunction(FunctionImp imp){
+      for (ASTIterator father : fathers){
+         if (father.imp == imp)
+             return true;
+      }
+      return false;
+  }
   private RuntimeValue handleExpression(Expression e){
     if (e.isSymbol()){
       return handleUnterminalSymbol(e.getSymbol());
@@ -600,6 +665,16 @@ public class ASTIterator {
     return new DefaultRuntimeValue();
   }
 
+  private boolean  matchSesitive(Expression e){
+      String left = e.getLeft() != null ? e.getLeft().toString() : null;
+      String right = e.getRight() != null ? e.getRight().toString() : null;
+      if (e.getOp() == Operator.NE || "null".equals(left)
+       || "null".equals(right)){
+          return true;
+      }
+
+      return false;
+  }
 
   public void continueToTaint(){
 
@@ -623,15 +698,27 @@ public class ASTIterator {
           //try to execute bool exp first
 
           if (cur instanceof ConditionalBlock){
-                for (Expression prev: ((ConditionalBlock) cur).getBoolExp().getPrevs())
-                {
-                    RuntimeValue ret = handleExpression(prev);
-                    if (!(ret instanceof DefaultRuntimeValue)){
-                        if (prev.getSymbol() instanceof TmpSymbol){
-                            tmpTable.addVariable(((TmpSymbol) prev.getSymbol()).getName(), ret);
+              if (((ConditionalBlock) cur).getBoolExp() == null){
+                  throw new ASTParsingException("not supported enhancedfor");
+              }
+                ExpressionListWithPrevs boolExp = ((ConditionalBlock) cur).getBoolExp();
+
+                if (matchSesitive(boolExp.getLastExpression())){
+                    ((ConditionalBlock) cur).setWarningFlag(true);
+                }
+                if (boolExp.hasPreExpression())
+                    for (Expression prev: boolExp.getPrevs())
+                    {
+                        if (matchSesitive(prev)){
+                            ((ConditionalBlock) cur).setWarningFlag(true);
+                        }
+                        RuntimeValue ret = handleExpression(prev);
+                        if (!(ret instanceof DefaultRuntimeValue)){
+                            if (prev.getSymbol() instanceof TmpSymbol){
+                                tmpTable.addVariable(((TmpSymbol) prev.getSymbol()).getName(), ret);
+                            }
                         }
                     }
-                }
 
                 indexStack.push(COND_INDEX_IF); // mark it is a statement
 
@@ -705,14 +792,14 @@ public class ASTIterator {
           mark[mark.length-2] = COND_INDEX_IF;
           GraphNode node = dataGraph.findNodeByMark(mark, mark.length-1);
           if (node == null)
-            throw new ASTParsingException("Cannot find graph node by mark " + Arrays.toString(mark));
+            throw new ParcelMismatchException("Cannot find graph node by mark " + Arrays.toString(mark));
           while (node.getChildren()!=null && node.getChildren().size() > 0){
             Edge childIndexEdge =  node.getChildren().get(0);
             int index = childIndexEdge.getRight();
             node = dataGraph.getNodeById(index);
           }
           if (!node.isPlaceholder())
-            throw new ASTParsingException("Expect a placeholder but a "+ node.toString());
+            throw new ParcelMismatchException("Expect a placeholder but a "+ node.toString());
           dataGraph.addNewNode(core.EXP_TRUE, node);
           int[] array = new int[indexStack.size() - 2];
           System.arraycopy(indexStack.toIntArray(), 0, array,0, array.length);

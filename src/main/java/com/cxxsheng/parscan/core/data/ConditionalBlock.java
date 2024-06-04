@@ -22,7 +22,8 @@ public class ConditionalBlock extends Block {
         super(x, content);
         this.boolExp = boolExp;
         this.someLocalEquals = localEquals;
-        boolExp.setBlock(this);
+        if (boolExp!=null)
+            boolExp.setBlock(this);
       }
 
 
@@ -75,4 +76,21 @@ public class ConditionalBlock extends Block {
       public List<ExpressionListWithPrevs> getSomeLocalEquals() {
         return someLocalEquals;
       }
+
+      private int warning_flag = 0;
+
+
+        public boolean isWarning() {
+            return warning_flag > 0;
+        }
+
+        public void setWarningFlag(boolean warning_flag) {
+            if (warning_flag)
+                this.warning_flag++;
+        }
+
+        public int warningLevel(){
+            return warning_flag;
+        }
+
 }

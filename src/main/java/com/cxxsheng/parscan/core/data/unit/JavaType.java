@@ -103,14 +103,19 @@ public class JavaType {
 
   @Override
   public String toString() {
+
     return getName() + (isArray ? "[]":"");
   }
 
   public String getName(){
+    if (this == VOID )
+      return "VOID";
     if (hasObjectName())
       return this.ObjectName;
     else
+    {
       return primitive.getName();
+    }
   }
   static public JavaType getVOID() {
     return VOID;

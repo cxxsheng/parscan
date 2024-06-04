@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.extractor;
 
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
+import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.data.ExpressionOrBlockList;
 import com.cxxsheng.parscan.core.data.FunctionImp;
@@ -21,13 +22,16 @@ public class JavaClassExtractor {
 
 
    private final Path path;
-   private JavaClass javaClass;
+
+    private final AntlrCore core;
+    private JavaClass javaClass;
 
    private final CommonExtractor extractor;
 
-    public JavaClassExtractor(Path path) {
+    public JavaClassExtractor(Path path, AntlrCore core) {
         this.path = path;
-        this.extractor = new CommonExtractor(path);
+        this.core = core;
+        this.extractor = new CommonExtractor(path,core);
     }
     //memberDeclaration
     //  : methodDeclaration                   √
@@ -107,7 +111,7 @@ public class JavaClassExtractor {
 
         if (ctx.classDeclaration()!=null)
         {
-            JavaClassExtractor innerExtractor = new JavaClassExtractor(path);
+            JavaClassExtractor innerExtractor = new JavaClassExtractor(path, core);
             JavaClass innerClass = innerExtractor.parseClass(ctx.classDeclaration());
             javaClass.addInnerClass(innerClass);
         }
@@ -152,7 +156,7 @@ public class JavaClassExtractor {
           }
 
 
-          javaClass = new JavaClass(name, interfaceList, superName, path);
+          javaClass = new JavaClass(core, name, interfaceList, superName, path);
           //classBody
           //: '{' classBodyDeclaration* '}'
           //;

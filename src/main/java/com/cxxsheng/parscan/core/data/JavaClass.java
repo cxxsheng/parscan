@@ -1,5 +1,6 @@
 package com.cxxsheng.parscan.core.data;
 
+import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.data.unit.Parameter;
 import com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration;
 
@@ -19,11 +20,12 @@ public class JavaClass {
 
   private List<JavaClass> innerClasses = new ArrayList<>();
 
-  public JavaClass(String name, List<String> interfaceName, String superClassName, Path filePath) {
+  public JavaClass(AntlrCore core, String name, List<String> interfaceName, String superClassName, Path filePath) {
       this.name = name;
       this.interfaceName = interfaceName;
       this.superClassName = superClassName;
       this.filePath = filePath;
+      core.addGlobal(this);
   }
 
   //for anonymous class
@@ -144,4 +146,6 @@ public class JavaClass {
   public boolean containsInterfaceName(String name){
     return interfaceName.contains(name);
   }
+
+
 }

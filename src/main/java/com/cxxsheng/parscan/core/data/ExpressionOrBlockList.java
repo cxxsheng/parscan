@@ -182,4 +182,18 @@ public class ExpressionOrBlockList {
     }
 
 
+    public long getLength(){
+      if (isEmpty())
+          return 0;
+      int result = 0;
+      for (ExpressionOrBlock eb : content)
+      {
+          if (eb instanceof Block){
+              result += ((Block) eb).getContent().getLength();
+          }else{
+              result++;
+          }
+      }
+      return result;
+  }
 }

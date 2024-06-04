@@ -2,6 +2,7 @@ package com.cxxsheng.parscan.core.extractor;
 
 import com.cxxsheng.parscan.antlr.exception.JavaASTExtractorException;
 import com.cxxsheng.parscan.antlr.parser.JavaParser;
+import com.cxxsheng.parscan.core.AntlrCore;
 import com.cxxsheng.parscan.core.Coordinate;
 import com.cxxsheng.parscan.core.Utils;
 import com.cxxsheng.parscan.core.data.JavaClass;
@@ -31,6 +32,7 @@ import com.cxxsheng.parscan.core.extractor.callback.BinaryCreator;
 import com.cxxsheng.parscan.core.extractor.callback.ListCreator;
 import com.cxxsheng.parscan.core.extractor.callback.TernaryCreator;
 import com.cxxsheng.parscan.core.extractor.callback.UnaryCreator;
+import com.cxxsheng.parscan.core.iterator.ASTParsingException;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -40,8 +42,10 @@ public class CommonExtractor {
 
   private final Path path;
 
-  public CommonExtractor(Path path) {
+  private final AntlrCore core;
+  public CommonExtractor(Path path , AntlrCore core) {
     this.path = path;
+    this.core = core;
   }
 
   /*****************************************************************
@@ -222,14 +226,16 @@ public class CommonExtractor {
     }
     Expression last = callback.create(terminalList);
     ExpressionListWithPrevs retEl = new ExpressionListWithPrevs(last);
-    for (ExpressionListWithPrevs el : ell){
-          if (el.hasPreExpression())
-            retEl.addPrevs(el.getPrevs());
-    }
-    for (TerminalSymbol ts : terminalList){
+    for (int i = 0; i < ell.size(); i++){
+      ExpressionListWithPrevs el = ell.get(i);
+      if (el.hasPreExpression())
+        retEl.addPrevs(el.getPrevs());
+      TerminalSymbol ts = terminalList.get(i);
       if (ts instanceof TmpSymbol)
         retEl.addPrev(ts.toExp());
     }
+
+
     return retEl;
   }
 
@@ -340,10 +346,15 @@ public class CommonExtractor {
       //    : '[' (']' ('[' ']')* arrayInitializer | expression ']' ('[' expression ']')* ('[' ']')*)
       //    ;
       if (creator.arrayCreatorRest()!=null){
-        //
-        ExpressionListWithPrevs size1 = parseExpression(creator.arrayCreatorRest().expression(0));
-        JavaType javaType = new JavaType(Primitive.nameOf(name), true);
-        return createExpressionListWithPrevsUnary(size1, t -> new Creator(t, javaType).toExp());
+        JavaParser.ExpressionContext eee = creator.arrayCreatorRest().expression(0);
+        if (eee != null)
+        {
+          ExpressionListWithPrevs size1 = parseExpression(eee);
+          JavaType javaType  = JavaType.parseJavaTypeString(name, true);
+//          JavaType javaType = new JavaType(Primitive.nameOf(name), true);
+          return createExpressionListWithPrevsUnary(size1, t -> new Creator(t, javaType).toExp());
+        }else
+          return null;
       }
 
 
@@ -361,7 +372,7 @@ public class CommonExtractor {
            CallFunc callFunc = new CallFunc(x, name, tle, true);
 
            if (ccr.classBody()!=null){
-             JavaClassExtractor ext = new JavaClassExtractor(path);
+             JavaClassExtractor ext = new JavaClassExtractor(path, core);
              JavaClass javaClass = ext.parseAnonymousClass(ccr.classBody());
              callFunc.setExtraClass(javaClass);
            }

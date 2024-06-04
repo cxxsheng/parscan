@@ -1,6 +1,7 @@
 package com.cxxsheng.parscan.core.iterator;
 
-import javafx.util.Pair;
+
+import com.cxxsheng.parscan.core.common.Pair;
 
 public class ASTIteratorManager {
   private static Pair<ASTIterator,ASTIterator> itPair;
@@ -19,8 +20,8 @@ public class ASTIteratorManager {
 
 
   public static boolean startSync(){
-    ASTIterator aIt = itPair.getKey();
-    ASTIterator bIt = itPair.getValue();
+    ASTIterator aIt = itPair.getLeft();
+    ASTIterator bIt = itPair.getRight();
 
 
 

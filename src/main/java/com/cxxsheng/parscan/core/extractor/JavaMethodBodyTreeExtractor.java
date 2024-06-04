@@ -146,7 +146,7 @@ public class JavaMethodBodyTreeExtractor {
               List<ExpressionListWithPrevs> equals = null;
               if (forControl.enhancedForControl()!=null){
                     //throw new ASTParsingException("enhancedForControl unsupported");
-                    return ExpressionOrBlockList.InitEmptyInstance();
+                  return new ConditionalBlock(x, null, parseBlock(statement.statement().get(0).block())).wrapToList();
               }
               else {
                  equals = parseLocalVariableDeclaration(forControl.forInit().localVariableDeclaration());
@@ -221,9 +221,9 @@ public class JavaMethodBodyTreeExtractor {
               return null;
           }
 
-          throw new JavaASTExtractorException("unreachable code ", statement);
+//          throw new JavaASTExtractorException("unreachable code ", statement);
 
-
+            return ExpressionOrBlockList.InitEmptyInstance();
 
 
       }

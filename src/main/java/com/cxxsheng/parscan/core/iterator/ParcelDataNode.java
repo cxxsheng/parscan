@@ -1,23 +1,24 @@
 package com.cxxsheng.parscan.core.iterator;
 
-import com.cxxsheng.parscan.core.common.Pair;
-import com.cxxsheng.parscan.core.data.unit.FunctionDeclaration;
-import com.cxxsheng.parscan.core.data.unit.JavaType;
-import com.cxxsheng.parscan.core.data.unit.TerminalSymbol;
-import com.cxxsheng.parscan.core.data.unit.TmpSymbol;
+import com.cxxsheng.parscan.core.data.unit.*;
 import com.cxxsheng.parscan.core.data.unit.symbol.CallFunc;
+import com.cxxsheng.parscan.core.data.unit.symbol.ConditionalExpression;
 import com.cxxsheng.parscan.core.data.unit.symbol.IdentifierSymbol;
 import com.cxxsheng.parscan.core.z3.ExprWithTypeVariable;
 import com.cxxsheng.parscan.core.z3.Z3Core;
-import com.microsoft.z3.Expr;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.cxxsheng.parscan.core.iterator.ASTIterator.DEFAULT_MODE;
+import static com.cxxsheng.parscan.core.iterator.ASTIterator.EXECUTION_MODE;
+
 public class ParcelDataNode implements GraphNode ,RuntimeValue{
 
+    private static List<String> whileList = Arrays.asList("unmarshall");
     private Graph graph;
 
     private List<Edge> children = new ArrayList<>();
@@ -85,10 +86,10 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
               return;
           }
 
-          if (dstIndex < index)
-          {
-              throw new ASTParsingException("cannot support loop state");
-          }
+//          if (dstIndex < index)
+//          {
+//              throw new ASTParsingException("cannot support loop state");
+//          }
           Edge edge = new Edge(cond, index, dstIndex);
           children.add(edge);
 
@@ -153,16 +154,21 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
       return isPlaceHolder;
     }
 
-    public static ParcelDataNode parseCallFunc(Z3Core core, CallFunc func, int[] marks){
+    public static ParcelDataNode parseCallFunc(Z3Core core, CallFunc func, int[] marks, int mode){
           int type = 0;
           String funcName = func.getFuncName();
           JavaType jType = null;
           boolean isArray = false;
+          boolean isOneOrZero = false;
+
           FunctionDeclaration d = FunctionReader.findDeclarationByName(funcName);
           ExprWithTypeVariable value = null;
 
           String attachedSymbolName = null;
+
           if (funcName.startsWith("read")){
+            if (mode != EXECUTION_MODE)
+                throw new ParcelMismatchException("oh no that is ridiculous");
             type = FUNC_TYPE_READ;
             jType = d.getReturnType();
             //fixme we need to record the return value
@@ -194,13 +200,27 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
               }
             }
           }else if (funcName.startsWith("write")){
-            type = FUNC_TYPE_WRITE;
+              if (mode != DEFAULT_MODE)
+                    throw new ParcelMismatchException("that is ridiculous ");
+              type = FUNC_TYPE_WRITE;
             if (d.hasParameter()){
               jType  = d.getParameterByIndex(0).getType();
               TerminalSymbol ts = func.getParams().get(0);
               if (ts instanceof IdentifierSymbol){
                 attachedSymbolName = ts.toString();
               }else if(ts instanceof TmpSymbol) {
+                Expression e = ((TmpSymbol) ts).getExpression();
+                if (e.isAssign())
+                {
+                   if (e.getRight() instanceof TmpSymbol)
+                       e = ((TmpSymbol) e.getRight()).getExpression();
+                }
+                Symbol symbol = e.getSymbol();
+                if (symbol instanceof ConditionalExpression){
+                        isOneOrZero = true;
+                }
+                if (e.toString().contains("1:0"))
+                    isOneOrZero = true;
                 //if (e instanceof ConditionalExpression){
                 //  Expression L = ((ConditionalExpression)e.getSymbol()).getLeft();
                 //  Expression R = ((ConditionalExpression)e.getSymbol()).getRight();
@@ -215,18 +235,25 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
                 //}
                 //else
                 //  value = core.mkEq(core.VALUE, core.mkExpression(e));
+
               }
             }
           }else if (funcName.startsWith("create")){
+              if (mode != EXECUTION_MODE)
+                  throw new ParcelMismatchException("that is ridiculous");
             type = FUNC_TYPE_CREATE;
             jType = d.getReturnType();
+          }else if (whileList.contains(funcName)){
+                return null;
           }
+
 
           if (jType == null || jType.isVoid()){
             throw new ASTParsingException("cannot handle this call-func: " + func.toString());
           }
           ParcelDataNode ret = new ParcelDataNode(attachedSymbolName, jType, type, marks);
           ret.setValue(value);
+          ret.isOneZeroValue = isOneOrZero;
           return ret;
     }
 
@@ -237,6 +264,8 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
     public boolean isArray(){
         return jtype.isArray();
     }
+
+    private boolean isOneZeroValue = false;
 
     @Override
     public String toString() {
@@ -309,15 +338,45 @@ public class ParcelDataNode implements GraphNode ,RuntimeValue{
     }
 
 
-  public static boolean compareTwoNode(ParcelDataNode node, ParcelDataNode currentNode){
+    public static final List<String> mapStings = Arrays.asList("Map", "HashMap");
+    public static List<String> listStrings = Arrays.asList("List", "ArrayList");
+    public static List<String> IBinberStrings = Arrays.asList("IBinder","IInterface");
+    public static List<List<String>> allStrings = Arrays.asList(mapStings, listStrings, IBinberStrings);
+    public static boolean compareTwoNode(ParcelDataNode node, ParcelDataNode currentNode){
 
-      if(node.isPlaceHolder ^ currentNode.isPlaceHolder)
+       if(node.isPlaceHolder ^ currentNode.isPlaceHolder)
         return false;
 
+       for (List<String> strings : allStrings)
+       {
+           for (String start : strings){
+               if (node.getJtype().toString().startsWith(start))
+               {
+                   for (String bstart : strings){
+                       if (currentNode.getJtype().toString().startsWith(bstart))
+                           return currentNode.getJtype().isArray() == node.getJtype().isArray();
+                   }
+                   return false;
+               }
+           }
+       }
+
+//       if (node.toString().startsWith("List") && (currentNode.toString().startsWith("List") || ))
+//           return true;
        if (!node.getJtype().equals(currentNode.getJtype()))
-        return false;
+       {
+           if ("T".equals(currentNode.getJtype().getObjectName()))
+               return node.getJtype().getObjectName()!=null;
+           if ("T".equals(node.getJtype().getObjectName()))
+               return currentNode.getJtype().getObjectName()!=null;
+           return false;
+       }
        //maybe check value
        return true;
 
+    }
+
+    public boolean isOneZeroValue() {
+        return isOneZeroValue;
     }
 }

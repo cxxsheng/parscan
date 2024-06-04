@@ -1,0 +1,1020 @@
+handing AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk ...
+[2024-03-09 21:46:38.575] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/entity/BodyHandlerEntry.java ...
+[2024-03-09 21:46:38.610] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.610] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableInputStream.java ...
+[2024-03-09 21:46:38.627] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableInputStream.java result is false
+[2024-03-09 21:46:38.627] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableFuture.java ...
+[2024-03-09 21:46:38.635] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableFuture.java result is false
+[2024-03-09 21:46:38.636] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/DefaultProgressEvent.java ...
+[2024-03-09 21:46:38.685] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.686] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableHeader.java ...
+[2024-03-09 21:46:38.701] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:137)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:246)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkTmpSymbol(Z3Core.java:113)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:243)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:303)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.701] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/NetworkResponse.java ...
+[2024-03-09 21:46:38.713] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.713] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableRequest.java ...
+[2024-03-09 21:46:38.749] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.750] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableNetworkListener.java ...
+[2024-03-09 21:46:38.757] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableNetworkListener.java result is false
+[2024-03-09 21:46:38.757] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableBodyHandler.java ...
+[2024-03-09 21:46:38.760] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/ParcelableBodyHandler.java result is false
+[2024-03-09 21:46:38.761] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anetwork/channel/aidl/DefaultFinishEvent.java ...
+[2024-03-09 21:46:38.770] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.771] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/mtopsdk/network/domain/ParcelableRequestBodyImpl.java ...
+[2024-03-09 21:46:38.776] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/mtopsdk/network/domain/ParcelableRequestBodyImpl.java result is true
+[2024-03-09 21:46:38.776] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/mtopsdk/network/impl/ParcelableRequestBodyEntry.java ...
+[2024-03-09 21:46:38.779] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.780] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/anet/channel/request/ByteArrayEntry.java ...
+[2024-03-09 21:46:38.784] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.785] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/messaging/RemoteMessageCreator.java ...
+[2024-03-09 21:46:38.789] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.789] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/session/PerfSession.java ...
+[2024-03-09 21:46:38.824] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/session/PerfSession.java result is true
+[2024-03-09 21:46:38.824] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/metrics/Trace.java ...
+[2024-03-09 21:46:38.873] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/metrics/Trace.java result is true
+[2024-03-09 21:46:38.873] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/metrics/Counter.java ...
+[2024-03-09 21:46:38.877] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/metrics/Counter.java result is true
+[2024-03-09 21:46:38.878] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/util/Timer.java ...
+[2024-03-09 21:46:38.885] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/perf/util/Timer.java result is true
+[2024-03-09 21:46:38.885] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzag.java ...
+[2024-03-09 21:46:38.888] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.889] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzh.java ...
+[2024-03-09 21:46:38.891] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.891] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzae.java ...
+[2024-03-09 21:46:38.894] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.895] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzf.java ...
+[2024-03-09 21:46:38.899] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.900] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzac.java ...
+[2024-03-09 21:46:38.902] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.903] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzd.java ...
+[2024-03-09 21:46:38.903] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.904] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzb.java ...
+[2024-03-09 21:46:38.909] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.910] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzg.java ...
+[2024-03-09 21:46:38.913] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.913] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzaf.java ...
+[2024-03-09 21:46:38.915] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.915] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzah.java ...
+[2024-03-09 21:46:38.917] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.918] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzz.java ...
+[2024-03-09 21:46:38.920] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.920] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/zzaa.java ...
+[2024-03-09 21:46:38.923] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.923] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzs.java ...
+[2024-03-09 21:46:38.927] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.927] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzbc.java ...
+[2024-03-09 21:46:38.929] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.929] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzq.java ...
+[2024-03-09 21:46:38.930] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.931] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzaf.java ...
+[2024-03-09 21:46:38.934] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.934] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzah.java ...
+[2024-03-09 21:46:38.936] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.936] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzaa.java ...
+[2024-03-09 21:46:38.937] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.938] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzy.java ...
+[2024-03-09 21:46:38.943] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.943] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/google/firebase/auth/internal/zzu.java ...
+[2024-03-09 21:46:38.946] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.946] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/zcachecorewrapper/model/ResourceItemInfo.java ...
+[2024-03-09 21:46:38.954] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/zcachecorewrapper/model/ResourceItemInfo.java result is true
+[2024-03-09 21:46:38.954] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/zcachecorewrapper/model/ResourceInfo.java ...
+[2024-03-09 21:46:38.961] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/zcachecorewrapper/model/ResourceInfo.java result is true
+[2024-03-09 21:46:38.961] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorDimension.java ...
+[2024-03-09 21:46:38.965] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorDimension.java result is true
+[2024-03-09 21:46:38.966] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorMeasure.java ...
+[2024-03-09 21:46:38.978] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:38.978] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorTransaction.java ...
+[2024-03-09 21:46:38.984] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorTransaction.java result is true
+[2024-03-09 21:46:38.985] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorDimensionSet.java ...
+[2024-03-09 21:46:38.996] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorDimensionSet.java result is true
+[2024-03-09 21:46:38.997] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/AliMonitorMeasureSet.java ...
+[2024-03-09 21:46:39.013] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:617)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:562)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleStatement(ASTIterator.java:294)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:732)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:68)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.014] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/searchbaseframe/context/BaseSearchContext.java ...
+[2024-03-09 21:46:39.019] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/searchbaseframe/context/BaseSearchContext.java result is true
+[2024-03-09 21:46:39.019] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/searchbaseframe/xsl/page/rtl/RtlViewPager.java ...
+[2024-03-09 21:46:39.036] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/android/searchbaseframe/xsl/page/rtl/RtlViewPager.java result is false
+[2024-03-09 21:46:39.037] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/OConfig.java ...
+[2024-03-09 21:46:39.053] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/OConfig.java result is true
+[2024-03-09 21:46:39.054] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/aidl/ParcelableCandidateCompare.java ...
+[2024-03-09 21:46:39.057] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/aidl/ParcelableCandidateCompare.java result is false
+[2024-03-09 21:46:39.058] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/aidl/ParcelableConfigListener.java ...
+[2024-03-09 21:46:39.059] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/orange/aidl/ParcelableConfigListener.java result is false
+[2024-03-09 21:46:39.059] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/message/common/inter/service/model/NonReadNumber.java ...
+[2024-03-09 21:46:39.061] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/message/common/inter/service/model/NonReadNumber.java result is true
+[2024-03-09 21:46:39.061] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/RemoteCallResult.java ...
+[2024-03-09 21:46:39.064] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/RemoteCallResult.java result is true
+[2024-03-09 21:46:39.064] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/IpcMessage.java ...
+[2024-03-09 21:46:39.067] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/IpcMessage.java result is true
+[2024-03-09 21:46:39.067] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/IPCParameter.java ...
+[2024-03-09 21:46:39.072] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:137)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:246)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkTmpSymbol(Z3Core.java:113)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:243)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:303)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.073] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/IPCResult.java ...
+[2024-03-09 21:46:39.076] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:137)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:246)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkTmpSymbol(Z3Core.java:113)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:243)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:303)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.076] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/taobao/process/interaction/data/RemoteCallArgs.java ...
+[2024-03-09 21:46:39.085] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.085] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/wish/service/pojo/WishListGroupView.java ...
+[2024-03-09 21:46:39.087] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/wish/service/pojo/WishListGroupView.java result is true
+[2024-03-09 21:46:39.088] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/wish/service/pojo/WishlistAddResultWithGroupList.java ...
+[2024-03-09 21:46:39.090] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/wish/service/pojo/WishlistAddResultWithGroupList.java result is true
+[2024-03-09 21:46:39.090] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/imagesearch/pojo/ImageSearchResult.java ...
+[2024-03-09 21:46:39.093] com.cxxsheng.parscan.core.iterator.ParcelMismatchException: Expected  ParcelDataNode{[13]func_type=2, jtype=long, attachedSymbolName=[]} but got ParcelDataNode{[13]func_type=1, jtype=int, attachedSymbolName=[null]}
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:539)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:389)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:617)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleStatement(ASTIterator.java:294)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:732)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:68)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.093] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/SellerStore.java ...
+[2024-03-09 21:46:39.095] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/SellerStore.java result is true
+[2024-03-09 21:46:39.096] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/StoreV3Result.java ...
+[2024-03-09 21:46:39.097] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/StoreV3Result.java result is true
+[2024-03-09 21:46:39.097] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/StoreResult.java ...
+[2024-03-09 21:46:39.100] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/module_store/business/pojo/StoreResult.java result is true
+[2024-03-09 21:46:39.101] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/product/service/pojo/UpsaleRecommendationsInfo.java ...
+[2024-03-09 21:46:39.103] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/product/service/pojo/UpsaleRecommendationsInfo.java result is true
+[2024-03-09 21:46:39.103] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/product/service/pojo/AcquireCoinResult.java ...
+[2024-03-09 21:46:39.106] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/product/service/pojo/AcquireCoinResult.java result is true
+[2024-03-09 21:46:39.107] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/picview/service/pojo/ProductEvaluationWithImageDTO.java ...
+[2024-03-09 21:46:39.110] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/picview/service/pojo/ProductEvaluationWithImageDTO.java result is true
+[2024-03-09 21:46:39.111] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/cointask/service/pojo/CoinTaskBean.java ...
+[2024-03-09 21:46:39.118] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/cointask/service/pojo/CoinTaskBean.java result is true
+[2024-03-09 21:46:39.118] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/cointask/service/bean/CoinTaskWrapper.java ...
+[2024-03-09 21:46:39.120] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/cointask/service/bean/CoinTaskWrapper.java result is true
+[2024-03-09 21:46:39.120] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/searchcategory/model/SearchBrandItem.java ...
+[2024-03-09 21:46:39.124] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/searchcategory/model/SearchBrandItem.java result is true
+[2024-03-09 21:46:39.124] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/searchcategory/model/SearchCategoryItem.java ...
+[2024-03-09 21:46:39.132] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/searchcategory/model/SearchCategoryItem.java result is true
+[2024-03-09 21:46:39.132] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/Money.java ...
+[2024-03-09 21:46:39.136] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/Money.java result is true
+[2024-03-09 21:46:39.136] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OrderList4Feedback.java ...
+[2024-03-09 21:46:39.167] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OrderList4Feedback.java result is true
+[2024-03-09 21:46:39.167] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/TpFundInfoVO.java ...
+[2024-03-09 21:46:39.172] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/TpFundInfoVO.java result is true
+[2024-03-09 21:46:39.172] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OrderLogistics.java ...
+[2024-03-09 21:46:39.178] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.178] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/MobileEvaluationSettingsResult.java ...
+[2024-03-09 21:46:39.188] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/MobileEvaluationSettingsResult.java result is true
+[2024-03-09 21:46:39.188] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OpenOrderInfo.java ...
+[2024-03-09 21:46:39.190] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OpenOrderInfo.java result is true
+[2024-03-09 21:46:39.190] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OrderList.java ...
+[2024-03-09 21:46:39.228] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/myorder/pojo/OrderList.java result is true
+[2024-03-09 21:46:39.229] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/GetSelectCouponsResult.java ...
+[2024-03-09 21:46:39.244] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/GetSelectCouponsResult.java result is true
+[2024-03-09 21:46:39.244] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/ObtainShoppingCoupon.java ...
+[2024-03-09 21:46:39.250] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/ObtainShoppingCoupon.java result is true
+[2024-03-09 21:46:39.250] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/GetPlatformCouponsResult.java ...
+[2024-03-09 21:46:39.255] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/GetPlatformCouponsResult.java result is true
+[2024-03-09 21:46:39.255] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/FloorCouponInfo.java ...
+[2024-03-09 21:46:39.264] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/FloorCouponInfo.java result is true
+[2024-03-09 21:46:39.264] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/Like.java ...
+[2024-03-09 21:46:39.266] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/module/channel/pojo/Like.java result is true
+[2024-03-09 21:46:39.266] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/AliPayConfig.java ...
+[2024-03-09 21:46:39.273] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/AliPayConfig.java result is true
+[2024-03-09 21:46:39.274] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/BankCardConfig.java ...
+[2024-03-09 21:46:39.293] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.293] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/EncryptionCertificate.java ...
+[2024-03-09 21:46:39.298] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/EncryptionCertificate.java result is true
+[2024-03-09 21:46:39.299] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/CardEncryptionKey.java ...
+[2024-03-09 21:46:39.305] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/CardEncryptionKey.java result is true
+[2024-03-09 21:46:39.305] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/PaymentMethod.java ...
+[2024-03-09 21:46:39.375] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:98)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:88)
+	at MainforTest.handleOneFile(MainforTest.java:63)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.376] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/AliPayTokenizationParams.java ...
+[2024-03-09 21:46:39.383] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPaymentService/common/domain/pojo/AliPayTokenizationParams.java result is true
+[2024-03-09 21:46:39.384] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPayment/paymentResult/presentation/view/PaymentResultFragment.java ...
+[2024-03-09 21:46:39.409] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPayment/paymentResult/presentation/view/PaymentResultFragment.java result is true
+[2024-03-09 21:46:39.409] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPayment/processPayment/presentation/view/ProcessPaymentFragment.java ...
+[2024-03-09 21:46:39.427] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/android/aerPayment/processPayment/presentation/view/ProcessPaymentFragment.java result is true
+[2024-03-09 21:46:39.428] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/framework/init/image/OkHttpClient3Factory.java ...
+[2024-03-09 21:46:39.456] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/framework/init/image/OkHttpClient3Factory.java result is true
+[2024-03-09 21:46:39.457] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/framework/base/tabnestcontainer/pojo/TabModel.java ...
+[2024-03-09 21:46:39.462] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/framework/base/tabnestcontainer/pojo/TabModel.java result is true
+[2024-03-09 21:46:39.463] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/profile_settings/domain/ProfileSettings.java ...
+[2024-03-09 21:46:39.486] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.487] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/marketing/pojo/VoteGetCoupon.java ...
+[2024-03-09 21:46:39.498] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/marketing/pojo/VoteGetCoupon.java result is true
+[2024-03-09 21:46:39.498] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/countrypicker/CountryProvinceCityPickerResult.java ...
+[2024-03-09 21:46:39.503] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/countrypicker/CountryProvinceCityPickerResult.java result is true
+[2024-03-09 21:46:39.503] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/dinamicx/view/DXAERScrollCoordinatorLayoutWidgetNode.java ...
+[2024-03-09 21:46:39.549] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.550] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/safemode/startup/StartupContext.java ...
+[2024-03-09 21:46:39.554] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/component/safemode/startup/StartupContext.java result is true
+[2024-03-09 21:46:39.554] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/turtle/base/util/TraceTime.java ...
+[2024-03-09 21:46:39.556] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/turtle/base/util/TraceTime.java result is true
+[2024-03-09 21:46:39.556] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/dynamicview/dynamic/configmanager/pojo/TileConfig.java ...
+[2024-03-09 21:46:39.558] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/dynamicview/dynamic/configmanager/pojo/TileConfig.java result is true
+[2024-03-09 21:46:39.558] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/pojo/Country.java ...
+[2024-03-09 21:46:39.560] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/pojo/Country.java result is true
+[2024-03-09 21:46:39.560] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/util/TimeTracer.java ...
+[2024-03-09 21:46:39.563] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/common/util/TimeTracer.java result is true
+[2024-03-09 21:46:39.563] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/PostShortsAdapterItem.java ...
+[2024-03-09 21:46:39.569] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/PostShortsAdapterItem.java result is true
+[2024-03-09 21:46:39.570] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/ContentPreview.java ...
+[2024-03-09 21:46:39.575] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/ContentPreview.java result is true
+[2024-03-09 21:46:39.575] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/VideoPreview.java ...
+[2024-03-09 21:46:39.579] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/VideoPreview.java result is true
+[2024-03-09 21:46:39.579] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/DataContentPreview.java ...
+[2024-03-09 21:46:39.584] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.584] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/PhotoPreview.java ...
+[2024-03-09 21:46:39.592] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.592] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Report.java ...
+[2024-03-09 21:46:39.596] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Report.java result is true
+[2024-03-09 21:46:39.596] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Video.java ...
+[2024-03-09 21:46:39.606] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.606] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Creative.java ...
+[2024-03-09 21:46:39.630] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Creative.java result is true
+[2024-03-09 21:46:39.630] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Photo.java ...
+[2024-03-09 21:46:39.638] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Photo.java result is true
+[2024-03-09 21:46:39.639] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Media.java ...
+[2024-03-09 21:46:39.647] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.648] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Author.java ...
+[2024-03-09 21:46:39.654] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Author.java result is true
+[2024-03-09 21:46:39.655] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Post.java ...
+[2024-03-09 21:46:39.671] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.671] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Comment.java ...
+[2024-03-09 21:46:39.683] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.683] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/ReportReasons.java ...
+[2024-03-09 21:46:39.689] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.689] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/ReportReason.java ...
+[2024-03-09 21:46:39.695] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.695] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Date.java ...
+[2024-03-09 21:46:39.701] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Date.java result is true
+[2024-03-09 21:46:39.701] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/Feed.java ...
+[2024-03-09 21:46:39.706] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.706] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/OptionVideo.java ...
+[2024-03-09 21:46:39.710] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/rest/OptionVideo.java result is true
+[2024-03-09 21:46:39.711] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/ContentPreview.java ...
+[2024-03-09 21:46:39.715] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/ContentPreview.java result is true
+[2024-03-09 21:46:39.715] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/VideoPreview.java ...
+[2024-03-09 21:46:39.719] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/VideoPreview.java result is true
+[2024-03-09 21:46:39.719] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/DataContentPreview.java ...
+[2024-03-09 21:46:39.724] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.724] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/PhotoPreview.java ...
+[2024-03-09 21:46:39.730] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.730] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Report.java ...
+[2024-03-09 21:46:39.733] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Report.java result is true
+[2024-03-09 21:46:39.733] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Video.java ...
+[2024-03-09 21:46:39.741] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.741] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Creative.java ...
+[2024-03-09 21:46:39.761] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Creative.java result is true
+[2024-03-09 21:46:39.761] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Photo.java ...
+[2024-03-09 21:46:39.768] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Photo.java result is true
+[2024-03-09 21:46:39.768] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Media.java ...
+[2024-03-09 21:46:39.775] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.775] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Author.java ...
+[2024-03-09 21:46:39.781] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Author.java result is true
+[2024-03-09 21:46:39.781] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Post.java ...
+[2024-03-09 21:46:39.796] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.796] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Comment.java ...
+[2024-03-09 21:46:39.808] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:190)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:253)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:309)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.808] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/ReportReasons.java ...
+[2024-03-09 21:46:39.814] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.814] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/ReportReason.java ...
+[2024-03-09 21:46:39.821] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.821] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Date.java ...
+[2024-03-09 21:46:39.828] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Date.java result is true
+[2024-03-09 21:46:39.828] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/Feed.java ...
+[2024-03-09 21:46:39.833] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.834] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/OptionVideo.java ...
+[2024-03-09 21:46:39.838] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/model/mixer/OptionVideo.java result is true
+[2024-03-09 21:46:39.839] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/rest/request/LikePostBody.java ...
+[2024-03-09 21:46:39.844] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.844] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/rest/request/ReportReasonBody.java ...
+[2024-03-09 21:46:39.849] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/rest/request/ReportReasonBody.java result is true
+[2024-03-09 21:46:39.849] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/rest/request/HidePostBody.java ...
+[2024-03-09 21:46:39.855] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.855] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/rest/response/GetShortsResponse.java ...
+[2024-03-09 21:46:39.859] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.859] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/mixer/request/MixerLikePostBody.java ...
+[2024-03-09 21:46:39.864] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.864] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/mixer/request/MixerHidePostBody.java ...
+[2024-03-09 21:46:39.870] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.870] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/mixer/request/MixerReportReasonBody.java ...
+[2024-03-09 21:46:39.874] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/android/feed_shorts/repository/mixer/request/MixerReportReasonBody.java result is true
+[2024-03-09 21:46:39.874] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/platform/passwordRecovery/createNewPassword/PasswordRecoveryCreateNewPasswordViewModelFactory.java ...
+[2024-03-09 21:46:39.877] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.877] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/platform/passwordRecovery/enterEmail/EmailWithSuggestions.java ...
+[2024-03-09 21:46:39.881] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/platform/passwordRecovery/enterEmail/EmailWithSuggestions.java result is true
+[2024-03-09 21:46:39.881] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/platform/passwordRecovery/confirmCode/PasswordRecoveryConfirmCodeViewModelFactory.java ...
+[2024-03-09 21:46:39.884] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.884] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/loyalty/common/onboarding/data/viewData/LoyaltyWelcomeInfo.java ...
+[2024-03-09 21:46:39.893] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.893] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/loyalty/common/onboarding/data/viewData/LoyaltyLevelInfo.java ...
+[2024-03-09 21:46:39.903] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/loyalty/common/onboarding/data/viewData/LoyaltyLevelInfo.java result is true
+[2024-03-09 21:46:39.903] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/loyalty/common/onboarding/data/viewData/LoyaltyOnboardingSummary.java ...
+[2024-03-09 21:46:39.907] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:39.907] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/core/mediapicker/model/MediaFile.java ...
+[2024-03-09 21:46:39.911] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/core/mediapicker/model/MediaFile.java result is true
+[2024-03-09 21:46:39.911] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/core/mixer/experimental/view/MixerArgs.java ...
+[2024-03-09 21:46:40.070] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.070] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/core/mixer/experimental/view/MixerBottomSheetSettings.java ...
+[2024-03-09 21:46:40.079] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.079] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/common/pojo/CountriesInfo.java ...
+[2024-03-09 21:46:40.102] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.102] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/common/login/LoginFlow.java ...
+[2024-03-09 21:46:40.106] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:98)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:88)
+	at MainforTest.handleOneFile(MainforTest.java:63)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.106] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/common/loginByPhone/confirm/ConfirmCodeParams.java ...
+[2024-03-09 21:46:40.113] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.113] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/kernel/design/dialog/ImageConfirmAerBottomSheetFragment$Parameters.java ...
+[2024-03-09 21:46:40.116] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.116] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/platform/filters/FiltersBottomSheetFragment.java ...
+[2024-03-09 21:46:40.136] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.137] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/SortResponse.java ...
+[2024-03-09 21:46:40.142] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.142] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/SortOrderResponse.java ...
+[2024-03-09 21:46:40.145] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/SortOrderResponse.java result is true
+[2024-03-09 21:46:40.145] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/filters/FilterContent.java ...
+[2024-03-09 21:46:40.180] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:98)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:88)
+	at MainforTest.handleOneFile(MainforTest.java:63)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.181] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/filters/SwitchTag.java ...
+[2024-03-09 21:46:40.188] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/filters/SwitchTag.java result is true
+[2024-03-09 21:46:40.189] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/search/common/dto/filters/SearchFilter.java ...
+[2024-03-09 21:46:40.233] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:98)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:88)
+	at MainforTest.handleOneFile(MainforTest.java:63)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.233] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/createNewPassword/CreateNewPasswordConfig.java ...
+[2024-03-09 21:46:40.236] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/createNewPassword/CreateNewPasswordConfig.java result is true
+[2024-03-09 21:46:40.236] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/analytics/PasswordRecoveryAnalyticsImpl.java ...
+[2024-03-09 21:46:40.246] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.247] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/confirmCode/ConfirmCodeConfig.java ...
+[2024-03-09 21:46:40.252] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/confirmCode/ConfirmCodeConfig.java result is true
+[2024-03-09 21:46:40.252] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/platform/confirmCode/ConfirmCodeTextConfig.java ...
+[2024-03-09 21:46:40.255] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.255] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/common/createNewPassword/CreateNewPasswordV2ViewModel.java ...
+[2024-03-09 21:46:40.261] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/common/createNewPassword/CreateNewPasswordV2ViewModel.java result is true
+[2024-03-09 21:46:40.261] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/login/ui/tools/common/confirmCode/ConfirmCodeViewModel.java ...
+[2024-03-09 21:46:40.270] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.270] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/recommendations/presentation/experimental/adapter/RecommendationsPagerAdapter.java ...
+[2024-03-09 21:46:40.276] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.277] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/recommendations/presentation/adapter/RecommendationsPagerAdapter.java ...
+[2024-03-09 21:46:40.279] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.279] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/change/platform/changePhone/ChangePhoneViewModelFactory.java ...
+[2024-03-09 21:46:40.282] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.282] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/change/platform/changeEmail/ChangeEmailViewModelFactory.java ...
+[2024-03-09 21:46:40.284] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.284] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/aer/change/platform/changePassword/ChangePasswordViewModelFactory.java ...
+[2024-03-09 21:46:40.286] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.286] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/ru/components/consolidation/RuConsolidationInfoDialog.java ...
+[2024-03-09 21:46:40.292] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/ru/components/consolidation/RuConsolidationInfoDialog.java result is true
+[2024-03-09 21:46:40.292] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/SelectSettingParams.java ...
+[2024-03-09 21:46:40.295] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/SelectSettingParams.java result is true
+[2024-03-09 21:46:40.295] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/SettingType.java ...
+[2024-03-09 21:46:40.297] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/SettingType.java result is false
+[2024-03-09 21:46:40.297] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/Setting.java ...
+[2024-03-09 21:46:40.302] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/aliexpress/regional_settings/select/Setting.java result is true
+[2024-03-09 21:46:40.302] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/vk/dto/common/id/UserId.java ...
+[2024-03-09 21:46:40.310] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/vk/dto/common/id/UserId.java result is true
+[2024-03-09 21:46:40.311] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/TwitterAuthConfig.java ...
+[2024-03-09 21:46:40.312] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/TwitterAuthConfig.java result is true
+[2024-03-09 21:46:40.312] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/TwitterAuthToken.java ...
+[2024-03-09 21:46:40.314] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/TwitterAuthToken.java result is true
+[2024-03-09 21:46:40.314] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/internal/oauth/OAuth2Token.java ...
+[2024-03-09 21:46:40.316] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/internal/oauth/OAuth2Token.java result is true
+[2024-03-09 21:46:40.316] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/internal/oauth/OAuthResponse.java ...
+[2024-03-09 21:46:40.317] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/twitter/sdk/android/core/internal/oauth/OAuthResponse.java result is true
+[2024-03-09 21:46:40.317] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AuthenticationTokenClaims.java ...
+[2024-03-09 21:46:40.333] com.cxxsheng.parscan.core.iterator.ASTParsingException: 
+	at com.cxxsheng.parscan.core.z3.Z3Core.handleSymbol(Z3Core.java:137)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:246)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkTmpSymbol(Z3Core.java:113)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpression(Z3Core.java:243)
+	at com.cxxsheng.parscan.core.z3.Z3Core.mkExpressionListWithPrevs(Z3Core.java:303)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructConditionByExpression(ASTIterator.java:130)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.constructCondition(ASTIterator.java:198)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:419)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:692)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.334] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AuthenticationToken.java ...
+[2024-03-09 21:46:40.338] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AuthenticationToken.java result is true
+[2024-03-09 21:46:40.338] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/Profile.java ...
+[2024-03-09 21:46:40.351] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.351] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AuthenticationTokenHeader.java ...
+[2024-03-09 21:46:40.354] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AuthenticationTokenHeader.java result is true
+[2024-03-09 21:46:40.354] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/AccessToken.java ...
+[2024-03-09 21:46:40.390] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.data.unit.symbol.VarDeclaration.getLastExpValue(VarDeclaration.java:52)
+	at com.cxxsheng.parscan.core.AntlrCore.getReadFromParcelFunc(AntlrCore.java:65)
+	at MainforTest.handleOneFile(MainforTest.java:67)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.390] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/GraphRequest.java ...
+[2024-03-09 21:46:40.450] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/GraphRequest.java result is false
+[2024-03-09 21:46:40.450] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/FacebookRequestError.java ...
+[2024-03-09 21:46:40.465] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/facebook/FacebookRequestError.java result is true
+[2024-03-09 21:46:40.466] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/ugc/aaf/module/base/api/report/pojo/ReportResult.java ...
+[2024-03-09 21:46:40.469] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/ugc/aaf/module/base/api/report/pojo/ReportResult.java result is true
+[2024-03-09 21:46:40.469] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/ugc/aaf/module/base/api/report/pojo/ReportType.java ...
+[2024-03-09 21:46:40.471] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/ugc/aaf/module/base/api/report/pojo/ReportType.java result is true
+[2024-03-09 21:46:40.472] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/etao/imagesearch/adapter/Share/ShareContentVO.java ...
+[2024-03-09 21:46:40.475] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/etao/imagesearch/adapter/Share/ShareContentVO.java result is true
+[2024-03-09 21:46:40.476] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/Transaction.java ...
+[2024-03-09 21:46:40.479] java.lang.NullPointerException
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:98)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.<init>(ASTIterator.java:92)
+	at MainforTest.handleOneFile(MainforTest.java:67)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.479] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/Dimension.java ...
+[2024-03-09 21:46:40.483] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/Dimension.java result is true
+[2024-03-09 21:46:40.483] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/Measure.java ...
+[2024-03-09 21:46:40.490] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.490] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/MeasureSet.java ...
+[2024-03-09 21:46:40.496] com.cxxsheng.parscan.core.iterator.ASTParsingException: not supported enhancedfor
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:701)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:617)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleUnterminalSymbol(ASTIterator.java:562)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleExpression(ASTIterator.java:647)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.handleStatement(ASTIterator.java:294)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:732)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:68)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.496] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/DimensionSet.java ...
+[2024-03-09 21:46:40.500] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/mtl/appmonitor/model/DimensionSet.java result is true
+[2024-03-09 21:46:40.500] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/ut/abtest/internal/debug/Debug.java ...
+[2024-03-09 21:46:40.502] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/ut/abtest/internal/debug/Debug.java result is true
+[2024-03-09 21:46:40.502] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/android/search/domain/pojo/SearchBrandItem.java ...
+[2024-03-09 21:46:40.506] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/android/search/domain/pojo/SearchBrandItem.java result is true
+[2024-03-09 21:46:40.507] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/android/search/domain/pojo/dto/FilterOptions.java ...
+[2024-03-09 21:46:40.509] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/android/search/domain/pojo/dto/FilterOptions.java result is true
+[2024-03-09 21:46:40.509] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Trace.java ...
+[2024-03-09 21:46:40.511] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Trace.java result is true
+[2024-03-09 21:46:40.512] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Field.java ...
+[2024-03-09 21:46:40.515] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Field.java result is true
+[2024-03-09 21:46:40.515] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/ControlBlock.java ...
+[2024-03-09 21:46:40.517] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/ControlBlock.java result is true
+[2024-03-09 21:46:40.517] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/CustomeArea.java ...
+[2024-03-09 21:46:40.518] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/CustomeArea.java result is true
+[2024-03-09 21:46:40.518] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/TileStatisticData.java ...
+[2024-03-09 21:46:40.520] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/TileStatisticData.java result is true
+[2024-03-09 21:46:40.520] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/FloorPageData.java ...
+[2024-03-09 21:46:40.523] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/FloorPageData.java result is true
+[2024-03-09 21:46:40.523] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Action.java ...
+[2024-03-09 21:46:40.524] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Action.java result is true
+[2024-03-09 21:46:40.524] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Track.java ...
+[2024-03-09 21:46:40.526] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/Track.java result is true
+[2024-03-09 21:46:40.526] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/FloorV1.java ...
+[2024-03-09 21:46:40.553] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpress/tile/bricks/core/pojo/FloorV1.java result is true
+[2024-03-09 21:46:40.553] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/global/floorcontainer/widget/ViewOffsetBehavior.java ...
+[2024-03-09 21:46:40.561] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.562] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/global/wallet/vm/common/SelectInputFloorViewModel.java ...
+[2024-03-09 21:46:40.635] com.cxxsheng.parscan.core.iterator.ASTParsingException: not a valid parcelable class!
+	at MainforTest.handleOneFile(MainforTest.java:61)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.635] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/felin/core/utils/TimeLog$TimeRecord.java ...
+[2024-03-09 21:46:40.637] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/felin/core/utils/TimeLog$TimeRecord.java result is true
+[2024-03-09 21:46:40.637] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/felin/core/scrollviewplus/ObservableRecyclerView.java ...
+[2024-03-09 21:46:40.649] com.cxxsheng.parscan.core.iterator.ASTParsingException: cannot support loop state
+	at com.cxxsheng.parscan.core.iterator.ParcelDataNode.addChild(ParcelDataNode.java:91)
+	at com.cxxsheng.parscan.core.iterator.Graph.addNewNode(Graph.java:135)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.indexStackPop(ASTIterator.java:802)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.continueToTaint(ASTIterator.java:740)
+	at com.cxxsheng.parscan.core.iterator.ASTIterator.start(ASTIterator.java:852)
+	at MainforTest.handleOneFile(MainforTest.java:64)
+	at MainforTest.main(MainforTest.java:116)
+
+[2024-03-09 21:46:40.649] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpresshd/home/pojo/PayloadList.java ...
+[2024-03-09 21:46:40.652] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/alibaba/aliexpresshd/home/pojo/PayloadList.java result is true
+[2024-03-09 21:46:40.652] parsing /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/tile/alibaba/tile_option/option/ui/ChannelTab.java ...
+[2024-03-09 21:46:40.655] finished /home/cs/Downloads/newoutput/AliExpress- интернет-магазин_8.20.370.884846_Apkpure.apk/sources/com/tile/alibaba/tile_option/option/ui/ChannelTab.java result is true

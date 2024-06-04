@@ -45,6 +45,9 @@ public class VarDeclaration extends Symbol {
   }
 
   public Symbol getLastExpValue(){
+    if (expressions == null){
+      System.out.println();
+    }
     assert expressions.getLastExpression().getOp() == Operator.AS;
     return expressions.getLastExpression().getRight();
   }

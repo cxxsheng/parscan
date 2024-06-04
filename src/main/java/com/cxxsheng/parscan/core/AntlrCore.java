@@ -17,6 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import com.cxxsheng.parscan.core.iterator.ASTParsingException;
+import com.cxxsheng.parscan.core.iterator.ASTRegularException;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
@@ -28,11 +31,13 @@ public class AntlrCore {
   private final Path filePath;
 
   private List<JavaClass> jClasses = new ArrayList<>();
+    private List<JavaClass> allJClasses = new ArrayList<>();
 
   private FunctionImp writeToParcel;
 
   private FunctionImp readFromParcel;
 
+  private JavaClass ParcelableClass = null;
 
   public AntlrCore(final Path filePath){
     this.filePath = filePath;
@@ -49,15 +54,13 @@ public class AntlrCore {
   }
 
   public FunctionImp getWriteToParcelFunc(){
-    JavaClass jClass = jClasses.get(0);
-    return  jClass.getFunctionImpByFullName("writeToParcel",
+    return  getParcelableClass().getFunctionImpByFullName("writeToParcel",
                                             new String[]{"Parcel","int"});
   }
 
   public FunctionImp getReadFromParcelFunc(){
-      JavaClass jClass = jClasses.get(0);
 
-      VarDeclaration v = jClass.getVarDeclarationByName("CREATOR");
+      VarDeclaration v = getParcelableClass().getVarDeclarationByName("CREATOR");
       if (v != null){
         Symbol e =  v.getLastExpValue();
         if (e instanceof TmpSymbol){
@@ -68,7 +71,7 @@ public class AntlrCore {
             JavaClass nullClass = ((CallFunc) e).extraClass();
             if (nullClass == null){
                 String funcName  = ((CallFunc) e).getFuncName();
-                nullClass = jClass.findInnerClassByName(funcName);
+                nullClass = getParcelableClass().findInnerClassByName(funcName);
                 if (nullClass == null){
                     //fixme need to look up another calss
 
@@ -80,7 +83,7 @@ public class AntlrCore {
                     Path newPath = absPath.resolveSibling(newRelativePath);
                     try {
                         nullClass = parse(newPath);
-                    }catch (IOException ex){
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -107,7 +110,7 @@ public class AntlrCore {
 
 
   //Start parse given java file
-  public JavaClass parse(Path filePath) throws IOException {
+  public JavaClass parse(Path filePath) throws Exception {
       //if file patg == null start from root filePath
       if (filePath == null)
         filePath = this.filePath;
@@ -130,15 +133,12 @@ public class AntlrCore {
       }
       for (JavaParser.TypeDeclarationContext t: ts){
         if (t.classDeclaration()!=null){
-          JavaClassExtractor extractor = new JavaClassExtractor(filePath);
+          JavaClassExtractor extractor = new JavaClassExtractor(filePath, this);
           JavaClass javaClass = extractor.parseClass(t.classDeclaration());
           jClasses.add(javaClass);
           return javaClass;
-          //writeToParcel = getWriteToParcel(jClass);
-          //readFromParcel = getReadFromParcel(jClass);
-          //System.out.println(writeToParcel);
-          //System.out.println(readFromParcel);
-          //compareTwoFunction(writeToParcel, readFromParcel);
+        }else {
+            throw new ASTRegularException("cannot find any class declaration");
         }
       }
         return null;
@@ -149,11 +149,22 @@ public class AntlrCore {
     }
 
     public JavaClass findClassByName(String name){
-        for (JavaClass javaClass: jClasses){
+        for (JavaClass javaClass: allJClasses){
             if (name.equals(javaClass.getName()))
                 return javaClass;
         }
         return null;
     }
 
+    public JavaClass getParcelableClass() {
+        return ParcelableClass;
+    }
+
+    public void setParcelableClass(JavaClass parcelableClass) {
+        ParcelableClass = parcelableClass;
+    }
+
+    public void addGlobal(JavaClass javaClass) {
+      allJClasses.add(javaClass);
+  }
 }

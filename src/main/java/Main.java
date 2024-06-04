@@ -40,13 +40,24 @@ public class Main {
     try {
       core.parse(null);
     }
-    catch (IOException e) {
+    catch (Exception e) {
       e.printStackTrace();
       return false;
     }
     JavaClass jclass = core.getJavaClasses().get(0);
     if (!jclass.containsInterfaceName("Parcelable")){
-      throw new ASTParsingException("expected an parcelable but got nothing");
+      List<JavaClass> innerClasses = jclass.getInnerClasses();
+      for (JavaClass innerClass : innerClasses){
+        if (innerClass.containsInterfaceName("Parcelable")){
+          core.setParcelableClass(innerClass);
+          break;
+        }
+      }
+    }else {
+      core.setParcelableClass(jclass);
+    }
+    if (core.getParcelableClass() == null){
+      throw new ASTParsingException("not a valid parcelable class!");
     }
     ASTIterator iterator1 = new ASTIterator(core, core.getWriteToParcelFunc());
     iterator1.start();
@@ -59,7 +70,7 @@ public class Main {
 
   private static void handleTest(){
     Path dir = Paths.get("src", "test", "resources", "JavaDemo", "cves");
-    File cveDir=  dir.toFile();
+    File cveDir= dir.toFile();
     if (!cveDir.isDirectory()){
       return;
     }

@@ -320,13 +320,17 @@ public class Z3Core {
 
   public ExprWithTypeVariable mkNot(ExprWithTypeVariable e){
     if (e ==null){
-      System.out.println();
+      return ExprWithTypeVariable.Occupied;
     }
     e.setExpr(ctx.mkNot(e.getExpr()));
     return e;
   }
 
   public ExprWithTypeVariable mkAnd(ExprWithTypeVariable left, ExprWithTypeVariable right){
+    if (left.getExpr() ==null)
+      return right;
+    if (right.getExpr() ==null)
+      return left;
     Expr new_exp = ctx.mkAnd(left.getExpr(), right.getExpr()).simplify();
     return ExprWithTypeVariable.contact(left, right, new_exp);
   }

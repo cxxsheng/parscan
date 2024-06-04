@@ -49,7 +49,7 @@ public class FunctionReader {
           functionMaps.put(d.getName(), d);
       }
     }
-    catch (IOException e) {
+    catch (Exception e) {
       e.printStackTrace();
     }
   }
